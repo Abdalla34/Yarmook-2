@@ -8,7 +8,7 @@ const { token, getCountries, getAreasByCountry, getCitiesByArea, logOrRegister }
 const phone = route.query.phone || "";
 const phoneOtp = route.query.otpCode || "";
 const loading = ref(false);
-const user =  useCookie("user", { maxAge: 365 * 24 * 60 * 60 });
+const user = useCookie("user", { maxAge: 365 * 24 * 60 * 60 });
 
 const countriesId = ref(null)
 const areas = ref([]);
@@ -51,10 +51,6 @@ async function onSubmit(values) {
     loading.value = true;
     try {
         const res = await logOrRegister({
-            first_name: values.first_name,
-            last_name: values.last_name,
-            area_id: selectedArea.value,
-            city_id: selectedCity.value,
             otp_code: phoneOtp,
             phone,
         });

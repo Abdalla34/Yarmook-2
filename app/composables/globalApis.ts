@@ -37,7 +37,7 @@ export const useGlobalApi = () => {
         });
     };
 // done
-    const auth = async (phone: Number) => {
+    const sendOtpCode = async (phone: Number) => {
         return await $fetch(`${config.public.apiBase}/auth/send-otp`, {
             method: "POST",
             headers,
@@ -64,5 +64,5 @@ export const useGlobalApi = () => {
 
     }
 
-    return { headers, token, getHome, getCountries, getAreasByCountry, getCitiesByArea, auth, checkCode, logOrRegister }
+    return { headers, token, getHome, getCountries, getAreasByCountry, getCitiesByArea, sendOtpCode, checkCode, logOrRegister }
 }
