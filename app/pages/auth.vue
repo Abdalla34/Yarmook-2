@@ -10,12 +10,14 @@ const phone = route.query.phone || '';
 const registered = route.query.registered;
 const otpCode = ref(null)
 const error = ref('')
+const loading = ref(false)
 
 const userCookie = useCookie("user", { maxAge: 365 * 24 * 60 * 60 })
 
 const handleOtpComplete = async (value) => {
+  loading.value = true
   otpCode.value = value
-  const res = await checkCode(phone, value)
+  const res = await checkCode(phone, value).finally(() => loading.value = false)
   if (res?.status) {
     if (registered === 'true') {
       try {
@@ -53,6 +55,9 @@ const handleOtpComplete = async (value) => {
             <div class="flex justify-center">
               <v-otp-input ref="otpInput" :num-inputs="4" :should-auto-focus="true" :should-focus-order="true"
                 input-type="number" input-classes="otp-input" @on-complete="handleOtpComplete" />
+            </div>
+            <div v-if="loading" class="flex justify-center mt-4">
+              <span class="w-6 h-6 border-2 border-main-color border-t-transparent rounded-full animate-spin"></span>
             </div>
           </div>
         </div>

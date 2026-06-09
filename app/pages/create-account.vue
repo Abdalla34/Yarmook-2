@@ -2,6 +2,7 @@
 const { handleSubmit } = useForm()
 const router = useRouter()
 const { sendOtpCode } = useGlobalApi()
+const loading = ref(false)
 
 const phoneRules = (value) => {
   if (!value) return 'Phone number is required'
@@ -10,8 +11,9 @@ const phoneRules = (value) => {
 }
 
 const onSubmit = handleSubmit(async (values) => {
+  loading.value = true
   const fullPhone = `+966${values.phone}`
-  const res = await sendOtpCode(fullPhone)
+  const res = await sendOtpCode(fullPhone).finally(() => loading.value = false)
   if (res?.status) {
     router.push({ path: '/auth', query: { phone: fullPhone, registered: res.data.registered } })
   }
@@ -41,8 +43,9 @@ const onSubmit = handleSubmit(async (values) => {
               </div>
               <ErrorMessage name="phone" class="text-red-500 text-sm mt-1" />
             </div>
-            <button type="submit" class="bg-main-color w-full py-2 rounded-lg font-bold hover:opacity-90 transition">
-              Submit
+            <button type="submit" :disabled="loading" class="bg-main-color w-full py-2 rounded-lg font-bold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2">
+              <span v-if="loading" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              {{ loading ? 'Please wait...' : 'Submit' }}
             </button>
           </form>
         </div>
