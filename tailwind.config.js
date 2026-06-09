@@ -12,6 +12,15 @@ export default {
       colors: {
         "main-color": "#ffe654",
       },
+      keyframes: {
+        scale: {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.12)" },
+        },
+      },
+      animation: {
+        scale: "scale 1.5s ease-in-out infinite",
+      },
     },
   },
   plugins: [],

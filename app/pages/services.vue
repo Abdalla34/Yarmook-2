@@ -1,7 +1,17 @@
 <template>
   <div class="services-page mt-0 lg:mt-3 min-h-screen  py-8">
     <div class="container mx-auto px-4">
-      <div v-if="loading" class="text-center text-gray-500 py-10">Loading...</div>
+      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-for="n in 6" :key="n"
+          class="bg-white flex flex-col items-center rounded-2xl shadow-md p-6 animate-pulse">
+          <div class="w-[100px] h-[100px] bg-gray-200 rounded-lg mb-4"></div>
+          <div class="h-6 w-3/4 bg-gray-200 rounded mb-4"></div>
+          <div class="flex items-center justify-between w-full">
+            <div class="h-6 w-24 bg-gray-200 rounded"></div>
+            <div class="h-9 w-28 bg-gray-200 rounded-lg"></div>
+          </div>
+        </div>
+      </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div v-for="service in carServices" :key="service.id"
           class="bg-white flex flex-col items-center rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
