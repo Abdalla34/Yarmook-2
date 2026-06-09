@@ -55,11 +55,11 @@ export const useGlobalApi = () => {
 
     }
 // done
-    const logOrRegister = async (formData: any) => {
+    const logOrRegister = async (form: any) => {
         return await $fetch(`${config.public.apiBase}/auth/login-or-register`, {
             method: "POST",
             headers: headers,
-            body: formData
+            body: form
         })
 
     }
