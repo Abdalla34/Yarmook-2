@@ -22,6 +22,14 @@ export const useGlobalApi = () => {
             headers,
         });
     };
+
+    const getOfferById = async (offerId: string | number) => {
+        return await $fetch(`${config.public.apiBase}/offer/offers/${offerId}`, {
+            method: "GET",
+            headers,
+          
+        });
+    };
 // done
     const getCountries = async () => {
         return await $fetch(`${config.public.apiBase}/core/countries`, {
@@ -71,5 +79,5 @@ export const useGlobalApi = () => {
 
     }
 
-    return { headers, token, getHome, getOffers, getCountries, getAreasByCountry, getCitiesByArea, sendOtpCode, checkCode, logOrRegister }
+    return { headers, token, getHome, getOffers, getOfferById, getCountries, getAreasByCountry, getCitiesByArea, sendOtpCode, checkCode, logOrRegister }
 }

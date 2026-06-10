@@ -111,7 +111,7 @@ const offers = computed(() => offersData.value?.data?.items ?? offersData.value?
             <div class="container mx-auto px-4">
                 <div class="flex align-middle justify-between">
                     <h2 class="text-2xl font-bold text-start mb-6">Offers</h2>
-                    <h2 class="text-red-500 font-bold uppercase">View all</h2>
+                    <h2 class="text-red-500 font-bold capitalize cursor-pointer" @click="navigateTo('/offers')">View all</h2>
                 </div>
                 <div
                     class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:snap-none">
