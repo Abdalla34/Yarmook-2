@@ -16,6 +16,7 @@ const offers = computed(() => offersData.value?.data?.items ?? offersData.value?
 <template>
     <div class="index-page mt-4">
         <div class="container mx-auto">
+            <!-- sliders home page -->
             <Swiper v-if="sliders.length" :modules="[Autoplay, Pagination]" :loop="true" :autoplay="{ delay: 2000 }"
                 :pagination="{ clickable: true }" class="home-slider w-[90%] md:w-[100%] lg:w-[80%]">
                 <SwiperSlide v-for="(slide, i) in sliders" :key="i">
@@ -24,7 +25,7 @@ const offers = computed(() => offersData.value?.data?.items ?? offersData.value?
 
                 </SwiperSlide>
             </Swiper>
-
+            <!-- end silders -->
         </div>
         <!-- yarmook center  -->
         <div class="section-yarmook mb-5">
@@ -34,8 +35,7 @@ const offers = computed(() => offersData.value?.data?.items ?? offersData.value?
                     <h2 class="text-2xl font-bold text-start mb-6">Center Yarmook</h2>
 
                     <div class="grid grid-cols-2 md:grid-cols-2 gap-3 available-services">
-                        <div
-                        @click="navigateTo('/services')"
+                        <div @click="navigateTo('/services')"
                             class="bg-white rounded-lg shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                             <div class="h-28 md:h-auto flex items-center justify-center">
                                 <img src="/car-fix.png" alt="handmade services"
@@ -65,7 +65,7 @@ const offers = computed(() => offersData.value?.data?.items ?? offersData.value?
                     </div>
 
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4 other-features">
-                
+
                         <div
                             class="bg-white rounded-lg shadow-md overflow-hidden relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                             <div class="h-28 flex items-center justify-center text-gray-400">
@@ -106,17 +106,19 @@ const offers = computed(() => offersData.value?.data?.items ?? offersData.value?
                 </section>
             </div>
         </div>
+        <!-- end center -->
         <!-- offers yarmook -->
         <section v-if="offers.length" class="offers mb-8">
             <div class="container mx-auto px-4">
                 <div class="flex align-middle justify-between">
                     <h2 class="text-2xl font-bold text-start mb-6">Offers</h2>
-                    <h2 class="text-red-500 font-bold capitalize cursor-pointer" @click="navigateTo('/offers')">View all</h2>
+                    <h2 class="text-red-500 font-bold capitalize cursor-pointer" @click="navigateTo('/offers')">View all
+                    </h2>
                 </div>
                 <div
                     class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:snap-none">
-                    <div v-for="offer in offers" :key="offer.id"
-                        class="min-w-[calc(50%-0.5rem)] w-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] flex-shrink-0 snap-start md:min-w-0 md:w-auto md:max-w-none bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                    <NuxtLink v-for="offer in offers" :key="offer.id" :to="`/offers/${offer.id}`"
+                        class="min-w-[calc(50%-0.5rem)] w-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] flex-shrink-0 snap-start md:min-w-0 md:w-auto md:max-w-none bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                         <div class="relative">
                             <img v-if="offer.image" :src="offer.image" :alt="offer.title"
                                 class="w-full h-28 md:h-[50%] object-cover" />
@@ -128,7 +130,8 @@ const offers = computed(() => offersData.value?.data?.items ?? offersData.value?
                                 class="hidden md:block absolute bottom-2 left-2 w-10 h-10 rounded-full border-2 border-white object-cover" />
                         </div>
                         <div class="p-2 md:p-4">
-                            <h3 class="text-xs md:text-sm font-bold text-gray-800 mb-1 md:mb-2 line-clamp-2">{{ offer.title }}</h3>
+                            <h3 class="text-xs md:text-sm font-bold text-gray-800 mb-1 md:mb-2 line-clamp-2">{{
+                                offer.title }}</h3>
                             <p v-if="offer.description"
                                 class="hidden md:block text-xs text-gray-500 mb-3 line-clamp-3 whitespace-pre-line">
                                 {{ offer.description }}
@@ -138,18 +141,20 @@ const offers = computed(() => offersData.value?.data?.items ?? offersData.value?
                                     <span class="text-gray-400 uppercase text-[10px] md:text-xs">sar</span>
                                 </span>
                                 <span v-if="offer.price_before_discount"
-                                    class="text-xs md:text-sm text-gray-400 line-through">{{ offer.price_before_discount }} sar</span>
+                                    class="text-xs md:text-sm text-gray-400 line-through">{{ offer.price_before_discount
+                                    }} sar</span>
                             </div>
-                            <div v-if="offer.benefits"
-                                class="hidden md:block text-xs text-gray-600 mb-3 offer-benefits" v-html="offer.benefits" />
+                            <div v-if="offer.benefits" class="hidden md:block text-xs text-gray-600 mb-3 offer-benefits"
+                                v-html="offer.benefits" />
                             <p v-if="offer.show_expiration && offer.expires_at"
                                 class="hidden md:block text-xs text-red-500 font-medium">
                                 Expires: {{ offer.expires_at }}
                             </p>
                         </div>
-                    </div>
+                    </NuxtLink>
                 </div>
             </div>
         </section>
+        <!-- end offers -->
     </div>
 </template>

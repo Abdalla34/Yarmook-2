@@ -16,10 +16,10 @@
 
       <div v-else-if="offers.length" class="grid grid-cols-2 gap-4">
         <NuxtLink v-for="offer in offers" :key="offer.id" :to="`/offers/${offer.id}`"
-          class="block bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
+          class="block bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer p-3">
           <div class="relative">
             <img v-if="offer.image" :src="offer.image" :alt="offer.title"
-              class="w-full h-32 md:h-40 object-cover" />
+              class="w-full h-32 md:h-[40%] object-cover rounded-md" />
             <span v-if="offer.discount_percentage_text"
               class="absolute top-2 right-2 bg-red-500 text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded-full">
               {{ offer.discount_percentage_text }}

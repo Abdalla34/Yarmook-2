@@ -28,6 +28,20 @@
             </svg>
           </div>
         </div>
+        <div v-else class="icons-user flex gap-2">
+          <NuxtLink to="/create-account" class="w-20 h-10 hidden bg-yellow-200 rounded-lg md:flex items-center justify-center">
+            <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+          </NuxtLink>
+          <NuxtLink to="/cart" class="w-20 h-10 hidden bg-yellow-200 rounded-lg md:flex items-center justify-center">
+            <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+            </svg>
+          </NuxtLink>
+        </div>
         <div class="md:hidden flex align-middle gap-2">
 
           <div class="w-10 h-10  bg-yellow-200 rounded-lg flex items-center justify-center">
@@ -48,12 +62,12 @@
         </div>
       </div>
       <nav v-if="menuOpen" class="md:hidden flex flex-col gap-2 pb-4 px-4">
-        <NuxtLink to="/" class="hover:text-gray-600" @click="menuOpen = false">Home</NuxtLink>
-        <NuxtLink to="/my-orders" class="hover:text-gray-600" @click="menuOpen = false">My Orders</NuxtLink>
-        <NuxtLink to="/services" class="hover:text-gray-600" @click="menuOpen = false">Services</NuxtLink>
-        <NuxtLink to="/offers" class="hover:text-gray-600" @click="menuOpen = false">Offers</NuxtLink>
-        <NuxtLink to="/memberships" class="hover:text-gray-600" @click="menuOpen = false">Memberships</NuxtLink>
-        <NuxtLink to="/spare-parts" class="hover:text-gray-600" @click="menuOpen = false">Spare Parts</NuxtLink>
+        <NuxtLink to="/" exact-active-class="active" class="hover:text-gray-600" @click="menuOpen = false">Home</NuxtLink>
+        <NuxtLink to="/my-orders" exact-active-class="active" class="hover:text-gray-600" @click="menuOpen = false">My Orders</NuxtLink>
+        <NuxtLink to="/services" exact-active-class="active" class="hover:text-gray-600" @click="menuOpen = false">Services</NuxtLink>
+        <NuxtLink to="/offers" exact-active-class="active" class="hover:text-gray-600" @click="menuOpen = false">Offers</NuxtLink>
+        <NuxtLink to="/memberships" exact-active-class="active" class="hover:text-gray-600" @click="menuOpen = false">Memberships</NuxtLink>
+        <NuxtLink to="/spare-parts" exact-active-class="active" class="hover:text-gray-600" @click="menuOpen = false">Spare Parts</NuxtLink>
       </nav>
     </div>
   </header>

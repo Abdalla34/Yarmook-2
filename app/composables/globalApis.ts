@@ -22,7 +22,7 @@ export const useGlobalApi = () => {
             headers,
         });
     };
-
+// done
     const getOfferById = async (offerId: string | number) => {
         return await $fetch(`${config.public.apiBase}/offer/offers/${offerId}`, {
             method: "GET",
@@ -66,8 +66,6 @@ export const useGlobalApi = () => {
             headers,
             body: { phone, code },
         });
-
-
     }
 // done
     const logOrRegister = async (form: any) => {
