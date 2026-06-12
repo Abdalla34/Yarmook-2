@@ -1,0 +1,172 @@
+<script setup>
+import { Form, Field, ErrorMessage } from "vee-validate";
+import VOtpInput from "vue3-otp-input";
+
+const props = defineProps({
+  show: Boolean,
+  type: String,
+  itemId: Number,
+  qty: { type: Number, default: 1 },
+});
+
+const emit = defineEmits(["close", "success"]);
+
+const { sendOtpCode, checkCode, logOrRegister, token } = useGlobalApi();
+const { addCart, addCartMulti } = useAddToCart();
+const userCookie = useCookie("user", { maxAge: 365 * 24 * 60 * 60 });
+
+const step = ref(1);
+const phone = ref("");
+const loading = ref(false);
+const error = ref("");
+const registered = ref(null);
+
+function phoneRules(value) {
+  if (!value) return "Phone number is required";
+  if (!/^\d{9,}$/.test(value)) return "Must be at least 9 digits";
+  return true;
+}
+
+async function submitPhone(values) {
+  loading.value = true;
+  error.value = "";
+  const fullPhone = `+966${values.phone}`;
+  try {
+    const res = await sendOtpCode(fullPhone);
+    if (res?.status) {
+      phone.value = fullPhone;
+      registered.value = res?.data?.registered ?? res?.registered;
+      step.value = 2;
+    } else {
+      error.value = res?.message || "Failed to send OTP";
+    }
+  } catch {
+    error.value = "An error occurred";
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function handleOtpComplete(value) {
+  loading.value = true;
+  error.value = "";
+  try {
+    const checkRes = await checkCode(phone.value, value);
+    if (!checkRes?.status) {
+      error.value = checkRes?.message || "Invalid code";
+      return;
+    }
+    const lrRes = await logOrRegister({
+      phone: phone.value,
+      otp_code: value,
+    });
+
+    if (lrRes?.status && lrRes?.data?.token) {
+      token.value = lrRes.data.token;
+      userCookie.value = lrRes.data.user;
+
+      if (registered.value === true || registered.value === 'true') {
+        await addCart(props.type, props.itemId, props.qty, token.value);
+        emit("success");
+        return;
+      }
+
+      const storedCart = localStorage.getItem("cartGuest");
+      const guestCart = storedCart ? JSON.parse(storedCart) : [];
+
+      const items = guestCart.map((item) => ({
+        type: item.type,
+        item_id: item.item_id,
+        qty: 1,
+      }));
+
+      items.push({ type: props.type, item_id: props.itemId, qty: props.qty });
+
+      const resMulti = await addCartMulti(items, token.value);
+      if (resMulti?.status) {
+        localStorage.removeItem("cartGuest");
+      }
+      emit("success");
+    }
+  } catch {
+    error.value = "Verification failed";
+  } finally {
+    loading.value = false;
+  }
+}
+</script>
+
+<template>
+  <Teleport to="body">
+    <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-md mx-4 relative">
+        <button @click="emit('close')"
+          class="absolute top-3 end-3 text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+
+        <div v-if="step === 1">
+          <h2 class="text-2xl font-bold text-center mb-6">Login to Add to Cart</h2>
+          <Form @submit="submitPhone">
+            <div class="mb-4">
+              <label class="block text-sm font-bold mb-2">Phone Number</label>
+              <div class="flex items-center border rounded-lg overflow-hidden">
+                <span class="bg-gray-100 px-3 py-2 text-gray-700 font-bold border-r">+966</span>
+                <Field name="phone" type="text" inputmode="numeric" placeholder="5XXXXXXXX" :rules="phoneRules"
+                  class="w-[full] px-3 py-2 outline-none" />
+              </div>
+              <ErrorMessage name="phone" class="text-red-500 text-sm mt-1" />
+            </div>
+            <p v-if="error" class="text-red-500 text-sm mb-2">{{ error }}</p>
+            <button type="submit" :disabled="loading"
+              class="bg-main-color w-full py-2 rounded-lg font-bold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2">
+              <span v-if="loading"
+                class="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+              {{ loading ? "Please wait..." : "Submit" }}
+            </button>
+          </Form>
+        </div>
+
+        <div v-else>
+          <h2 class="text-xl font-bold text-center mb-6">Verify OTP</h2>
+          <p class="text-center text-gray-500 mb-4">Enter the code sent to your phone</p>
+          <p v-if="error" class="text-red-500 text-sm text-center mb-2">{{ error }}</p>
+          <div class="flex justify-center gap-3">
+            <v-otp-input :num-inputs="4" :should-auto-focus="true" :should-focus-order="true" input-type="number"
+              aria-placeholder="*" input-classes="otp-input" @on-complete="handleOtpComplete" />
+          </div>
+          <div v-if="loading" class="flex justify-center mt-4">
+            <span class="w-6 h-6 border-2 border-main-color border-t-transparent rounded-full animate-spin"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+</template>
+
+<style scoped>
+.otp-input {
+  width: 48px;
+  height: 48px;
+  padding: 5px;
+  margin: 0 6px;
+  font-size: 20px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  text-align: center;
+  outline: none;
+}
+
+.otp-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.otp-input.is-complete {
+  background-color: #e4e4e4;
+}
+
+.otp-input::-webkit-inner-spin-button,
+.otp-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>

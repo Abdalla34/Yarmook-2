@@ -17,7 +17,6 @@
           class="bg-white flex flex-col items-center rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
           <img :src="service.image" class="max-w-[100px]" alt="">
           <h2 class="text-xl font-bold text-gray-800 mb-2">{{ service.title }}</h2>
-          <!-- <p class="text-gray-500 text-sm mb-3">{{ service.description }}</p> -->
           <div class="flex items-center justify-between w-full">
             <span class="text-lg font-semibold text-black-600">{{ service.price }} <span class="text-gray-400 uppercase text-sm">sar</span></span>
             <button @click="addServiceToCart(service)"
@@ -29,24 +28,50 @@
         </div>
       </div>
     </div>
+
+    <AuthCartModal
+      :show="showAuthModal"
+      :type="pendingItem?.type"
+      :item-id="pendingItem?.itemId"
+      :qty="pendingItem?.qty"
+      @close="showAuthModal = false"
+      @success="handleAuthSuccess"
+    />
   </div>
 </template>
 
 <script setup>
 const { getServices } = useCarServices();
 const { addCart } = useAddToCart();
+const { token } = useGlobalApi();
 
 const carServices = ref([]);
 const loading = ref(true);
+const showAuthModal = ref(false);
+const pendingItem = ref(null);
 
 async function addServiceToCart(service) {
   if (service.in_cart) return;
+
+  if (!token.value) {
+    pendingItem.value = { type: "service", itemId: service.id, qty: 1 };
+    showAuthModal.value = true;
+    return;
+  }
+
   try {
     await addCart("service", service.id, 1);
     service.in_cart = true;
   } catch (err) {
     console.error("Failed to add to cart", err);
   }
+}
+
+function handleAuthSuccess() {
+  showAuthModal.value = false;
+  const service = carServices.value.find((s) => s.id === pendingItem.value?.itemId);
+  if (service) service.in_cart = true;
+  pendingItem.value = null;
 }
 
 onMounted(async () => {
