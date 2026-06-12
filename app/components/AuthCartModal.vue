@@ -122,6 +122,10 @@ async function handleOtpComplete(value) {
                 class="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
               {{ loading ? "Please wait..." : "Submit" }}
             </button>
+            <button type="button" @click="emit('close')"
+              class="w-full py-2 mt-2 rounded-lg font-bold text-gray-600 border border-gray-300 hover:bg-red-500 transition">
+              Cancel
+            </button>
           </Form>
         </div>
 
@@ -144,24 +148,28 @@ async function handleOtpComplete(value) {
 
 <style scoped>
 .otp-input {
-  width: 48px;
-  height: 48px;
-  padding: 5px;
-  margin: 0 6px;
-  font-size: 20px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
+  width: 56px;
+  height: 56px;
+  font-size: 24px;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  background: #fff;
   text-align: center;
   outline: none;
+  transition: all 0.2s ease;
+  color: #111827;
 }
 
 .otp-input:focus {
   border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .otp-input.is-complete {
-  background-color: #e4e4e4;
+  border-color: #10b981;
+  background-color: #ecfdf5;
+  color: #065f46;
 }
 
 .otp-input::-webkit-inner-spin-button,
