@@ -19,10 +19,12 @@
           <h2 class="text-xl font-bold text-gray-800 mb-2">{{ service.title }}</h2>
           <div class="flex items-center justify-between w-full">
             <span class="text-lg font-semibold text-black-600">{{ service.price }} <span class="text-gray-400 uppercase text-sm">sar</span></span>
-            <button @click="addServiceToCart(service)"
-              class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            <button @click="addServiceToCart(service)" :disabled="loadingServiceId === service.id"
+              class="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
               :class="service.in_cart ? 'bg-white text-black border rounded-lg' : 'bg-main-color text-black hover:bg-yellow-200'">
-              {{ service.in_cart ? 'Added to Cart' : 'Add to Cart' }}
+              <span v-if="loadingServiceId === service.id"
+                class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+              {{ service.in_cart ? 'Added to Cart' : (loadingServiceId === service.id ? 'Adding...' : 'Add to Cart') }}
             </button>
           </div>
         </div>
@@ -49,9 +51,10 @@ const carServices = ref([]);
 const loading = ref(true);
 const showAuthModal = ref(false);
 const pendingItem = ref(null);
+const loadingServiceId = ref(null);
 
 async function addServiceToCart(service) {
-  if (service.in_cart) return;
+  if (service.in_cart || loadingServiceId.value === service.id) return;
 
   if (!token.value) {
     pendingItem.value = { type: "service", itemId: service.id, qty: 1 };
@@ -59,11 +62,14 @@ async function addServiceToCart(service) {
     return;
   }
 
+  loadingServiceId.value = service.id;
   try {
     await addCart("service", service.id, 1);
     service.in_cart = true;
   } catch (err) {
     console.error("Failed to add to cart", err);
+  } finally {
+    loadingServiceId.value = null;
   }
 }
 

@@ -133,7 +133,7 @@ async function handleOtpComplete(value) {
           <h2 class="text-xl font-bold text-center mb-6">Verify OTP</h2>
           <p class="text-center text-gray-500 mb-4">Enter the code sent to your phone</p>
           <p v-if="error" class="text-red-500 text-sm text-center mb-2">{{ error }}</p>
-          <div class="flex justify-center gap-3">
+          <div class="flex justify-center">
             <v-otp-input :num-inputs="4" :should-auto-focus="true" :should-focus-order="true" input-type="number"
               aria-placeholder="*" input-classes="otp-input" @on-complete="handleOtpComplete" />
           </div>
@@ -147,7 +147,7 @@ async function handleOtpComplete(value) {
 </template>
 
 <style scoped>
-.otp-input {
+:deep(.otp-input) {
   width: 56px;
   height: 56px;
   font-size: 24px;
@@ -159,21 +159,22 @@ async function handleOtpComplete(value) {
   outline: none;
   transition: all 0.2s ease;
   color: #111827;
+  margin: 0 4px;
 }
 
-.otp-input:focus {
+:deep(.otp-input:focus) {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-.otp-input.is-complete {
+:deep(.otp-input.is-complete) {
   border-color: #10b981;
   background-color: #ecfdf5;
   color: #065f46;
 }
 
-.otp-input::-webkit-inner-spin-button,
-.otp-input::-webkit-outer-spin-button {
+:deep(.otp-input::-webkit-inner-spin-button),
+:deep(.otp-input::-webkit-outer-spin-button) {
   -webkit-appearance: none;
   margin: 0;
 }
