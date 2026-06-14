@@ -8,50 +8,50 @@ export const useGlobalApi = () => {
         Accept: "application/json",
         "Access-Control-Allow-Origin": "*",
     };
-// done
+    // done
     const getHome = async () => {
         return await $fetch(`${config.public.apiBase}/home`, {
             method: "GET",
             headers,
         });
     };
-// done
+    // done
     const getOffers = async () => {
         return await $fetch(`${config.public.apiBase}/offer/offers`, {
             method: "GET",
             headers,
         });
     };
-// done
+    // done
     const getOfferById = async (offerId: string | number) => {
         return await $fetch(`${config.public.apiBase}/offer/offers/${offerId}`, {
             method: "GET",
             headers,
-          
+
         });
     };
-// done
+    // done
     const getCountries = async () => {
         return await $fetch(`${config.public.apiBase}/core/countries`, {
             method: "GET",
             headers
         });
     };
-// done
+    // done
     const getAreasByCountry = async (countryId: any) => {
         return await $fetch(`${config.public.apiBase}/core/countries/${countryId}/areas`, {
             method: "GET",
             headers
         });
     };
-// done
+    // done
     const getCitiesByArea = async (areaId: any) => {
         return await $fetch(`${config.public.apiBase}/core/countries/${areaId}/cities`, {
             method: "GET",
             headers
         });
     };
-// done
+    // done
     const sendOtpCode = async (phone: Number) => {
         return await $fetch(`${config.public.apiBase}/auth/send-otp`, {
             method: "POST",
@@ -59,7 +59,7 @@ export const useGlobalApi = () => {
             body: { phone: phone }
         })
     }
-// done
+    // done
     const checkCode = async (phone: any, code: any) => {
         return await $fetch(`${config.public.apiBase}/auth/check-code`, {
             method: "POST",
@@ -67,7 +67,7 @@ export const useGlobalApi = () => {
             body: { phone, code },
         });
     }
-// done
+    // done
     const logOrRegister = async (form: any) => {
         return await $fetch(`${config.public.apiBase}/auth/login-or-register`, {
             method: "POST",
@@ -76,6 +76,13 @@ export const useGlobalApi = () => {
         })
 
     }
+    const getSpareParts = async () => {
+        return await $fetch(`${config.public.apiBase}/car/spare-parts`, {
 
-    return { headers, token, getHome, getOffers, getOfferById, getCountries, getAreasByCountry, getCitiesByArea, sendOtpCode, checkCode, logOrRegister }
+            method: "GET", headers
+
+        })
+    }
+
+    return { headers, token, getHome, getOffers, getOfferById, getCountries, getAreasByCountry, getCitiesByArea, sendOtpCode, checkCode, logOrRegister, getSpareParts }
 }
