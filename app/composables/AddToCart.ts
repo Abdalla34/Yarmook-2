@@ -26,8 +26,10 @@ const clearGuestCart = () => {
     }
 };
 
+const cartCount = ref(0);
+
 export const useAddToCart = () => {
-    
+
     const config = useRuntimeConfig();
     const token = useCookie("token", { maxAge: 365 * 24 * 60 * 60 });
 
@@ -36,6 +38,13 @@ export const useAddToCart = () => {
         "Content-Type": "application/json",
         Accept: "application/json",
     });
+
+    function updateCountFromCart(data: any) {
+        const services = data?.services ?? [];
+        const offers = data?.offers ?? [];
+        const spareParts = data?.spare_parts ?? [];
+        cartCount.value = services.length + offers.length + spareParts.length;
+    }
 
     const addCartMulti = async (items: CartItem[], authToken?: string) => {
         const headers = {
@@ -50,6 +59,7 @@ export const useAddToCart = () => {
         });
         if (res?.status) {
             clearGuestCart();
+            cartCount.value += items.length;
         }
         return res;
     };
@@ -62,11 +72,15 @@ export const useAddToCart = () => {
                 "Content-Type": "application/json",
                 Accept: "application/json",
             };
-            return await $fetch(`${config.public.apiBase}/marketplace/cart/add-to-cart`, {
+            const res = await $fetch(`${config.public.apiBase}/marketplace/cart/add-to-cart`, {
                 method: "POST",
                 body: { type, item_id, qty },
                 headers,
             });
+            if (res?.status) {
+                cartCount.value += qty;
+            }
+            return res;
         }
 
         const items = getGuestCart();
@@ -77,18 +91,28 @@ export const useAddToCart = () => {
         } else {
             items.push({ type, item_id, qty });
         }
-
         setGuestCart(items);
-
         return await addCartMulti(items);
     };
 
     const getMyCart = async () => {
-        return await $fetch(`${config.public.apiBase}/marketplace/cart/my-cart`, {
+        const res = await $fetch(`${config.public.apiBase}/marketplace/cart/my-cart`, {
             method: "GET",
             headers: getHeaders(),
         });
+        if (res?.status) {
+            updateCountFromCart(res.data);
+        }
+        return res;
     };
 
-    return { addCart, addCartMulti, getMyCart };
+    const deleteItemsFromCart = async (order_id: Number, item_id: Number, type: string) => {
+        return await $fetch(`${config.public.apiBase}/marketplace/cart/delete-item-from-cart`, {
+            method: "POST",
+            headers: getHeaders(),
+            body: { order_id, cart_item_id: item_id, type }
+        })
+    }
+
+    return { addCart, addCartMulti, getMyCart, cartCount, deleteItemsFromCart };
 };

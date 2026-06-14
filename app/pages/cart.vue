@@ -4,8 +4,7 @@
       <h1 class="text-2xl font-bold mb-6">My Cart</h1>
 
       <div v-if="loading" class="space-y-4">
-        <div v-for="n in 3" :key="n"
-          class="bg-white rounded-2xl shadow-md p-4 animate-pulse flex items-center gap-4">
+        <div v-for="n in 3" :key="n" class="bg-white rounded-2xl shadow-md p-4 animate-pulse flex items-center gap-4">
           <div class="w-20 h-20 bg-gray-200 rounded-lg shrink-0"></div>
           <div class="flex-1 space-y-2">
             <div class="h-5 w-3/4 bg-gray-200 rounded"></div>
@@ -38,16 +37,20 @@
           <div class="flex-1 min-w-0">
             <h3 class="font-bold text-gray-800 truncate">{{ item.title }}</h3>
             <p class="text-sm text-gray-500 mt-1 capitalize">{{ item.type }}</p>
-            <p class="text-lg font-semibold text-black-600 mt-1">{{ item.price ?? item.price_after_discount }} <span class="text-gray-400 uppercase text-sm">sar</span></p>
+            <p class="text-lg font-semibold text-black-600 mt-1">{{ item.price ?? item.price_after_discount }} <span
+                class="text-gray-400 uppercase text-sm">sar</span></p>
           </div>
           <div class="flex items-center gap-3 shrink-0">
             <span class="text-sm text-gray-500">Qty: {{ item.qty ?? item.quantity ?? 1 }}</span>
+            <button @click="removeItem(item)"
+              class="text-red-500 hover:text-red-700 transition text-xl leading-none">&times;</button>
           </div>
         </div>
 
         <div class="bg-white rounded-2xl shadow-md p-4 flex items-center justify-between">
           <span class="text-lg font-bold">Total</span>
-          <span class="text-xl font-bold text-black-600">{{ cartTotal }} <span class="text-gray-400 uppercase text-sm">sar</span></span>
+          <span class="text-xl font-bold text-black-600">{{ cartTotal }} <span
+              class="text-gray-400 uppercase text-sm">sar</span></span>
         </div>
       </div>
     </div>
@@ -55,12 +58,14 @@
 </template>
 
 <script setup>
-const { getMyCart } = useAddToCart();
+const { getMyCart, deleteItemsFromCart, cartCount } = useAddToCart();
 
 const cartItems = ref([]);
 const cartTotal = ref("0");
+const cartId = ref(null);
 const loading = ref(true);
 const error = ref("");
+const order_id = ref(null)
 
 async function fetchCart() {
   loading.value = true;
@@ -68,6 +73,7 @@ async function fetchCart() {
   try {
     const res = await getMyCart();
     const data = res?.data ?? {};
+    order_id.value = data.id;
 
     const services = (data.services ?? []).map((item) => ({ ...item, type: "service" }));
     const offers = (data.offers ?? []).map((item) => ({ ...item, type: "offer" }));
@@ -82,6 +88,17 @@ async function fetchCart() {
     loading.value = false;
   }
 }
+
+async function removeItem(item) {
+  try {
+    await deleteItemsFromCart(order_id.value, item.id, item.type);
+    cartItems.value = cartItems.value.filter((i) => i.id !== item.id);
+    cartCount.value -= 1;
+  } catch (err) {
+    console.error("Failed to remove item", err);
+  }
+}
+
 
 onMounted(fetchCart);
 </script>

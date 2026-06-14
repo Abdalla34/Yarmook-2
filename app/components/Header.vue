@@ -15,11 +15,15 @@
                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <NuxtLink to="/cart" class="w-20 h-10 hidden bg-yellow-200 rounded-lg md:flex items-center justify-center">
+          <NuxtLink to="/cart" class="w-20 h-10 hidden bg-yellow-200 rounded-lg md:flex items-center justify-center relative">
             <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
             </svg>
+            <span v-if="cartCount > 0"
+              class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              {{ cartCount }}
+            </span>
           </NuxtLink>
           <div class="w-20 h-10 hidden bg-yellow-200 rounded-lg md:flex items-center justify-center">
             <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,20 +39,28 @@
                 d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
             </svg>
           </NuxtLink>
-          <NuxtLink to="/cart" class="w-20 h-10 hidden bg-yellow-200 rounded-lg md:flex items-center justify-center">
+          <NuxtLink to="/cart" class="w-20 h-10 hidden bg-yellow-200 rounded-lg md:flex items-center justify-center relative">
             <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
             </svg>
+            <span v-if="cartCount > 0"
+              class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              {{ cartCount }}
+            </span>
           </NuxtLink>
         </div>
         <div class="md:hidden flex align-middle gap-2">
 
-          <NuxtLink to="/cart" class="w-10 h-10 bg-yellow-200 rounded-lg flex items-center justify-center">
+          <NuxtLink to="/cart" class="w-10 h-10 bg-yellow-200 rounded-lg flex items-center justify-center relative">
             <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
             </svg>
+            <span v-if="cartCount > 0"
+              class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              {{ cartCount }}
+            </span>
           </NuxtLink>
 
           <button @click="menuOpen = !menuOpen">
@@ -75,5 +87,12 @@
 
 <script setup>
 const { token } = useGlobalApi()
+const { cartCount, getMyCart } = useAddToCart()
 const menuOpen = ref(false)
+
+onMounted(() => {
+  if (token.value) {
+    getMyCart()
+  }
+})
 </script>
