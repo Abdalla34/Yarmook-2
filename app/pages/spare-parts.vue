@@ -1,7 +1,7 @@
 <template>
   <div class="spare-parts-page mt-0 lg:mt-3 min-h-screen py-8">
     <div class="container mx-auto px-4">
-      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div v-for="n in 6" :key="n"
           class="bg-white flex flex-col items-center rounded-2xl shadow-md p-6 animate-pulse">
           <div class="w-[100px] h-[100px] bg-gray-200 rounded-lg mb-4"></div>
@@ -12,7 +12,7 @@
           </div>
         </div>
       </div>
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div v-for="item in spareParts" :key="item.id"
           class="bg-white flex flex-col items-center rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
           <img :src="item.image" class="max-w-[100px]" alt="">
@@ -41,10 +41,10 @@
     />
   </div>
 </template>
-<!-- ////////////////////////////////////////// -->
+
 <script setup>
 const { getSpareParts, token } = useGlobalApi();
-const { addCart, getMyCart } = useAddToCart();
+const { addCart } = useAddToCart();
 
 const spareParts = ref([]);
 const loading = ref(true);
@@ -83,16 +83,6 @@ onMounted(async () => {
   try {
     const response = await getSpareParts();
     spareParts.value = Array.isArray(response) ? response?.data?.items : (response.data?.items ?? []);
-    if (token.value) {
-      const cartRes = await getMyCart();
-      console.log("cart response:", cartRes?.data?.spare_parts);
-      const cartSpareParts = cartRes?.data?.spare_parts ?? [];
-      const cartIds = new Set(cartSpareParts.map((i) => i.id));
-      console.log("cart spare part ids:", [...cartIds]);
-      spareParts.value.forEach((item) => {
-        if (cartIds.has(item.id)) item.in_cart = true;
-      });
-    }
   } catch (err) {
     console.error(err);
   } finally {
