@@ -299,11 +299,11 @@ async function submitCar() {
         chassis_number: formData.value.chassis_number,
     };
     try {
-        console.log(payload)
-        // const res = await createMycar(payload);
-        // if (res?.status) {
-        //     navigateTo('/my-cars')
-        // }
+   
+        const res = await createMycar(payload);
+        if (res?.status) {
+            navigateTo('/my-cars')
+        }
     } catch (err) {
         console.error("Failed to create car", err);
         alert("Failed to add car");
