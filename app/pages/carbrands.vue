@@ -25,9 +25,15 @@
 
             <!-- Step 1: Car Brands -->
             <div v-if="step === 1">
-                <div class="text-center mb-8">
+                <div class="text-center mb-6">
                     <h1 class="text-3xl font-bold text-gray-800">Select Car Brand</h1>
                     <p class="text-gray-400 mt-2">Choose your car brand to get started</p>
+                </div>
+
+                <div class="relative mb-6 max-w-md mx-auto">
+                    <input v-model="searchQuery" type="text" placeholder="Search brands..."
+                        class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 pl-10 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition text-sm" />
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">&#x1F50D;</span>
                 </div>
 
                 <div v-if="loadingBrands" class="grid grid-cols-2 sm:grid-cols-4 gap-5">
@@ -39,7 +45,7 @@
                 </div>
 
                 <div v-else class="grid grid-cols-2 sm:grid-cols-4 gap-5">
-                    <div v-for="brand in brands" :key="brand.id"
+                    <div v-for="brand in filteredBrands" :key="brand.id"
                         class="group rounded-2xl bg-white p-5 shadow-sm border border-gray-100 hover:border-main-color hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col items-center gap-3"
                         @click="selectBrand(brand)">
                         <div class="w-full aspect-square bg-gray-50 rounded-xl flex items-center justify-center p-3 group-hover:scale-105 transition-transform duration-200">
@@ -58,9 +64,15 @@
                     <span>&larr;</span> Back to brands
                 </button>
 
-                <div class="text-center mb-8">
+                <div class="text-center mb-6">
                     <h1 class="text-3xl font-bold text-gray-800">{{ selectedBrand.title }} Types</h1>
                     <p class="text-gray-400 mt-2">Select the model of your {{ selectedBrand.title }}</p>
+                </div>
+
+                <div class="relative mb-6 max-w-md mx-auto">
+                    <input v-model="typeSearchQuery" type="text" placeholder="Search types..."
+                        class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 pl-10 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition text-sm" />
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">&#x1F50D;</span>
                 </div>
 
                 <div v-if="loadingTypes" class="grid grid-cols-2 sm:grid-cols-4 gap-5">
@@ -72,7 +84,7 @@
                 </div>
 
                 <div v-else class="grid grid-cols-2 sm:grid-cols-4 gap-5">
-                    <div v-for="type in carTypes" :key="type.id"
+                    <div v-for="type in filteredCarTypes" :key="type.id"
                         class="group rounded-2xl bg-white p-5 shadow-sm border border-gray-100 hover:border-main-color hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col items-center gap-3"
                         :class="{ 'border-main-color ring-2 ring-main-color/30': selectedType?.id === type.id }"
                         @click="selectedType = type; step = 3">
@@ -186,6 +198,18 @@
 const { getcarBrands, getcartypesbrand, createMycar } = useCarServices();
 
 const step = ref(1);
+const searchQuery = ref("");
+const typeSearchQuery = ref("");
+const filteredBrands = computed(() =>
+    brands.value.filter((b) =>
+        b.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
+);
+const filteredCarTypes = computed(() =>
+    carTypes.value.filter((t) =>
+        t.title.toLowerCase().includes(typeSearchQuery.value.toLowerCase())
+    )
+);
 const loadingBrands = ref(true);
 const brands = ref([]);
 const selectedBrand = ref(null);
