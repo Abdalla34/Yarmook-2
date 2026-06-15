@@ -34,7 +34,7 @@ export const useCarServices = () => {
       params: { brand_id: idBrand },
     });
   };
-
+  // done
   const createMycar = async (payload: any) => {
     return await $fetch(`${config.public.apiBase}/customer/create-car`, {
       method: "POST",
@@ -42,5 +42,12 @@ export const useCarServices = () => {
       body: payload
     })
   }
-  return { getServices, getcarBrands, getcartypesbrand, createMycar };
+
+  const getMycars = async () => {
+    return await $fetch(`${config.public.apiBase}/customer/cars`, {
+      method: "GET",
+      headers,
+    });
+  };
+  return { getServices, getcarBrands, getcartypesbrand, createMycar,getMycars };
 };

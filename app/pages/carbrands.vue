@@ -69,10 +69,17 @@
                     <p class="text-gray-400 mt-2">Select the model of your {{ selectedBrand.title }}</p>
                 </div>
 
-                <div class="relative mb-6 max-w-md mx-auto">
-                    <input v-model="typeSearchQuery" type="text" placeholder="Search types..."
-                        class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 pl-10 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition text-sm" />
-                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">&#x1F50D;</span>
+                <div class="flex items-center justify-between gap-4 mb-6">
+                    <div class="relative flex-1 max-w-md">
+                        <input v-model="typeSearchQuery" type="text" placeholder="Search types..."
+                            class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 pl-10 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition text-sm" />
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">&#x1F50D;</span>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <input type="checkbox" id="isDefaultStep2" :checked="isDefault" @click="isDefault = !isDefault"
+                            class="w-5 h-5 accent-main-color cursor-pointer" />
+                        <label for="isDefaultStep2" class="text-sm font-medium text-gray-700 cursor-pointer select-none whitespace-nowrap">Default</label>
+                    </div>
                 </div>
 
                 <div v-if="loadingTypes" class="grid grid-cols-2 sm:grid-cols-4 gap-5">
@@ -95,6 +102,7 @@
                         <span class="text-sm font-semibold text-gray-700 group-hover:text-gray-900">{{ type.title }}</span>
                     </div>
                 </div>
+
             </div>
 
             <!-- Step 3: Car Details -->
@@ -181,8 +189,14 @@
                             </div>
                         </div>
 
+                        <div class="flex items-center gap-3 pt-2">
+                            <input type="checkbox" id="isDefaultStep3" :checked="isDefault" @click="isDefault = !isDefault"
+                                class="w-5 h-5 accent-main-color cursor-pointer" />
+                            <label for="isDefaultStep3" class="text-sm font-medium text-gray-700 cursor-pointer select-none">Set as default car</label>
+                        </div>
+
                         <button @click="submitCar"
-                            class="mt-8 w-full rounded-full bg-main-color py-4 font-bold text-black transition hover:brightness-95 active:scale-[0.99] shadow-sm">
+                            class="mt-6 w-full rounded-full bg-main-color py-4 font-bold text-black transition hover:brightness-95 active:scale-[0.99] shadow-sm">
                             Submit
                         </button>
 
@@ -200,6 +214,7 @@ const { getcarBrands, getcartypesbrand, createMycar } = useCarServices();
 const step = ref(1);
 const searchQuery = ref("");
 const typeSearchQuery = ref("");
+const isDefault = ref(false);
 const filteredBrands = computed(() =>
     brands.value.filter((b) =>
         b.title.toLowerCase().includes(searchQuery.value.toLowerCase())
@@ -267,6 +282,7 @@ async function submitCar() {
     const payload = {
         brand_id: selectedBrand.value.id,
         car_type_id: selectedType.value.id,
+        is_default: isDefault.value,
         car_plate: `${formData.value.car_plate_letters} ${formData.value.car_plate_numbers}`,
         car_mileage: formData.value.car_mileage,
         last_maintenance: formData.value.last_maintenance,
@@ -275,13 +291,15 @@ async function submitCar() {
         chassis_number: formData.value.chassis_number,
     };
     try {
-        const res = await createMycar(payload);
-        if (res?.status) {
-            alert("Car added successfully!");
-        }
+        console.log(payload)
+        // const res = await createMycar(payload);
+        // if (res?.status) {
+        //     navigateTo('/my-cars')
+        // }
     } catch (err) {
         console.error("Failed to create car", err);
         alert("Failed to add car");
     }
 }
+
 </script>
