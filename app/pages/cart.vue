@@ -134,6 +134,7 @@
               </div>
 
               <button
+                @click="router.push({ path: '/order-update-details', query: { order_id: order_id } })"
                 class="mt-6 w-full rounded-full bg-yellow-400 py-4 font-medium text-black transition hover:bg-yellow-500">
                 Continue
               </button>
@@ -148,6 +149,7 @@
 </template>
 
 <script setup>
+const router = useRouter();
 const { getMyCart, deleteItemsFromCart, updateQtyCart, cartCount } = useAddToCart();
 
 const cartItems = ref([]);
