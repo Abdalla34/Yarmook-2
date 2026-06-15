@@ -76,9 +76,13 @@
                         <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">&#x1F50D;</span>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
-                        <input type="checkbox" id="isDefaultStep2" :checked="isDefault" @click="isDefault = !isDefault"
-                            class="w-5 h-5 accent-main-color cursor-pointer" />
-                        <label for="isDefaultStep2" class="text-sm font-medium text-gray-700 cursor-pointer select-none whitespace-nowrap">Default</label>
+                        <span class="text-sm font-medium text-gray-600">Default</span>
+                        <div @click="isDefault = !isDefault"
+                            class="relative w-10 h-6 rounded-full border transition cursor-pointer"
+                            :class="isDefault ? 'bg-main-color border-main-color' : 'bg-gray-100 border-gray-300'">
+                            <div class="absolute top-1 w-4 h-4 rounded-full transition-all duration-200"
+                                :class="isDefault ? 'bg-black left-5' : 'bg-gray-400 left-1'"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -189,10 +193,14 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-3 pt-2">
-                            <input type="checkbox" id="isDefaultStep3" :checked="isDefault" @click="isDefault = !isDefault"
-                                class="w-5 h-5 accent-main-color cursor-pointer" />
-                            <label for="isDefaultStep3" class="text-sm font-medium text-gray-700 cursor-pointer select-none">Set as default car</label>
+                        <div class="flex items-center gap-2 pt-2">
+                            <span class="text-sm font-medium text-gray-700">Set as default car</span>
+                            <div @click="isDefault = !isDefault"
+                                class="relative w-10 h-6 rounded-full border transition cursor-pointer"
+                                :class="isDefault ? 'bg-main-color border-main-color' : 'bg-gray-100 border-gray-300'">
+                                <div class="absolute top-1 w-4 h-4 rounded-full transition-all duration-200"
+                                    :class="isDefault ? 'bg-black left-5' : 'bg-gray-400 left-1'"></div>
+                            </div>
                         </div>
 
                         <button @click="submitCar"
