@@ -49,15 +49,16 @@
                       <p class="text-lg font-semibold text-black-600 mt-1 truncate">{{ item.price ?? item.price_after_discount }} <span class="text-gray-400 uppercase text-sm">sar</span></p>
                     </div>
                   </div>
-                  <div class="flex items-center gap-3 shrink-0 self-end sm:self-auto">
-                    <div class="flex items-center gap-1 border rounded-lg px-2 py-1">
-                      <button @click="updateQty(item, (item.qty ?? item.quantity ?? 1) - 1)" :disabled="(item.qty ?? item.quantity ?? 1) <= 1"
-                        class="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-black disabled:opacity-30 transition text-lg leading-none">-</button>
-                      <span class="text-sm text-gray-500 min-w-[20px] text-center">{{ item.qty ?? item.quantity ?? 1 }}</span>
-                      <button @click="updateQty(item, (item.qty ?? item.quantity ?? 1) + 1)"
-                        :disabled="item.type === 'service'"
-                        class="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-black transition text-lg leading-none">+</button>
-                    </div>
+                    <div class="flex items-center gap-3 shrink-0 self-end sm:self-auto">
+                      <div class="flex items-center gap-1 border rounded-lg px-2 py-1">
+                        <button @click="updateQty(item, (item.qty ?? item.quantity ?? 1) - 1)" :disabled="(item.qty ?? item.quantity ?? 1) <= 1 || updatingQtyId === item.id"
+                          class="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-black disabled:opacity-30 transition text-lg leading-none">-</button>
+                        <span v-if="updatingQtyId === item.id" class="w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin block mx-auto"></span>
+                        <span v-else class="text-sm text-gray-500 min-w-[20px] text-center">{{ item.qty ?? item.quantity ?? 1 }}</span>
+                        <button @click="updateQty(item, (item.qty ?? item.quantity ?? 1) + 1)"
+                          :disabled="item.type === 'service' || updatingQtyId === item.id"
+                          class="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-black transition text-lg leading-none">+</button>
+                      </div>
                     <button @click="removeItem(item)" :disabled="deletingId === item.id"
                       class="text-red-500 hover:text-red-700 transition text-xl leading-none flex items-center justify-center w-6 h-6">
                       <span v-if="deletingId === item.id" class="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin block"></span>
@@ -167,6 +168,7 @@ const reservationDate = ref("");
 const reservationTime = ref("");
 const branch = ref("");
 const deletingId = ref(null);
+const updatingQtyId = ref(null);
 
 async function fetchCart() {
   loading.value = true;
@@ -195,11 +197,31 @@ async function fetchCart() {
   }
 }
 
+async function syncCart() {
+  try {
+    const res = await getMyCart();
+    const data = res?.data ?? {};
+    order_id.value = data.id;
+    const services = (data.services ?? []).map((item) => ({ ...item, type: "service" }));
+    const offers = (data.offers ?? []).map((item) => ({ ...item, type: "offer" }));
+    const spareParts = (data.spare_parts ?? []).map((item) => ({ ...item, type: "spare_part" }));
+    cartItems.value = [...services, ...offers, ...spareParts];
+    cartTotal.value = data.total_amount ?? "0";
+    vatAmount.value = data.vat_amount ?? "0";
+    amountToPay.value = data.amount_to_pay ?? "0";
+    reservationDate.value = data.reservation_date ?? data.created_at ?? "";
+    reservationTime.value = data.reservation_time ?? "";
+    branch.value = data.branch ?? "";
+  } catch (err) {
+    console.error("Failed to sync cart", err);
+  }
+}
+
 async function removeItem(item) {
   deletingId.value = item.id;
   try {
     await deleteItemsFromCart(order_id.value, item.id, item.type);
-    await fetchCart();
+    await syncCart();
   } catch (err) {
     console.error("Failed to remove item", err);
   } finally {
@@ -209,16 +231,19 @@ async function removeItem(item) {
 
 async function updateQty(item, qty) {
   if (qty < 1) return;
+  updatingQtyId.value = item.id;
   const oldQty = item.qty ?? item.quantity ?? 1;
   item.qty = qty;
   cartCount.value += qty - oldQty;
   try {
     await updateQtyCart(item.type, order_id.value, item.id, qty);
-    await fetchCart();
+    await syncCart();
   } catch (err) {
     item.qty = oldQty;
     cartCount.value -= qty - oldQty;
     console.error("Failed to update qty", err);
+  } finally {
+    updatingQtyId.value = null;
   }
 }
 
