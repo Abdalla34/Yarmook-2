@@ -4,10 +4,11 @@
     class="fixed inset-0 bg-black/50 z-40 md:hidden"
     @click="menuOpen = false"
   />
-  <header class="relative z-50 bg-white text-black shadow-md flex justify-center">
+  <header class="fixed top-0 left-0 w-full z-50 text-black flex justify-center transition-all duration-300"
+    :class="scrolled ? 'bg-white shadow-md' : 'bg-transparent'">
     <div class="container max-w-auto px-4">
       <div class="flex items-center justify-between p-4">
-        <NuxtLink to="/" class="font-bold text-lg">Yarmook</NuxtLink>
+        <NuxtLink to="/" class="font-bold text-lg"><img src="/Yarmook Logo.png" alt=""></NuxtLink>
         <div v-if="token" class="icons-user flex gap-2">
           <div class="w-20 h-10 hidden bg-yellow-200 rounded-lg md:flex items-center justify-center">
             <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,14 +74,22 @@
 
         </div>
       </div>
-      <nav v-if="menuOpen" class="md:hidden flex flex-col gap-2 pb-4 px-4">
-        <NuxtLink to="/" exact-active-class="active" class="hover:text-gray-600" @click="menuOpen = false">Home</NuxtLink>
-        <NuxtLink to="/my-orders" exact-active-class="active" class="hover:text-gray-600" @click="menuOpen = false">My Orders</NuxtLink>
-        <NuxtLink to="/services" exact-active-class="active" class="hover:text-gray-600" @click="menuOpen = false">Services</NuxtLink>
-        <NuxtLink to="/offers" exact-active-class="active" class="hover:text-gray-600" @click="menuOpen = false">Offers</NuxtLink>
-        <NuxtLink to="/memberships" exact-active-class="active" class="hover:text-gray-600" @click="menuOpen = false">Memberships</NuxtLink>
-        <NuxtLink to="/spare-parts" exact-active-class="active" class="hover:text-gray-600" @click="menuOpen = false">Spare Parts</NuxtLink>
-      </nav>
+      <Transition name="slide-right">
+        <nav v-if="menuOpen"
+          class="fixed top-0 right-0 h-full w-64 z-50 flex flex-col gap-2 p-6 bg-white shadow-xl">
+          <button @click="menuOpen = false" class="self-end mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <NuxtLink to="/" exact-active-class="active" class="hover:text-gray-600 py-2 text-lg font-medium" @click="menuOpen = false">Home</NuxtLink>
+          <NuxtLink to="/my-orders" exact-active-class="active" class="hover:text-gray-600 py-2 text-lg font-medium" @click="menuOpen = false">My Orders</NuxtLink>
+          <NuxtLink to="/services" exact-active-class="active" class="hover:text-gray-600 py-2 text-lg font-medium" @click="menuOpen = false">Services</NuxtLink>
+          <NuxtLink to="/offers" exact-active-class="active" class="hover:text-gray-600 py-2 text-lg font-medium" @click="menuOpen = false">Offers</NuxtLink>
+          <NuxtLink to="/memberships" exact-active-class="active" class="hover:text-gray-600 py-2 text-lg font-medium" @click="menuOpen = false">Memberships</NuxtLink>
+          <NuxtLink to="/spare-parts" exact-active-class="active" class="hover:text-gray-600 py-2 text-lg font-medium" @click="menuOpen = false">Spare Parts</NuxtLink>
+        </nav>
+      </Transition>
     </div>
   </header>
 </template>
@@ -89,10 +98,29 @@
 const { token } = useGlobalApi()
 const { cartCount, getMyCart } = useAddToCart()
 const menuOpen = ref(false)
+const scrolled = ref(false)
 
 onMounted(() => {
   if (token.value) {
     getMyCart()
   }
+  const handleScroll = () => {
+    scrolled.value = window.scrollY > 0
+  }
+  window.addEventListener('scroll', handleScroll)
+  onBeforeUnmount(() => {
+    window.removeEventListener('scroll', handleScroll)
+  })
 })
 </script>
+
+<style scoped>
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: transform 0.3s ease;
+}
+.slide-right-enter-from,
+.slide-right-leave-to {
+  transform: translateX(100%);
+}
+</style>

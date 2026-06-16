@@ -2,7 +2,9 @@
   <div>
     <!-- <NuxtRouteAnnouncer /> -->
     <Header />
-    <LinksBar />
-    <NuxtPage />
+    <div class="pt-16">
+      <LinksBar />
+      <NuxtPage />
+    </div>
   </div>
 </template>

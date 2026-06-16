@@ -1,9 +1,10 @@
 <template>
   <div class="offers-page min-h-screen py-8">
     <div class="container mx-auto px-4">
-      <h1 class="text-2xl font-bold mb-6">Offers</h1>
+      <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
+        <h1 class="text-2xl font-bold mb-6">Offers</h1>
 
-      <div v-if="loading" class="grid grid-cols-2 gap-4">
+        <div v-if="loading" class="grid grid-cols-2 gap-4">
         <div v-for="n in 4" :key="n"
           class="bg-white rounded-2xl shadow-md overflow-hidden animate-pulse">
           <div class="h-32 bg-gray-200"></div>
@@ -19,7 +20,7 @@
           class="block bg-white rounded-2xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer p-3">
           <div class="relative">
             <img v-if="offer.image" :src="offer.image" :alt="offer.title"
-              class="w-full h-32 md:h-[40%] object-cover rounded-md" />
+              class="w-full h-32 md:h-[40%] object-cover rounded-md"  @error="$event.target.src = '/offerimage.jpeg'"/>
             <span v-if="offer.discount_percentage_text"
               class="absolute top-2 right-2 bg-red-500 text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded-full">
               {{ offer.discount_percentage_text }}
@@ -52,6 +53,7 @@
       </div>
 
       <p v-else class="text-center text-gray-500 py-10">No offers available.</p>
+      </div>
     </div>
   </div>
 </template>

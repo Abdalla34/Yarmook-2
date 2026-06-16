@@ -39,7 +39,7 @@
 
             <div v-else :class="cartItems.length > 5 ? 'max-h-[600px] overflow-y-auto rounded-3xl -mx-4 sm:mx-0 px-4 sm:px-0 space-y-2' : 'space-y-2'">
               <div v-for="item in cartItems" :key="item.id"
-                class="bg-white p-4 sm:p-5 shadow-sm rounded-3xl">
+                class="bg-white p-4 sm:p-5 shadow-md rounded-3xl">
                 <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                   <div class="flex items-center gap-4 flex-1 min-w-0">
                     <img :src="item.image" class="h-14 w-14 object-contain shrink-0" alt="">
@@ -58,8 +58,11 @@
                         :disabled="item.type === 'service'"
                         class="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-black transition text-lg leading-none">+</button>
                     </div>
-                    <button @click="removeItem(item)"
-                      class="text-red-500 hover:text-red-700 transition text-xl leading-none">&times;</button>
+                    <button @click="removeItem(item)" :disabled="deletingId === item.id"
+                      class="text-red-500 hover:text-red-700 transition text-xl leading-none flex items-center justify-center w-6 h-6">
+                      <span v-if="deletingId === item.id" class="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin block"></span>
+                      <span v-else>&times;</span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -68,8 +71,8 @@
           </div>
 
           <!-- Right Side -->
-          <div>
-            <div class="rounded-3xl bg-white p-6 shadow-sm">
+          <div v-if="cartItems.length">
+            <div class="rounded-3xl bg-white p-6 shadow-md">
 
               <h2 class="mb-5 text-lg font-semibold">
                 Order Details
@@ -78,7 +81,7 @@
               <div class="space-y-3 text-sm">
                 <div class="flex justify-between">
                   <span class="text-gray-500">Branch</span>
-                  <span class="font-medium">{{ branch || 'Riyadh - Raiyah' }}</span>
+                  <span class="font-medium">{{ branch  || 'Not set'}}</span>
                 </div>
 
                 <div class="flex justify-between">
@@ -163,6 +166,7 @@ const amountToPay = ref("0");
 const reservationDate = ref("");
 const reservationTime = ref("");
 const branch = ref("");
+const deletingId = ref(null);
 
 async function fetchCart() {
   loading.value = true;
@@ -192,12 +196,14 @@ async function fetchCart() {
 }
 
 async function removeItem(item) {
+  deletingId.value = item.id;
   try {
     await deleteItemsFromCart(order_id.value, item.id, item.type);
-    cartItems.value = cartItems.value.filter((i) => i.id !== item.id);
-    cartCount.value -= 1;
+    await fetchCart();
   } catch (err) {
     console.error("Failed to remove item", err);
+  } finally {
+    deletingId.value = null;
   }
 }
 
@@ -208,6 +214,7 @@ async function updateQty(item, qty) {
   cartCount.value += qty - oldQty;
   try {
     await updateQtyCart(item.type, order_id.value, item.id, qty);
+    await fetchCart();
   } catch (err) {
     item.qty = oldQty;
     cartCount.value -= qty - oldQty;
