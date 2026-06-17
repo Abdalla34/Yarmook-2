@@ -16,13 +16,36 @@
                                     My Cars
                                 </label>
 
-                                <select
-                                    class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-yellow-400">
-                                    <option>Select Car</option>
-                                    <option>Toyota Camry</option>
-                                    <option>Hyundai Elantra</option>
-                                    <option>Kia Sportage</option>
-                                </select>
+                                <div v-if="carsLoading" class="rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-400">
+                                    Loading cars...
+                                </div>
+
+                                <template v-else-if="userCars.length">
+                                    <select
+                                        v-model="selectedCarId"
+                                        class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-yellow-400">
+                                        <option value="">
+                                            Welcome Mr {{ userFirstName }}
+                                        </option>
+                                        <option v-for="car in userCars" :key="car.id" :value="car.id">
+                                          {{ car.brand?.title }} {{ car.car_type.title }}
+                                        </option>
+                                    </select>
+                                </template>
+
+                                <template v-else>
+                                    <select
+                                        class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none text-gray-400"
+                                        disabled>
+                                        <option>No cars available</option>
+                                    </select>
+                                    <button
+                                        @click="navigateTo('/carbrands')"
+                                        class="mt-3 w-full rounded-xl bg-yellow-400 px-4 py-3 text-sm font-semibold text-black transition hover:bg-yellow-500"
+                                    >
+                                        Add Your Car
+                                    </button>
+                                </template>
                             </div>
 
                             <!-- Branch -->
@@ -35,7 +58,8 @@
                                     class="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3 cursor-pointer">
                                     <input readonly v-model="branchName" placeholder="Select Branch"
                                         class="w-full bg-transparent outline-none text-black placeholder-gray-500 cursor-pointer" />
-                                    <span class="text-gray-400">⌄</span>
+                                    <span v-if="!branchesLoading" class="text-gray-400">⌄</span>
+                                    <span v-else class="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
                                 </div>
                             </div>
 
@@ -178,6 +202,19 @@
 
 <script setup>
 const { getBranches, getBranchDates } = useGlobalApi();
+const { getMycars } = useCarServices();
+
+const userCars = ref([]);
+const carsLoading = ref(true);
+const selectedCarId = ref("");
+
+const userCookie = useCookie("user");
+
+const userFirstName = computed(() => {
+  if (!userCookie.value) return "";
+  const data = typeof userCookie.value === "string" ? JSON.parse(userCookie.value) : userCookie.value;
+  return data?.first_name ?? data?.name ?? "";
+});
 
 const branches = ref([]);
 const branchesLoading = ref(false);
@@ -274,4 +311,15 @@ function formatDate(dateStr) {
         day: 'numeric'
     });
 }
+
+onMounted(async () => {
+    try {
+        const res = await getMycars();
+        userCars.value = res?.data?.data ?? res?.data ?? [];
+    } catch (err) {
+        console.error("Failed to load cars", err);
+    } finally {
+        carsLoading.value = false;
+    }
+});
 </script>
