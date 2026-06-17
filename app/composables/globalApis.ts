@@ -52,6 +52,26 @@ export const useGlobalApi = () => {
         });
     };
     // done
+    const getSpareParts = async () => {
+        return await $fetch(`${config.public.apiBase}/car/spare-parts`, {
+            method: "GET", headers
+        })
+    }
+    // done
+    const getBranchDates = async (branchId: number | string) => {
+        return await $fetch(`${config.public.apiBase}/core/branches/${branchId}/dates`, {
+            method: "GET",
+            headers
+        })
+    }
+    // done
+    const getBranches = async () => {
+        return await $fetch(`${config.public.apiBase}/core/branches?page=1&per_page=15&with_dates=1`, {
+            method: "GET",
+            headers
+        })
+    }
+    // done
     const sendOtpCode = async (phone: Number) => {
         return await $fetch(`${config.public.apiBase}/auth/send-otp`, {
             method: "POST",
@@ -76,13 +96,7 @@ export const useGlobalApi = () => {
         })
 
     }
-    const getSpareParts = async () => {
-        return await $fetch(`${config.public.apiBase}/car/spare-parts`, {
 
-            method: "GET", headers
 
-        })
-    }
-
-    return { headers, token, getHome, getOffers, getOfferById, getCountries, getAreasByCountry, getCitiesByArea, sendOtpCode, checkCode, logOrRegister, getSpareParts }
+    return { headers, token, getHome, getOffers, getOfferById, getCountries, getAreasByCountry, getCitiesByArea, getBranches, getBranchDates, sendOtpCode, checkCode, logOrRegister, getSpareParts }
 }

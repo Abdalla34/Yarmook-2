@@ -11,7 +11,8 @@
             </h2>
 
             <div v-if="loading" class="space-y-4">
-              <div v-for="n in 3" :key="n" class="bg-white rounded-2xl shadow-md p-4 animate-pulse flex items-center gap-4">
+              <div v-for="n in 3" :key="n"
+                class="bg-white rounded-2xl shadow-md p-4 animate-pulse flex items-center gap-4">
                 <div class="w-20 h-20 bg-gray-200 rounded-lg shrink-0"></div>
                 <div class="flex-1 space-y-2">
                   <div class="h-5 w-3/4 bg-gray-200 rounded"></div>
@@ -37,31 +38,36 @@
               </NuxtLink>
             </div>
 
-            <div v-else :class="cartItems.length > 5 ? 'max-h-[600px] overflow-y-auto rounded-3xl -mx-4 sm:mx-0 px-4 sm:px-0 space-y-2' : 'space-y-2'">
-              <div v-for="item in cartItems" :key="item.id"
-                class="bg-white p-4 sm:p-5 shadow-md rounded-3xl">
+            <div v-else
+              :class="cartItems.length > 5 ? 'max-h-[600px] overflow-y-auto rounded-3xl -mx-4 sm:mx-0 px-4 sm:px-0 space-y-2' : 'space-y-2'">
+              <div v-for="item in cartItems" :key="item.id" class="bg-white p-4 sm:p-5 shadow-md rounded-3xl">
                 <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                   <div class="flex items-center gap-4 flex-1 min-w-0">
                     <img :src="item.image" class="h-14 w-14 object-contain shrink-0" alt="">
                     <div class="min-w-0">
                       <h3 class="font-semibold text-gray-800 truncate">{{ item.title }}</h3>
                       <p class="text-sm text-gray-500 capitalize">{{ item.type }}</p>
-                      <p class="text-lg font-semibold text-black-600 mt-1 truncate">{{ item.price ?? item.price_after_discount }} <span class="text-gray-400 uppercase text-sm">sar</span></p>
+                      <p class="text-lg font-semibold text-black-600 mt-1 truncate">{{ item.price ??
+                        item.price_after_discount }} <span class="text-gray-400 uppercase text-sm">sar</span></p>
                     </div>
                   </div>
-                    <div class="flex items-center gap-3 shrink-0 self-end sm:self-auto">
-                      <div class="flex items-center gap-1 border rounded-lg px-2 py-1">
-                        <button @click="updateQty(item, (item.qty ?? item.quantity ?? 1) - 1)" :disabled="(item.qty ?? item.quantity ?? 1) <= 1 || updatingQtyId === item.id"
-                          class="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-black disabled:opacity-30 transition text-lg leading-none">-</button>
-                        <span v-if="updatingQtyId === item.id" class="w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin block mx-auto"></span>
-                        <span v-else class="text-sm text-gray-500 min-w-[20px] text-center">{{ item.qty ?? item.quantity ?? 1 }}</span>
-                        <button @click="updateQty(item, (item.qty ?? item.quantity ?? 1) + 1)"
-                          :disabled="item.type === 'service' || updatingQtyId === item.id"
-                          class="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-black transition text-lg leading-none">+</button>
-                      </div>
+                  <div class="flex items-center gap-3 shrink-0 self-end sm:self-auto">
+                    <div class="flex items-center gap-1 border rounded-lg px-2 py-1">
+                      <button @click="updateQty(item, (item.qty ?? item.quantity ?? 1) - 1)"
+                        :disabled="(item.qty ?? item.quantity ?? 1) <= 1 || updatingQtyId === item.id"
+                        class="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-black disabled:opacity-30 transition text-lg leading-none">-</button>
+                      <span v-if="updatingQtyId === item.id"
+                        class="w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin block mx-auto"></span>
+                      <span v-else class="text-sm text-gray-500 min-w-[20px] text-center">{{ item.qty ?? item.quantity
+                        ?? 1 }}</span>
+                      <button @click="updateQty(item, (item.qty ?? item.quantity ?? 1) + 1)"
+                        :disabled="item.type === 'service' || updatingQtyId === item.id"
+                        class="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-black transition text-lg leading-none">+</button>
+                    </div>
                     <button @click="removeItem(item)" :disabled="deletingId === item.id"
                       class="text-red-500 hover:text-red-700 transition text-xl leading-none flex items-center justify-center w-6 h-6">
-                      <span v-if="deletingId === item.id" class="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin block"></span>
+                      <span v-if="deletingId === item.id"
+                        class="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin block"></span>
                       <span v-else>&times;</span>
                     </button>
                   </div>
@@ -82,7 +88,7 @@
               <div class="space-y-3 text-sm">
                 <div class="flex justify-between">
                   <span class="text-gray-500">Branch</span>
-                  <span class="font-medium">{{ branch  || 'Not set'}}</span>
+                  <span class="font-medium">{{ branch || 'Not set' }}</span>
                 </div>
 
                 <div class="flex justify-between">
@@ -137,11 +143,17 @@
                 </div>
               </div>
 
-              <button
-                @click="router.push({ path: '/order-update-details', query: { order_id: order_id } })"
-                class="mt-6 w-full rounded-full bg-yellow-400 py-4 font-medium text-black transition hover:bg-yellow-500">
-                Continue
-              </button>
+              <div class="mt-6 flex gap-3">
+                <button @click="router.push('/services')"
+                  class="flex-1 rounded-full border border-black-400 bg-white py-4 font-medium text-black-500 transition hover:bg-yellow-50">
+                  Add Another Item
+                </button>
+
+                <button @click="router.push({ path: '/order-update-details', query: { order_id } })"
+                  class="flex-1 rounded-full bg-yellow-400 py-4 font-medium text-black transition hover:bg-yellow-500">
+                  Continue
+                </button>
+              </div>
 
             </div>
           </div>
