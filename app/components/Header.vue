@@ -26,12 +26,12 @@
               {{ cartCount }}
             </span>
           </NuxtLink>
-          <div class="w-20 h-10 hidden bg-yellow-200 rounded-lg md:flex items-center justify-center">
+          <NuxtLink to="/my-cars" class="w-20 h-10 hidden bg-yellow-200 rounded-lg md:flex items-center justify-center">
             <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M5 17h14M5 17l-2-4h18l-2 4M5 17a2 2 0 01-2 2H2m20 0h-1a2 2 0 01-2-2M5 17l-1-5h16l-1 5M8 9l1-3h6l1 3M4 9h16" />
             </svg>
-          </div>
+          </NuxtLink>
         </div>
         <div v-else class="icons-user flex gap-2">
           <NuxtLink to="/create-account" class="w-20 h-10 hidden bg-yellow-200 rounded-lg md:flex items-center justify-center">

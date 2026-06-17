@@ -42,12 +42,19 @@ export const useCarServices = () => {
       body: payload
     })
   }
-
+  // done
   const getMycars = async () => {
     return await $fetch(`${config.public.apiBase}/customer/cars`, {
       method: "GET",
       headers,
     });
   };
-  return { getServices, getcarBrands, getcartypesbrand, createMycar,getMycars };
+  const deleteCar = async (id: any) => {
+    return await $fetch(`${config.public.apiBase}/customer/delete-car/${id}`, {
+      method: "POST",
+      headers,
+      body: { id }
+    })
+  }
+  return { getServices, getcarBrands, getcartypesbrand, createMycar, getMycars, deleteCar };
 };
