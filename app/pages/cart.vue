@@ -79,36 +79,12 @@
 
           <!-- Right Side -->
           <div v-if="cartItems.length">
-            <div class="rounded-3xl bg-white p-6 shadow-md">
-
-              <h2 class="mb-5 text-lg font-semibold">
-                Order Details
-              </h2>
-
-              <div class="space-y-3 text-sm">
-                <div class="flex justify-between">
-                  <span class="text-gray-500">Branch</span>
-                  <span class="font-medium">{{ branch || 'Not set' }}</span>
-                </div>
-
-                <div class="flex justify-between">
-                  <span class="text-gray-500">Reservation Date</span>
-                  <span class="font-medium">{{ reservationDate || 'Not set' }}</span>
-                </div>
-
-                <div class="flex justify-between">
-                  <span class="text-gray-500">Reservation Time</span>
-                  <span class="font-medium">{{ reservationTime || 'Not set' }}</span>
-                </div>
-              </div>
-
-              <hr class="my-6" />
+            <div class="rounded-3xl bg-white p-6 shadow-md box-design">
 
               <h2 class="mb-4 text-lg font-semibold">
                 Cost Details
               </h2>
-
-              <div class="space-y-3 text-sm">
+              <div class="space-y-3 text-sm ">
                 <div class="flex justify-between">
                   <span class="text-gray-500">Total Order</span>
                   <span>{{ cartTotal }} SAR</span>
@@ -127,11 +103,6 @@
 
               <hr class="my-6" />
 
-              <div class="mt-5">
-                <input type="text" placeholder="Promocode"
-                  class="w-full rounded-lg border border-gray-200 px-4 py-3 outline-none focus:border-yellow-400" />
-              </div>
-
               <div class="mt-4 flex items-center justify-between rounded-xl bg-green-50 px-4 py-3">
                 <span class="font-semibold text-gray-700">
                   Total Amount
@@ -142,8 +113,7 @@
                   <span class="text-xs text-gray-400">SAR</span>
                 </div>
               </div>
-
-              <div class="mt-6 flex gap-3">
+              <div class="mt-6 flex flex-col sm:flex-row gap-3">
                 <button @click="router.push('/services')"
                   class="flex-1 rounded-full border border-black-400 bg-white py-4 font-medium text-black-500 transition hover:bg-yellow-50">
                   Add Another Item
@@ -154,10 +124,8 @@
                   Continue
                 </button>
               </div>
-
             </div>
           </div>
-
         </div>
       </div>
     </div>

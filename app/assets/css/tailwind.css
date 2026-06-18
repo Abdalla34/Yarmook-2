@@ -3,17 +3,21 @@
 @tailwind utilities;
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
-body{
-    background-color: #FDFDFF;
- 
-         /* min-height: 100vh; */
-        /* background: linear-gradient(
+
+body {
+  background-color: #FDFDFF;
+
+  /* min-height: 100vh; */
+  /* background: linear-gradient(
           to right,
           #fcf8dd,
           #f8f0e8,
           #f3e1e5
         );  */
-      }
+}
 
+.box-design {
+  background-color: #f7f9f9;
+}

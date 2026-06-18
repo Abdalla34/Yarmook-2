@@ -23,7 +23,7 @@
                                 <template v-else-if="userCars.length">
                                     <select
                                         v-model="selectedCarId"
-                                        class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-yellow-400">
+                                        class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-yellow-400 cursor-pointer">
                                         <option value="">
                                             Welcome Mr {{ userFirstName }}
                                         </option>
