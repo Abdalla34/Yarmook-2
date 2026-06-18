@@ -85,7 +85,7 @@
                                     Details
                                 </label>
 
-                                <textarea rows="5" placeholder="Issues details"
+                                <textarea v-model="details" rows="5" placeholder="Issues details"
                                     class="w-full rounded-xl border border-gray-200 p-4 outline-none focus:border-yellow-400"></textarea>
                             </div>
 
@@ -97,11 +97,10 @@
 
                                 <div class="rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center">
 
-
-                                    <input type="file" class="hidden" id="upload" />
+                                    <input type="file" ref="fileInput" class="hidden" id="upload" @change="onFileChange" accept="image/jpeg,image/png" />
 
                                     <label for="upload" class="cursor-pointer font-medium text-yellow-500">
-                                        Upload from your gallery
+                                        {{ photoName || 'Upload from your gallery' }}
                                     </label>
 
                                     <p class="mt-2 text-sm text-gray-400">
@@ -114,9 +113,10 @@
                             <div class="flex flex-col gap-3 sm:flex-row">
 
 
-                                <button
-                                    class="flex-1 rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500">
-                                    Continue
+                                <button @click="handleContinue" :disabled="saving"
+                                    class="flex-1 rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
+                                    <span v-if="saving" class="inline-block w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                                    <span v-else>Continue</span>
                                 </button>
 
                             </div>
@@ -201,8 +201,11 @@
 </template>
 
 <script setup>
+const router = useRouter();
+const route = useRoute();
 const { getBranches, getBranchDates } = useGlobalApi();
 const { getMycars } = useCarServices();
+const { updateCartDetails } = useAddToCart();
 
 const userCars = ref([]);
 const carsLoading = ref(true);
@@ -243,6 +246,54 @@ const selectedDateTime = computed(() => {
     if (!selectedDate.value || !selectedTime.value) return "";
     return `${formatDate(selectedDate.value.date)} at ${selectedTime.value}`;
 });
+
+const details = ref("");
+const fileInput = ref(null);
+const photoFile = ref(null);
+const photoName = ref("");
+const saving = ref(false);
+
+function onFileChange(e) {
+    const target = e.target;
+    const file = target.files?.[0];
+    if (file) {
+        photoFile.value = file;
+        photoName.value = file.name;
+    }
+}
+
+async function handleContinue() {
+    const orderId = route.query.order_id;
+    if (!orderId) return;
+
+    saving.value = true;
+    try {
+        const fd = new FormData();
+        fd.append("order_id", String(orderId));
+        if (selectedCarId.value) fd.append("car_id", String(selectedCarId.value));
+        if (selectedBranch.value) fd.append("branch_id", (selectedBranch.value));
+        if (selectedDate.value) fd.append("reservation_date", selectedDate.value.date);
+        if (selectedTime.value) fd.append("reservation_time", selectedTime.value);
+        if (details.value) fd.append("details", details.value);
+        if (photoFile.value) fd.append("photo", photoFile.value);
+
+        await updateCartDetails(fd,orderId);
+        router.push({
+            path: '/cart-update-details',
+            query: {
+                order_id: orderId,
+                branch_id: selectedBranch.value?.id ?? '',
+                branch_name: selectedBranch.value?.name ?? selectedBranch.value?.title ?? '',
+                reservation_date: selectedDate.value?.date ?? '',
+                reservation_time: selectedTime.value ?? '',
+            }
+        });
+    } catch (err) {
+        console.error("Failed to update cart details", err);
+    } finally {
+        saving.value = false;
+    }
+}
 
 async function openBranchPopup() {
     if (branches.value.length === 0) {

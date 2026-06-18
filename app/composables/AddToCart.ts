@@ -113,7 +113,7 @@ export const useAddToCart = () => {
             body: { order_id, cart_item_id: item_id, type }
         })
     }
-
+    // d0ne
     const updateQtyCart = async (type: string, order_id: Number, cart_item_id: Number, qty: Number) => {
         return await $fetch(`${config.public.apiBase}/marketplace/cart/update-quantity-cart`, {
             method: "POST",
@@ -122,5 +122,15 @@ export const useAddToCart = () => {
         })
     }
 
-    return { addCart, addCartMulti, getMyCart, cartCount, deleteItemsFromCart,updateQtyCart };
+    const updateCartDetails = async (formData: FormData , order_id:any) => {
+     
+
+        return await $fetch(`${config.public.apiBase}/marketplace/cart/cart-details/${order_id}`, {
+            method: "POST",
+            headers:getHeaders(),
+            body: formData,
+        });
+    }
+
+    return { addCart, addCartMulti, getMyCart, cartCount, deleteItemsFromCart, updateQtyCart, updateCartDetails };
 };
