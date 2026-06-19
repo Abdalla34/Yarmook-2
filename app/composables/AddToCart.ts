@@ -121,16 +121,17 @@ export const useAddToCart = () => {
             body: { type, order_id, cart_item_id, qty }
         })
     }
-
-    const updateCartDetails = async (formData: FormData , order_id:any) => {
-     
-
-        return await $fetch(`${config.public.apiBase}/marketplace/cart/cart-details/${order_id}`, {
-            method: "POST",
-            headers:getHeaders(),
-            body: formData,
-        });
-    }
-
+    const updateCartDetails = async (order_id: any, payload: any) => {
+        return await $fetch(
+            `${config.public.apiBase}/marketplace/cart/cart-details/${order_id}`,
+            {
+                method: "POST",
+                headers: {
+                    ...getHeaders(),
+                },
+                body: payload,
+            }
+        );
+    };
     return { addCart, addCartMulti, getMyCart, cartCount, deleteItemsFromCart, updateQtyCart, updateCartDetails };
 };

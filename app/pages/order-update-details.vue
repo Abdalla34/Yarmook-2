@@ -1,13 +1,14 @@
 <template>
     <div class="update-details">
         <div class="container mx-auto">
-            <div class="container mx-auto max-w-5xl px-4 py-8">
+            <div class="mx-auto max-w-5xl px-4 py-8">
                 <div class="grid grid-cols-1 gap-8">
 
                     <div>
                         <h1 class="mb-6 text-2xl font-bold text-gray-800">
                             Order Details
                         </h1>
+
                         <div class="rounded-3xl bg-white p-6 shadow-sm">
 
                             <!-- My Cars -->
@@ -16,36 +17,13 @@
                                     My Cars
                                 </label>
 
-                                <div v-if="carsLoading" class="rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-400">
-                                    Loading cars...
-                                </div>
-
-                                <template v-else-if="userCars.length">
-                                    <select
-                                        v-model="selectedCarId"
-                                        class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-yellow-400 cursor-pointer">
-                                        <option value="">
-                                            Welcome Mr {{ userFirstName }}
-                                        </option>
-                                        <option v-for="car in userCars" :key="car.id" :value="car.id">
-                                          {{ car.brand?.title }} {{ car.car_type.title }}
-                                        </option>
-                                    </select>
-                                </template>
-
-                                <template v-else>
-                                    <select
-                                        class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none text-gray-400"
-                                        disabled>
-                                        <option>No cars available</option>
-                                    </select>
-                                    <button
-                                        @click="navigateTo('/carbrands')"
-                                        class="mt-3 w-full rounded-xl bg-yellow-400 px-4 py-3 text-sm font-semibold text-black transition hover:bg-yellow-500"
-                                    >
-                                        Add Your Car
-                                    </button>
-                                </template>
+                                <select v-model="selectedCarId"
+                                    class="w-full rounded-xl cursor-pointer border border-gray-200 px-4 py-3 outline-none focus:border-yellow-400">
+                                    <option value="" disabled class="text-gray-200">Welcome MR: {{ userName }}</option>
+                                    <option v-for="car in cars" :key="car.id" :value="car.id">
+                                        {{ car.name }} - {{ car.brand?.title }} {{ car.car_type?.title }}
+                                    </option>
+                                </select>
                             </div>
 
                             <!-- Branch -->
@@ -54,12 +32,12 @@
                                     Branch
                                 </label>
 
-                                <div @click="openBranchPopup"
+                                <div @click="showBranchPopup = true"
                                     class="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3 cursor-pointer">
-                                    <input readonly v-model="branchName" placeholder="Select Branch"
-                                        class="w-full bg-transparent outline-none text-black placeholder-gray-500 cursor-pointer" />
-                                    <span v-if="!branchesLoading" class="text-gray-400">⌄</span>
-                                    <span v-else class="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
+                                    <span class="text-black placeholder-gray-500">
+                                        {{ selectedBranchName || 'Select Branch' }}
+                                    </span>
+                                    <span class="text-gray-400">⌄</span>
                                 </div>
                             </div>
 
@@ -69,12 +47,11 @@
                                     Date & Time
                                 </label>
 
-                                <div @click="openDateTimePopup"
+                                <div @click="openDateTimePicker"
                                     class="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3 cursor-pointer">
-                                    <span class="text-gray-500">
+                                    <span :class="selectedDateTime ? 'text-black' : 'text-gray-500'">
                                         {{ selectedDateTime || 'Select Date & Time' }}
                                     </span>
-
                                     <span class="text-gray-400">⌄</span>
                                 </div>
                             </div>
@@ -85,7 +62,7 @@
                                     Details
                                 </label>
 
-                                <textarea v-model="details" rows="5" placeholder="Issues details"
+                                <textarea rows="5" placeholder="Issues details"
                                     class="w-full rounded-xl border border-gray-200 p-4 outline-none focus:border-yellow-400"></textarea>
                             </div>
 
@@ -96,11 +73,10 @@
                                 </label>
 
                                 <div class="rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center">
-
-                                    <input type="file" ref="fileInput" class="hidden" id="upload" @change="onFileChange" accept="image/jpeg,image/png" />
+                                    <input type="file" class="hidden" id="upload" accept="image/jpeg,image/png" />
 
                                     <label for="upload" class="cursor-pointer font-medium text-yellow-500">
-                                        {{ photoName || 'Upload from your gallery' }}
+                                        Upload from your gallery
                                     </label>
 
                                     <p class="mt-2 text-sm text-gray-400">
@@ -111,266 +87,242 @@
 
                             <!-- Buttons -->
                             <div class="flex flex-col gap-3 sm:flex-row">
-
-
-                                <button @click="handleContinue" :disabled="saving"
-                                    class="flex-1 rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
-                                    <span v-if="saving" class="inline-block w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-                                    <span v-else>Continue</span>
+                                <button
+                                    class="flex-1 rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500">
+                                    Continue
                                 </button>
-
                             </div>
 
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Branch Popup -->
-    <Teleport to="body">
-        <div v-if="showBranchPopup" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
-            @click.self="showBranchPopup = false">
-            <div class="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[70vh] overflow-y-auto p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-bold">Select Branch</h2>
-                    <button @click="showBranchPopup = false" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+    <!-- Date/Time Picker Popup -->
+    <div v-if="showDateTimePopup"
+        class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-4"
+        @click="showDateTimePopup = false">
+        <div class="w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-white p-6 shadow-xl max-h-[80vh] flex flex-col"
+            @click.stop>
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-4">
+                <button v-if="dateTimeStep === 2" @click="dateTimeStep = 1" class="text-gray-500 hover:text-gray-700">
+                    ← Back
+                </button>
+                <span class="flex-1"></span>
+                <h3 class="text-lg font-semibold text-gray-800">
+                    {{ dateTimeStep === 1 ? 'Select Date' : 'Select Time' }}
+                </h3>
+                <span class="flex-1"></span>
+            </div>
+
+            <!-- Loading -->
+            <div v-if="loadingDates" class="flex justify-center py-8">
+                <svg class="w-8 h-8 animate-spin text-yellow-400" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+            </div>
+
+            <!-- Step 1: Dates -->
+            <div v-else-if="dateTimeStep === 1" class="overflow-y-auto flex-1 -mx-2">
+                <div v-if="dates.length" class="space-y-2">
+                    <div v-for="date in dates" :key="date.date" @click="selectDate(date)"
+                        class="rounded-xl border border-gray-200 px-4 py-3 cursor-pointer hover:bg-yellow-50">
+                        <p class="font-medium">
+                            {{ date.date }}
+                        </p>
+
+                        <p class="text-sm text-gray-500">
+                            {{ date.time_slots?.length || 0 }} available times
+                        </p>
+                    </div>
                 </div>
-                <div v-if="branchesLoading" class="flex justify-center py-8">
-                    <span class="w-6 h-6 border-2 border-gray-500 border-t-transparent rounded-full animate-spin"></span>
+                <div v-else class="text-center py-8 text-gray-500">
+                    No available dates
                 </div>
-                <div v-else-if="branches.length" class="space-y-2">
-                    <div v-for="branch in branches" :key="branch.id" @click="selectBranch(branch)"
-                        class="p-4 rounded-xl border border-gray-200 cursor-pointer transition hover:border-yellow-400 hover:bg-yellow-50"
-                        :class="selectedBranch?.id === branch.id ? 'border-yellow-400 bg-yellow-50' : ''">
+            </div>
+
+            <!-- Step 2: Times -->
+            <div v-else-if="dateTimeStep === 2" class="overflow-y-auto flex-1 -mx-2">
+                <div v-if="availableTimes.length" class="grid grid-cols-3 gap-3">
+                    <div v-for="time in availableTimes" :key="time.time" @click="selectTime(time)"
+                        class="rounded-xl border px-3 py-3 text-center cursor-pointer hover:bg-yellow-50">
+                        <p>
+                            {{ time.time }}
+                        </p>
+
+                        <p class="text-xs text-gray-500">
+                            Available: {{ time.available_orders }}
+                        </p>
+                    </div>
+                    <!-- <div v-for="time in availableTimes" :key="time.id || time.time" @click="selectTime(time)"
+                        class="rounded-xl border border-gray-200 px-3 py-3 text-center cursor-pointer transition hover:bg-yellow-50"
+                        :class="{ 'bg-yellow-50 border-yellow-400': selectedTime === (time.time || time.value) }">
+                        <p class="font-medium text-gray-800 text-sm">{{ time.time || time.value }}</p>
+                    </div> -->
+                </div>
+                <div v-else class="text-center py-8 text-gray-500">
+                    No available times
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Branch Picker Popup -->
+    <div v-if="showBranchPopup"
+        class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-4"
+        @click="showBranchPopup = false">
+        <div class="w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-white p-6 shadow-xl max-h-[70vh] flex flex-col"
+            @click.stop>
+            <h3 class="text-lg font-semibold text-gray-800 text-center mb-4">
+                Select Branch
+            </h3>
+
+            <div v-if="loadingBranches" class="flex justify-center py-8">
+                <svg class="w-8 h-8 animate-spin text-yellow-400" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+            </div>
+
+            <div v-else-if="branches.length" class="overflow-y-auto flex-1 -mx-2">
+                <div v-for="branch in branches" :key="branch.id" @click="selectBranch(branch)"
+                    class="flex items-center gap-3 rounded-xl px-4 py-3 cursor-pointer transition hover:bg-yellow-50"
+                    :class="{ 'bg-yellow-50 border border-yellow-200': selectedBranchId === branch.id }">
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 text-yellow-600 font-bold text-sm">
+                        {{ branch.title?.charAt(0) || 'B' }}
+                    </div>
+                    <div>
                         <p class="font-medium text-gray-800">{{ branch.title }}</p>
-                        <p v-if="branch.address" class="text-sm text-gray-500 mt-1">{{ branch.address }}</p>
+                        <p v-if="branch.address" class="text-sm text-gray-500">{{ branch.address }}</p>
                     </div>
                 </div>
-                <p v-else class="text-center text-gray-500 py-8">No branches available.</p>
+            </div>
+
+            <div v-else class="text-center py-8 text-gray-500">
+                No branches available
             </div>
         </div>
-    </Teleport>
-
-    <!-- Date/Time Popup -->
-    <Teleport to="body">
-        <div v-if="showDateTimePopup" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
-            @click.self="showDateTimePopup = false">
-            <div class="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[70vh] overflow-y-auto p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-bold">{{ dateTimeStep === 'date' ? 'Select Date' : 'Select Time' }}</h2>
-                    <button @click="showDateTimePopup = false" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
-                </div>
-
-                <!-- Loading State -->
-                <div v-if="dateTimeLoading" class="flex justify-center py-8">
-                    <span class="w-6 h-6 border-2 border-gray-500 border-t-transparent rounded-full animate-spin"></span>
-                </div>
-
-                <!-- Date Selection Step -->
-                <template v-else-if="dateTimeStep === 'date'">
-                    <div v-if="availableDates.length" class="space-y-2">
-                        <div v-for="dt in availableDates" :key="dt.date" @click="selectDate(dt)"
-                            class="p-4 rounded-xl border border-gray-200 cursor-pointer transition hover:border-yellow-400 hover:bg-yellow-50"
-                            :class="selectedDate?.date === dt.date ? 'border-yellow-400 bg-yellow-50' : ''">
-                            <p class="font-medium text-gray-800">{{ formatDate(dt.date) }}</p>
-                            <p class="text-sm text-gray-500 mt-1">{{ dt.time_slots?.length || 0 }} available times</p>
-                        </div>
-                    </div>
-                    <p v-else class="text-center text-gray-500 py-8">No available dates for this branch.</p>
-                </template>
-
-                <!-- Time Selection Step -->
-                <template v-else-if="dateTimeStep === 'time'">
-                    <button @click="dateTimeStep = 'date'" class="text-sm text-yellow-500 mb-3 flex items-center gap-1">
-                        &larr; Back to Dates
-                    </button>
-                    <div v-if="availableTimes.length" class="space-y-2">
-                        <div v-for="time in availableTimes" :key="time" @click="selectTime(time)"
-                            class="p-4 rounded-xl border border-gray-200 cursor-pointer transition hover:border-yellow-400 hover:bg-yellow-50 text-center"
-                            :class="selectedTime === time ? 'border-yellow-400 bg-yellow-50' : ''">
-                            <p class="font-medium text-gray-800">{{ time }}</p>
-                        </div>
-                    </div>
-                    <p v-else class="text-center text-gray-500 py-8">No available times for this date.</p>
-                </template>
-            </div>
-        </div>
-    </Teleport>
+    </div>
 </template>
 
+<!-- ////////////////// -->
 <script setup>
-const router = useRouter();
-const route = useRoute();
-const { getBranches, getBranchDates } = useGlobalApi();
 const { getMycars } = useCarServices();
-const { updateCartDetails } = useAddToCart();
+const { getBranches, getBranchDates } = useGlobalApi();
+const userCookie = useCookie("user", { maxAge: 365 * 24 * 60 * 60 });
 
-const userCars = ref([]);
-const carsLoading = ref(true);
+const cars = ref([]);
 const selectedCarId = ref("");
 
-const userCookie = useCookie("user");
-
-const userFirstName = computed(() => {
-  if (!userCookie.value) return "";
-  const data = typeof userCookie.value === "string" ? JSON.parse(userCookie.value) : userCookie.value;
-  return data?.first_name ?? data?.name ?? "";
-});
-
 const branches = ref([]);
-const branchesLoading = ref(false);
+const selectedBranchId = ref(null);
+const selectedBranchName = ref("");
 const showBranchPopup = ref(false);
-const selectedBranch = ref(null);
-const branchName = ref("");
+const loadingBranches = ref(false);
 
 const showDateTimePopup = ref(false);
-const dateTimeLoading = ref(false);
-const dateTimeStep = ref('date');
-const selectedDate = ref(null);
+const dateTimeStep = ref(1);
+const dates = ref([]);
+const loadingDates = ref(false);
+const selectedDate = ref("");
+const availableTimes = ref([]);
 const selectedTime = ref("");
-const branchDates = ref([]);
+const selectedDateTime = ref("");
 
-const availableDates = computed(() => {
-    return branchDates.value.length ? branchDates.value : (selectedBranch.value?.available_times ?? []);
+const userName = computed(() => {
+    if (!userCookie.value) return "";
+    const user = typeof userCookie.value === "string"
+        ? JSON.parse(userCookie.value)
+        : userCookie.value;
+    return user?.first_name && user?.last_name
+        ? `${user.first_name} ${user.last_name}`
+        : user?.name || "";
 });
 
-const availableTimes = computed(() => {
-    if (!selectedDate.value) return [];
-    const slots = selectedDate.value.time_slots ?? [];
-    return slots.map(s => s.time ?? String(s));
-});
+function openDateTimePicker() {
+  if (!selectedBranchId.value) return;
 
-const selectedDateTime = computed(() => {
-    if (!selectedDate.value || !selectedTime.value) return "";
-    return `${formatDate(selectedDate.value.date)} at ${selectedTime.value}`;
-});
-
-const details = ref("");
-const fileInput = ref(null);
-const photoFile = ref(null);
-const photoName = ref("");
-const saving = ref(false);
-
-function onFileChange(e) {
-    const target = e.target;
-    const file = target.files?.[0];
-    if (file) {
-        photoFile.value = file;
-        photoName.value = file.name;
-    }
+  dateTimeStep.value = 1;
+  showDateTimePopup.value = true;
 }
+function selectDate(date) {
+    selectedDate.value = date.date;
 
-async function handleContinue() {
-    const orderId = route.query.order_id;
-    if (!orderId) return;
+    availableTimes.value = date.time_slots || [];
 
-    saving.value = true;
-    try {
-        const fd = new FormData();
-        fd.append("order_id", String(orderId));
-        if (selectedCarId.value) fd.append("car_id", String(selectedCarId.value));
-        if (selectedBranch.value) fd.append("branch_id", (selectedBranch.value));
-        if (selectedDate.value) fd.append("reservation_date", selectedDate.value.date);
-        if (selectedTime.value) fd.append("reservation_time", selectedTime.value);
-        if (details.value) fd.append("details", details.value);
-        if (photoFile.value) fd.append("photo", photoFile.value);
-
-        await updateCartDetails(fd,orderId);
-        router.push({
-            path: '/cart-update-details',
-            query: {
-                order_id: orderId,
-                branch_id: selectedBranch.value?.id ?? '',
-                branch_name: selectedBranch.value?.name ?? selectedBranch.value?.title ?? '',
-                reservation_date: selectedDate.value?.date ?? '',
-                reservation_time: selectedTime.value ?? '',
-            }
-        });
-    } catch (err) {
-        console.error("Failed to update cart details", err);
-    } finally {
-        saving.value = false;
-    }
-}
-
-async function openBranchPopup() {
-    if (branches.value.length === 0) {
-        branchesLoading.value = true;
-        try {
-            const res = await getBranches();
-            console.log("Branches API response:", res);
-            branches.value = res?.data?.items ?? res?.data ?? [];
-        } catch (err) {
-            console.error("Failed to load branches", err);
-        } finally {
-            branchesLoading.value = false;
-        }
-    }
-    showBranchPopup.value = true;
-}
-
-function selectBranch(branch) {
-    selectedBranch.value = branch;
-    branchName.value = branch.name ?? branch.title ?? "";
-    showBranchPopup.value = false;
-    selectedDate.value = null;
-    selectedTime.value = "";
-    branchDates.value = [];
-}
-
-async function openDateTimePopup() {
-    if (!selectedBranch.value) return;
-    showDateTimePopup.value = true;
-    dateTimeStep.value = 'date';
-    selectedDate.value = null;
-    selectedTime.value = "";
-
-    if (selectedBranch.value.available_times) return;
-
-    if (branchDates.value.length === 0) {
-        dateTimeLoading.value = true;
-        try {
-            const res = await getBranchDates(selectedBranch.value.id);
-            branchDates.value = res?.data?.dates ?? res?.data ?? res ?? [];
-        } catch (err) {
-            console.error("Failed to load branch dates", err);
-        } finally {
-            dateTimeLoading.value = false;
-        }
-    }
-}
-
-function selectDate(dt) {
-    selectedDate.value = dt;
-    dateTimeStep.value = 'time';
+    dateTimeStep.value = 2;
 }
 
 function selectTime(time) {
-    selectedTime.value = time;
+    selectedTime.value = time.time;
+
+    selectedDateTime.value =
+        `${selectedDate.value} ${selectedTime.value}`;
+
     showDateTimePopup.value = false;
 }
+async function fetchDates() {
+    loadingDates.value = true;
 
-function formatDate(dateStr) {
-    if (!dateStr) return "";
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
+    try {
+        const response = await getBranchDates(selectedBranchId.value);
+
+        dates.value =
+            response?.data?.dates?.available_times ||
+            response?.dates?.available_times ||
+            [];
+    } catch (err) {
+        console.error(err);
+    } finally {
+        loadingDates.value = false;
+    }
 }
 
-onMounted(async () => {
+function selectBranch(branch) {
+  selectedBranchId.value = branch.id;
+  selectedBranchName.value = branch.title;
+
+  dates.value = branch.available_times || [];
+
+  selectedDate.value = "";
+  selectedTime.value = "";
+  availableTimes.value = [];
+
+  showBranchPopup.value = false;
+}
+
+async function fetchCars() {
     try {
-        const res = await getMycars();
-        userCars.value = res?.data?.data ?? res?.data ?? [];
+        const response = await getMycars();
+        cars.value = response?.data?.data ?? response?.data ?? [];
     } catch (err) {
-        console.error("Failed to load cars", err);
+        console.error(err);
+    }
+}
+
+async function fetchBranches() {
+    loadingBranches.value = true;
+    try {
+        const response = await getBranches();
+        branches.value = response?.data?.items ?? response?.data ?? [];
+    } catch (err) {
+        console.error(err);
     } finally {
-        carsLoading.value = false;
+        loadingBranches.value = false;
+    }
+}
+
+watch(showBranchPopup, (val) => {
+    if (val && !branches.value.length) {
+        fetchBranches();
     }
 });
+
+onMounted(fetchCars);
 </script>
