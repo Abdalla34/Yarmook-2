@@ -121,14 +121,16 @@ export const useAddToCart = () => {
             body: { type, order_id, cart_item_id, qty }
         })
     }
+
     const updateCartDetails = async (order_id: any, payload: any) => {
+        const isFormData = payload instanceof FormData;
         return await $fetch(
             `${config.public.apiBase}/marketplace/cart/cart-details/${order_id}`,
             {
                 method: "POST",
-                headers: {
-                    ...getHeaders(),
-                },
+                headers: isFormData
+                    ? { Authorization: `Bearer ${token.value}` }
+                    : getHeaders(),
                 body: payload,
             }
         );

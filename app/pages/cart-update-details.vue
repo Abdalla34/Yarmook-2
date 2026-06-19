@@ -88,7 +88,7 @@
                             <div class="space-y-3 text-sm">
                                 <div class="flex justify-between">
                                     <span class="text-gray-500">Branch</span>
-                                    <span class="font-medium">{{ branch || 'Not set' }}</span>
+                                    <span class="font-medium">{{ branch.title || 'Not set' }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="text-gray-500">Reservation Date</span>

@@ -62,7 +62,7 @@
                                     Details
                                 </label>
 
-                                <textarea rows="5" placeholder="Issues details"
+                                <textarea v-model="customerNote" rows="5" placeholder="Issues details"
                                     class="w-full rounded-xl border border-gray-200 p-4 outline-none focus:border-yellow-400"></textarea>
                             </div>
 
@@ -73,10 +73,10 @@
                                 </label>
 
                                 <div class="rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center">
-                                    <input type="file" class="hidden" id="upload" accept="image/jpeg,image/png" />
+                                    <input ref="fileInput" type="file" class="hidden" id="upload" accept="image/jpeg,image/png" multiple @change="handleFileChange" />
 
                                     <label for="upload" class="cursor-pointer font-medium text-yellow-500">
-                                        Upload from your gallery
+                                        {{ selectedFiles.length ? `${selectedFiles.length} file(s) selected` : 'Upload from your gallery' }}
                                     </label>
 
                                     <p class="mt-2 text-sm text-gray-400">
@@ -87,7 +87,7 @@
 
                             <!-- Buttons -->
                             <div class="flex flex-col gap-3 sm:flex-row">
-                                <button
+                                <button @click="submitOrderDetails"
                                     class="flex-1 rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500">
                                     Continue
                                 </button>
@@ -215,7 +215,12 @@
 <script setup>
 const { getMycars } = useCarServices();
 const { getBranches, getBranchDates } = useGlobalApi();
+const { updateCartDetails } = useAddToCart();
 const userCookie = useCookie("user", { maxAge: 365 * 24 * 60 * 60 });
+const route = useRoute();
+const router = useRouter();
+
+const orderId = route.query.order_id;
 
 const cars = ref([]);
 const selectedCarId = ref("");
@@ -234,6 +239,36 @@ const selectedDate = ref("");
 const availableTimes = ref([]);
 const selectedTime = ref("");
 const selectedDateTime = ref("");
+
+const customerNote = ref("");
+const selectedFiles = ref([]);
+const fileInput = ref(null);
+const submitting = ref(false);
+
+function handleFileChange() {
+  if (fileInput.value?.files) {
+    selectedFiles.value = Array.from(fileInput.value.files);
+  }
+}
+
+async function submitOrderDetails() {
+  if (!orderId) return;
+  try {
+    const payload = new FormData();
+    payload.append("branch_id", selectedBranchId.value);
+    payload.append("user_car_id", selectedCarId.value);
+    payload.append("reservation_time", selectedDateTime.value);
+    payload.append("customer_note", customerNote.value);
+    selectedFiles.value.forEach((file) => {
+      payload.append("images[]", file);
+    });
+
+    await updateCartDetails(orderId, payload);
+    router.push(`/cart-update-details?order_id=${orderId}`);
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 const userName = computed(() => {
     if (!userCookie.value) return "";
@@ -288,7 +323,7 @@ function selectBranch(branch) {
   selectedBranchId.value = branch.id;
   selectedBranchName.value = branch.title;
 
-  dates.value = branch.available_times || [];
+  dates.value = [];
 
   selectedDate.value = "";
   selectedTime.value = "";
