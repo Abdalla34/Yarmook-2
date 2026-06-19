@@ -215,24 +215,24 @@ const router = useRouter();
 const orderId = route.query.order_id;
 
 const cars = ref([]);
-const selectedCarId = ref("");
+const selectedCarId = useState("orderCarId", () => "");
 
 const branches = ref([]);
-const selectedBranchId = ref(null);
-const selectedBranchName = ref("");
+const selectedBranchId = useState("orderBranchId", () => null);
+const selectedBranchName = useState("orderBranchName", () => "");
 const showBranchPopup = ref(false);
 const loadingBranches = ref(false);
 
 const showDateTimePopup = ref(false);
 const dateTimeStep = ref(1);
-const dates = ref([]);
+const dates = useState("orderDates", () => []);
 
-const selectedDate = ref("");
-const availableTimes = ref([]);
-const selectedTime = ref("");
-const selectedDateTime = ref("");
+const selectedDate = useState("orderSelectedDate", () => "");
+const availableTimes = useState("orderAvailableTimes", () => []);
+const selectedTime = useState("orderSelectedTime", () => "");
+const selectedDateTime = useState("orderSelectedDateTime", () => "");
 
-const customerNote = ref("");
+const customerNote = useState("orderCustomerNote", () => "");
 const selectedFiles = ref([]);
 const fileInput = ref(null);
 const submitting = ref(false);
@@ -256,6 +256,7 @@ async function submitOrderDetails() {
     });
 
     await updateCartDetails(orderId, payload);
+
     router.push(`/cart-update-details?order_id=${orderId}`);
   } catch (err) {
     console.error(err);
