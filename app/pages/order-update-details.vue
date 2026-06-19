@@ -119,16 +119,8 @@
                 <span class="flex-1"></span>
             </div>
 
-            <!-- Loading -->
-            <div v-if="loadingDates" class="flex justify-center py-8">
-                <svg class="w-8 h-8 animate-spin text-yellow-400" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-            </div>
-
             <!-- Step 1: Dates -->
-            <div v-else-if="dateTimeStep === 1" class="overflow-y-auto flex-1 -mx-2">
+            <div v-if="dateTimeStep === 1" class="overflow-y-auto flex-1 -mx-2">
                 <div v-if="dates.length" class="space-y-2">
                     <div v-for="date in dates" :key="date.date" @click="selectDate(date)"
                         class="rounded-xl border border-gray-200 px-4 py-3 cursor-pointer hover:bg-yellow-50">
@@ -214,7 +206,7 @@
 <!-- ////////////////// -->
 <script setup>
 const { getMycars } = useCarServices();
-const { getBranches, getBranchDates } = useGlobalApi();
+const { getBranches } = useGlobalApi();
 const { updateCartDetails } = useAddToCart();
 const userCookie = useCookie("user", { maxAge: 365 * 24 * 60 * 60 });
 const route = useRoute();
@@ -234,7 +226,7 @@ const loadingBranches = ref(false);
 const showDateTimePopup = ref(false);
 const dateTimeStep = ref(1);
 const dates = ref([]);
-const loadingDates = ref(false);
+
 const selectedDate = ref("");
 const availableTimes = ref([]);
 const selectedTime = ref("");
@@ -302,28 +294,11 @@ function selectTime(time) {
 
     showDateTimePopup.value = false;
 }
-async function fetchDates() {
-    loadingDates.value = true;
-
-    try {
-        const response = await getBranchDates(selectedBranchId.value);
-
-        dates.value =
-            response?.data?.dates?.available_times ||
-            response?.dates?.available_times ||
-            [];
-    } catch (err) {
-        console.error(err);
-    } finally {
-        loadingDates.value = false;
-    }
-}
-
 function selectBranch(branch) {
   selectedBranchId.value = branch.id;
   selectedBranchName.value = branch.title;
 
-  dates.value = [];
+  dates.value = branch.available_times || [];
 
   selectedDate.value = "";
   selectedTime.value = "";

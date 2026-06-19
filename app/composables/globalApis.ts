@@ -59,7 +59,7 @@ export const useGlobalApi = () => {
     }
     // done
     const getBranchDates = async (branchId: number | string) => {
-        return await $fetch(`${config.public.apiBase}/core/branches/available-times/${branchId}`, {
+        return await $fetch(`${config.public.apiBase}/core/branches/${branchId}/dates`, {
             method: "GET",
             headers
         })
