@@ -87,11 +87,11 @@ export const PayMents = () => {
             headers,
         });
     };
-    const chachOnDelivery = async (order_id: any) => {
+    const checkOnDeliveryRequirements = async (order_id: any) => {
         return await $fetch(`${config.public.apiBase}/payment/cash-on-delivery/${order_id}`, {
             method: "GET",
             headers,
         });
     };
-    return { usePayment, usePaymentMembership, usePaymentToChargeWallet, getHyperpayStatus, tamaraPayment, tabyPayment, tabbyStatusSuccess, tabbyStatusFailure, tabbyStatusCancel,chachOnDelivery }
+    return { usePayment, usePaymentMembership, usePaymentToChargeWallet, getHyperpayStatus, tamaraPayment, tabyPayment, tabbyStatusSuccess, tabbyStatusFailure, tabbyStatusCancel, checkOnDeliveryRequirements }
 }
