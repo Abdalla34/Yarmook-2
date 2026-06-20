@@ -72,6 +72,12 @@ export const useGlobalApi = () => {
         })
     }
     // done
+    const getsingleOrder = async (order_id: any) => {
+        return await $fetch(`${config.public.apiBase}/order/orders/${order_id}`, {
+            headers
+        })
+    }
+    // done
     const sendOtpCode = async (phone: Number) => {
         return await $fetch(`${config.public.apiBase}/auth/send-otp`, {
             method: "POST",
@@ -98,5 +104,5 @@ export const useGlobalApi = () => {
     }
 
 
-    return { headers, token, getHome, getOffers, getOfferById, getCountries, getAreasByCountry, getCitiesByArea, getBranches, getBranchDates, sendOtpCode, checkCode, logOrRegister, getSpareParts }
+    return { headers, token, getHome, getOffers, getOfferById, getCountries, getAreasByCountry, getCitiesByArea, getBranches, getBranchDates, getsingleOrder, sendOtpCode, checkCode, logOrRegister, getSpareParts }
 }

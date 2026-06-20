@@ -14,10 +14,19 @@
                 </NuxtLink>
             </div>
 
+            <!-- Loading order -->
+            <div v-else-if="loadingOrder" class="text-center py-12">
+                <div class="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <p class="mt-4 text-gray-600">Loading order details...</p>
+            </div>
+
             <!-- Payment method selection -->
             <template v-else>
                 <div v-if="!checkoutId">
-                    <div class="space-y-4">
+                    <div v-if="!paymentMethods.length" class="text-center py-12">
+                        <p class="text-gray-500 text-lg">No payment methods available.</p>
+                    </div>
+                    <div v-else class="space-y-4">
                         <div
                             v-for="method in paymentMethods"
                             :key="method"
@@ -63,6 +72,22 @@
                         ></form>
                     </div>
                 </div>
+
+                <!-- Cash on Delivery popup -->
+                <div v-if="showCodPopup"
+                    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+                    <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+                            <span class="text-3xl text-green-500">&#10003;</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800 mb-3">Cash on Delivery</h2>
+                        <p class="text-gray-600 mb-6">{{ codMessage }}</p>
+                        <NuxtLink to="/my-orders"
+                            class="inline-block px-6 py-3 bg-yellow-400 rounded-full font-semibold hover:bg-yellow-500 transition">
+                            View My Orders
+                        </NuxtLink>
+                    </div>
+                </div>
             </template>
         </div>
     </div>
@@ -70,17 +95,52 @@
 
 <script setup>
 const route = useRoute();
-const { usePayment, tamaraPayment, tabyPayment } = PayMents();
+const { getsingleOrder } = useGlobalApi();
+const { usePayment, tamaraPayment, tabyPayment, checkOnDelivery } = PayMents();
 
 const orderId = route.query.order_id;
 
-const paymentMethods = ["Visa", "Mada", "MasterCard", "Tabby", "Tamara"];
+const showCashOnDelivery = ref(false);
+const showCodPopup = ref(false);
+const codMessage = ref("");
+let codTimer = null;
+
+onUnmounted(() => {
+    if (codTimer) clearTimeout(codTimer);
+});
 const selectedMethod = ref("");
 const submitting = ref(false);
 const error = ref("");
 const checkoutId = ref(null);
 const loadingCheckout = ref(false);
+const loadingOrder = ref(true);
 const hyperpayBrands = ref("");
+
+const paymentMethods = computed(() => {
+    const methods = ["Visa", "Mada", "MasterCard", "Tabby", "Tamara"];
+    if (showCashOnDelivery.value) {
+        methods.push("Cash on Delivery");
+    }
+    return methods;
+});
+
+onMounted(async () => {
+    if (!orderId) {
+        loadingOrder.value = false;
+        return;
+    }
+    try {
+        const res = await getsingleOrder(orderId);
+        const data = res?.data ?? res;
+        if (data?.open_cash === true ) {
+            showCashOnDelivery.value = true;
+        }
+    } catch (err) {
+        console.error("Failed to fetch order:", err);
+    } finally {
+        loadingOrder.value = false;
+    }
+});
 
 const origin = import.meta.client ? window.location.origin : "";
 
@@ -105,6 +165,8 @@ async function handlePay() {
             await handleTamaraPayment();
         } else if (selectedMethod.value === "Tabby") {
             await handleTabbyPayment();
+        } else if (selectedMethod.value === "Cash on Delivery") {
+            await handleCashOnDelivery();
         } else {
             await handleHyperpayPayment();
         }
@@ -172,6 +234,16 @@ async function handleTamaraPayment() {
     } else {
         throw new Error("No checkout URL returned from Tamara");
     }
+}
+
+async function handleCashOnDelivery() {
+    const res = await checkOnDelivery(orderId);
+    const data = res?.data ?? res;
+    codMessage.value = data?.refrence || "Your order will be delivered. Thank you!";
+    showCodPopup.value = true;
+    codTimer = setTimeout(() => {
+        navigateTo("/");
+    }, 3000);
 }
 
 async function handleTabbyPayment() {
