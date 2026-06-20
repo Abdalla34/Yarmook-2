@@ -144,9 +144,9 @@
 
                             <div class="mt-6 flex flex-col sm:flex-row gap-3">
 
-                                <button
-                                    class="flex-1 rounded-full bg-yellow-400 py-4 font-medium text-black transition hover:bg-yellow-500">
-                                    Continue
+                                <button @click="continueOrder" :disabled="submitting"
+                                    class="flex-1 rounded-full bg-yellow-400 py-4 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
+                                    {{ submitting ? 'Loading...' : 'Continue' }}
                                 </button>
                             </div>
 
@@ -177,6 +177,12 @@ const reservationTime = ref("");
 const branch = ref("");
 const deletingId = ref(null);
 const updatingQtyId = ref(null);
+const submitting = ref(false);
+
+function continueOrder() {
+  submitting.value = true;
+  router.push(`/payment?order_id=${orderIdFromQuery}`);
+}
 
 async function fetchCart() {
     loading.value = true;

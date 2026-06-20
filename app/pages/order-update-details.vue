@@ -87,9 +87,9 @@
 
                             <!-- Buttons -->
                             <div class="flex flex-col gap-3 sm:flex-row">
-                                <button @click="submitOrderDetails"
-                                    class="flex-1 rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500">
-                                    Continue
+                                <button @click="submitOrderDetails" :disabled="submitting"
+                                    class="flex-1 rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
+                                    {{ submitting ? 'Loading...' : 'Continue' }}
                                 </button>
                             </div>
 
@@ -245,6 +245,7 @@ function handleFileChange() {
 
 async function submitOrderDetails() {
   if (!orderId) return;
+  submitting.value = true;
   try {
     const payload = new FormData();
     payload.append("branch_id", selectedBranchId.value);
@@ -260,6 +261,8 @@ async function submitOrderDetails() {
     router.push(`/cart-update-details?order_id=${orderId}`);
   } catch (err) {
     console.error(err);
+  } finally {
+    submitting.value = false;
   }
 }
 

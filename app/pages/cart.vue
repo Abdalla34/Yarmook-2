@@ -119,9 +119,9 @@
                   Add Another Item
                 </button>
 
-                <button @click="router.push({ path: '/order-update-details', query: { order_id } })"
-                  class="flex-1 rounded-full bg-yellow-400 py-4 font-medium text-black transition hover:bg-yellow-500">
-                  Continue
+                <button @click="handleContinue" :disabled="navigating"
+                  class="flex-1 rounded-full bg-yellow-400 py-4 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
+                  {{ navigating ? 'Loading...' : 'Continue' }}
                 </button>
               </div>
             </div>
@@ -149,6 +149,12 @@ const reservationTime = ref("");
 const branch = ref("");
 const deletingId = ref(null);
 const updatingQtyId = ref(null);
+const navigating = ref(false);
+
+function handleContinue() {
+  navigating.value = true;
+  router.push({ path: '/order-update-details', query: { order_id: order_id.value } });
+}
 
 async function fetchCart() {
   loading.value = true;
