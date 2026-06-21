@@ -1,12 +1,14 @@
 <template>
-    <div class="min-h-screen bg-gray-50 py-10">
+    <div class="min-h-screen bg-gray-50 py-10 mt-2">
         <div class="container mx-auto px-4">
             <h1 class="mb-8 text-2xl font-bold text-gray-800 text-center">
                 My Orders
             </h1>
 
             <div v-if="loading" class="text-center py-12">
-                <div class="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <div
+                    class="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto">
+                </div>
                 <p class="mt-4 text-gray-600">Loading orders...</p>
             </div>
 
@@ -26,32 +28,61 @@
                 </NuxtLink>
             </div>
 
-            <div v-else class="max-w-3xl mx-auto space-y-4">
-                <div v-for="order in orders" :key="order.id"
-                    class="bg-white rounded-2xl shadow-md p-5 border border-gray-100">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-sm text-gray-500">Order #{{ order.id }}</span>
-                        <span class="text-xs font-medium px-3 py-1 rounded-full"
-                            :class="order.status === 'completed' || order.status === 'paid' ? 'bg-green-100 text-green-700' : order.status === 'cancelled' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'">
-                            {{ order.status }}
-                        </span>
-                    </div>
-                    <div class="text-sm text-gray-600 space-y-1">
-                        <p v-if="order.created_at" class="text-gray-400">Date: {{ order.created_at }}</p>
-                        <p v-if="order.total_amount">Total: {{ order.total_amount }} SAR</p>
-                    </div>
-                    <div v-if="order.items?.length" class="mt-3 space-y-2">
-                        <div v-for="item in order.items" :key="item.id"
-                            class="flex items-center gap-3 text-sm text-gray-600 border-t pt-2">
-                            <img v-if="item.image" :src="item.image" class="w-10 h-10 object-contain rounded" alt="">
-                            <span class="flex-1 truncate">{{ item.title || item.name }}</span>
-                            <span class="shrink-0">{{ item.price }} SAR</span>
+            <div v-else class="max-w-3xl mx-auto">
+                <div class="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide snap-x">
+                    <button @click="activeFilter = 'all'"
+                        class="shrink-0 snap-start px-5 py-2 rounded-full text-sm font-medium transition-all duration-300"
+                        :class="activeFilter === 'all' ? 'bg-yellow-400 text-black' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'">
+                        All
+                    </button>
+                    <button v-for="type in orderTypes" :key="type" @click="activeFilter = type"
+                        class="shrink-0 snap-start px-5 py-2 rounded-full text-sm font-medium capitalize transition-all duration-300"
+                        :class="activeFilter === type ? 'bg-yellow-400 text-black' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'">
+                        {{ type }}
+                    </button>
+                </div>
+
+                <div v-if="!filteredOrders.length" class="text-center py-12">
+                    <p class="text-gray-500 text-lg">No {{ activeFilter === 'all' ? '' : activeFilter }} orders found.
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <div v-for="order in filteredOrders" :key="order.id" @click="navigateTo(`/singleorderdetailsid/${order.id}`)"
+                        class="bg-white rounded-2xl shadow-md p-5 border border-gray-100 cursor-pointer hover:shadow-lg hover:border-yellow-300 transition-all duration-300">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm text-gray-500 flex items-center gap-2">
+                                <StatusIconOrder :status="order.status" />
+                                Order #{{ order.id }}
+                                <span v-if="order.type"
+                                    class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 capitalize">
+                                    {{ order.type }}
+                                </span>
+                            </span>
+                            <span class="text-xs font-medium px-3 py-1 rounded-full"
+                                :class="order.status === 'completed' || order.status === 'paid' ? 'bg-green-100 text-green-700' : order.status === 'cancelled' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'">
+                                {{ order.status }}
+                            </span>
+                        </div>
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <p v-if="order.created_at" class="text-gray-400">Date: {{ order.created_at }}</p>
+                            <p v-if="order.total_amount">Total: {{ order.total_amount }} SAR</p>
+                        </div>
+                        <div v-if="order.items?.length" class="mt-3 space-y-2">
+                            <div v-for="item in order.items" :key="item.id"
+                                class="flex items-center gap-3 text-sm text-gray-600 border-t pt-2">
+                                <img v-if="item.image" :src="item.image" class="w-10 h-10 object-contain rounded"
+                                    alt="">
+                                <span class="flex-1 truncate">{{ item.title || item.name }}</span>
+                                <span class="shrink-0">{{ item.price }} SAR</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </template>
 
 <script setup>
@@ -60,6 +91,21 @@ const { getOrdersAll } = useGlobalApi();
 const orders = ref([]);
 const loading = ref(true);
 const error = ref("");
+const activeFilter = ref("all");
+
+const orderTypes = computed(() => {
+    const values = new Set();
+    orders.value.forEach((o) => {
+        if (o?.status) values.add(o.status);
+        if (o?.type) values.add(o.type);
+    });
+    return [...values];
+});
+
+const filteredOrders = computed(() => {
+    if (activeFilter.value === "all") return orders.value;
+    return orders.value.filter((o) => o?.status === activeFilter.value || o?.type === activeFilter.value);
+});
 
 onMounted(fetchOrders);
 
