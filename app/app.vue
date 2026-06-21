@@ -6,5 +6,6 @@
       <LinksBar />
       <NuxtPage />
     </div>
+    <Footer/>
   </div>
 </template>
