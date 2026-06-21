@@ -12,7 +12,7 @@ const phoneRules = (value) => {
 
 const onSubmit = handleSubmit(async (values) => {
   loading.value = true
-  const fullPhone = `+966${values.phone}`
+  const fullPhone = `+${values.phone}`
   const res = await sendOtpCode(fullPhone).finally(() => loading.value = false)
   if (res?.status) {
     router.push({ path: '/auth', query: { phone: fullPhone, registered: res.data.registered } })

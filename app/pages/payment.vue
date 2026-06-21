@@ -100,7 +100,7 @@ useHead({
 
 const route = useRoute();
 const { getsingleOrder } = useGlobalApi();
-const { usePayment, tamaraPayment, tabyPayment, checkOnDeliveryRequirements } = PayMents();
+const { usePayment, tamaraPayment, tabyPayment, checkOnDelivery } = PayMents();
 
 const orderId = route.query.order_id;
 
@@ -226,6 +226,9 @@ function loadHyperpayWidget(id) {
     const cancelUrl = `${origin}/payment/cancel?gateway=hyperpay&order_id=${orderId}`;
 
     window.wpwlOptions = {
+        onCheckoutSuccess: function () {
+            window.location.href = successUrl;
+        },
         onCheckoutFailure: function () {
             window.location.href = failureUrl;
         },
@@ -263,7 +266,7 @@ async function handleTamaraPayment() {
 }
 
 async function handleCashOnDelivery() {
-    const res = await checkOnDeliveryRequirements(orderId);
+    const res = await checkOnDelivery(orderId);
     const data = res?.data ?? res;
     codMessage.value = data?.refrence || "Your order will be delivered. Thank you!";
     showCodPopup.value = true;
@@ -284,13 +287,16 @@ async function handleTabbyPayment() {
         cancel_url: cancelUrl,
     });
 
+    console.log("Tabby response:", JSON.stringify(res, null, 2));
+
     const data = res?.data ?? res;
-    const checkoutUrl = data?.checkout_url;
+    const checkoutUrl = data?.checkout_url || data?.url || data?.redirect_url || data?.payment_url;
 
     if (checkoutUrl) {
         window.location.href = checkoutUrl;
     } else {
-        throw new Error("No checkout URL returned from Tabby");
+        console.error("Tabby response (no checkout_url found):", JSON.stringify(data, null, 2));
+        throw new Error(data?.message || data?.error || "No checkout URL returned from Tabby");
     }
 }
 </script>
