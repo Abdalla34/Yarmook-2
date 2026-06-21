@@ -77,6 +77,12 @@ export const useGlobalApi = () => {
             headers
         })
     }
+    const getOrdersAll = async () => {
+        return await $fetch(`${config.public.apiBase}/order/orders`, {
+            headers,
+            method: "GET"
+        })
+    }
     // done
     const sendOtpCode = async (phone: Number) => {
         return await $fetch(`${config.public.apiBase}/auth/send-otp`, {
@@ -104,5 +110,5 @@ export const useGlobalApi = () => {
     }
 
 
-    return { headers, token, getHome, getOffers, getOfferById, getCountries, getAreasByCountry, getCitiesByArea, getBranches, getBranchDates, getsingleOrder, sendOtpCode, checkCode, logOrRegister, getSpareParts }
+    return { headers, token, getHome, getOffers, getOfferById, getCountries, getAreasByCountry, getCitiesByArea, getBranches, getBranchDates, getsingleOrder,getOrdersAll, sendOtpCode, checkCode, logOrRegister, getSpareParts }
 }

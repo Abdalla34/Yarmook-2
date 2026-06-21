@@ -4,10 +4,17 @@ export const PayMents = () => {
     const { headers } = useGlobalApi();
     const config = useRuntimeConfig();
 
-    const usePayment = async (orderId: any, brand: any, wallet_amount: any) => {
+    const usePayment = async (orderId: any, brand: any, wallet_amount?: any, total_amount?: any) => {
+        const body: Record<string, any> = { order_id: orderId, brand: brand };
+        if (wallet_amount !== undefined) {
+            body.wallet_amount = wallet_amount;
+        }
+        if (total_amount !== undefined) {
+            body.total_amount = total_amount;
+        }
         return await $fetch(`${config.public.apiBase}/payment/hyper-pay/prepare-checkout`, {
             method: "POST",
-            body: { order_id: orderId, brand: brand, wallet_amount: wallet_amount },
+            body,
             headers,
         });
     };

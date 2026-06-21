@@ -11,87 +11,106 @@
 
                         <div class="rounded-3xl bg-white p-6 shadow-sm">
 
-                            <!-- My Cars -->
-                            <div class="mb-5">
-                                <label class="mb-2 block text-sm font-medium text-gray-700">
-                                    My Cars
-                                </label>
+                            <Form @submit="submitOrderDetails">
 
-                                <select v-model="selectedCarId"
-                                    class="w-full rounded-xl cursor-pointer border border-gray-200 px-4 py-3 outline-none focus:border-yellow-400">
-                                    <option value="" disabled class="text-gray-200">Welcome MR: {{ userName }}</option>
-                                    <option v-for="car in cars" :key="car.id" :value="car.id">
-                                        {{ car.name }} - {{ car.brand?.title }} {{ car.car_type?.title }}
-                                    </option>
-                                </select>
-                            </div>
-
-                            <!-- Branch -->
-                            <div class="mb-5">
-                                <label class="mb-2 block text-sm font-medium text-gray-700">
-                                    Branch
-                                </label>
-
-                                <div @click="showBranchPopup = true"
-                                    class="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3 cursor-pointer">
-                                    <span class="text-black placeholder-gray-500">
-                                        {{ selectedBranchName || 'Select Branch' }}
-                                    </span>
-                                    <span class="text-gray-400">⌄</span>
-                                </div>
-                            </div>
-
-                            <!-- Date -->
-                            <div class="mb-5">
-                                <label class="mb-2 block text-sm font-medium text-gray-700">
-                                    Date & Time
-                                </label>
-
-                                <div @click="openDateTimePicker"
-                                    class="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3 cursor-pointer">
-                                    <span :class="selectedDateTime ? 'text-black' : 'text-gray-500'">
-                                        {{ selectedDateTime || 'Select Date & Time' }}
-                                    </span>
-                                    <span class="text-gray-400">⌄</span>
-                                </div>
-                            </div>
-
-                            <!-- Details -->
-                            <div class="mb-5">
-                                <label class="mb-2 block text-sm font-medium text-gray-700">
-                                    Details
-                                </label>
-
-                                <textarea v-model="customerNote" rows="5" placeholder="Issues details"
-                                    class="w-full rounded-xl border border-gray-200 p-4 outline-none focus:border-yellow-400"></textarea>
-                            </div>
-
-                            <!-- Upload -->
-                            <div class="mb-6">
-                                <label class="mb-2 block text-sm font-medium text-gray-700">
-                                    Problem Photo
-                                </label>
-
-                                <div class="rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center">
-                                    <input ref="fileInput" type="file" class="hidden" id="upload" accept="image/jpeg,image/png" multiple @change="handleFileChange" />
-
-                                    <label for="upload" class="cursor-pointer font-medium text-yellow-500">
-                                        {{ selectedFiles.length ? `${selectedFiles.length} file(s) selected` : 'Upload from your gallery' }}
+                                <!-- My Cars -->
+                                <div v-if="cars.length > 0" class="mb-5">
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">
+                                        My Cars
                                     </label>
 
-                                    <p class="mt-2 text-sm text-gray-400">
-                                        JPG, PNG up to 10MB
-                                    </p>
+                                    <Field name="car_id" :rules="required" as="select" v-model="selectedCarId"
+                                        class="w-full rounded-xl cursor-pointer border border-gray-200 px-4 py-3 outline-none focus:border-yellow-400">
+                                        <option value="" disabled class="text-gray-200">Welcome MR: {{ userName }}</option>
+                                        <option v-for="car in cars" :key="car.id" :value="car.id">
+                                            {{ car.name }} - {{ car.brand?.title }} {{ car.car_type?.title }}
+                                        </option>
+                                    </Field>
+                                    <ErrorMessage name="car_id" class="text-red-500 text-sm mt-1 block" />
                                 </div>
-                            </div>
 
-                            <!-- Buttons -->
-                            <div class="flex flex-col gap-3 sm:flex-row">
-                                <button @click="submitOrderDetails" :disabled="submitting"
-                                    class="flex-1 rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
-                                    {{ submitting ? 'Loading...' : 'Continue' }}
-                                </button>
-                            </div>
+                                <!-- No Car -->
+                                <div v-else class="mb-5">
+                                    <button @click="router.push('/carbrands')"
+                                        class="w-full rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500">
+                                        Add Car
+                                    </button>
+                                </div>
+
+                                <!-- Branch -->
+                                <div class="mb-5">
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">
+                                        Branch
+                                    </label>
+
+                                    <Field name="branch_id" :rules="branchRequired" :model-value="selectedBranchId" type="hidden" />
+
+                                    <div @click="showBranchPopup = true"
+                                        class="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3 cursor-pointer">
+                                        <span class="text-black placeholder-gray-500">
+                                            {{ selectedBranchName || 'Select Branch' }}
+                                        </span>
+                                        <span class="text-gray-400">⌄</span>
+                                    </div>
+                                    <ErrorMessage name="branch_id" class="text-red-500 text-sm mt-1 block" />
+                                </div>
+
+                                <!-- Date -->
+                                <div class="mb-5">
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">
+                                        Date & Time
+                                    </label>
+
+                                    <Field name="datetime" :rules="dateTimeRequired" :model-value="selectedDateTime" type="hidden" />
+
+                                    <div @click="openDateTimePicker"
+                                        class="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3 cursor-pointer">
+                                        <span :class="selectedDateTime ? 'text-black' : 'text-gray-500'">
+                                            {{ selectedDateTime || 'Select Date & Time' }}
+                                        </span>
+                                        <span class="text-gray-400">⌄</span>
+                                    </div>
+                                    <ErrorMessage name="datetime" class="text-red-500 text-sm mt-1 block" />
+                                </div>
+
+                                <!-- Details -->
+                                <div class="mb-5">
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">
+                                        Details
+                                    </label>
+
+                                    <Field name="customer_note" as="textarea" v-model="customerNote" rows="5" placeholder="Issues details"
+                                        class="w-full rounded-xl border border-gray-200 p-4 outline-none focus:border-yellow-400" />
+                                </div>
+
+                                <!-- Upload -->
+                                <div class="mb-6">
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">
+                                        Problem Photo
+                                    </label>
+
+                                    <div class="rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center">
+                                        <input ref="fileInput" type="file" class="hidden" id="upload" accept="image/jpeg,image/png" multiple @change="handleFileChange" />
+
+                                        <label for="upload" class="cursor-pointer font-medium text-yellow-500">
+                                            {{ selectedFiles.length ? `${selectedFiles.length} file(s) selected` : 'Upload from your gallery' }}
+                                        </label>
+
+                                        <p class="mt-2 text-sm text-gray-400">
+                                            JPG, PNG up to 10MB
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="flex flex-col gap-3 sm:flex-row">
+                                    <button type="submit" :disabled="submitting"
+                                        class="flex-1 rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
+                                        {{ submitting ? 'Loading...' : 'Continue' }}
+                                    </button>
+                                </div>
+
+                            </Form>
 
                         </div>
                     </div>
@@ -205,6 +224,23 @@
 
 <!-- ////////////////// -->
 <script setup>
+import { Form, Field, ErrorMessage } from "vee-validate";
+
+function required(value) {
+    if (!value) return "This field is required";
+    return true;
+}
+
+function branchRequired(value) {
+    if (!value) return "Please select a branch";
+    return true;
+}
+
+function dateTimeRequired(value) {
+    if (!value) return "Please select date & time";
+    return true;
+}
+
 const { getMycars } = useCarServices();
 const { getBranches } = useGlobalApi();
 const { updateCartDetails } = useAddToCart();

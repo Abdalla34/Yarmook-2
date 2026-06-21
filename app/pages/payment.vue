@@ -16,7 +16,9 @@
 
             <!-- Loading order -->
             <div v-else-if="loadingOrder" class="text-center py-12">
-                <div class="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <div
+                    class="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto">
+                </div>
                 <p class="mt-4 text-gray-600">Loading order details...</p>
             </div>
 
@@ -27,13 +29,9 @@
                         <p class="text-gray-500 text-lg">No payment methods available.</p>
                     </div>
                     <div v-else class="space-y-4">
-                        <div
-                            v-for="method in paymentMethods"
-                            :key="method"
-                            @click="selectedMethod = method"
+                        <div v-for="method in paymentMethods" :key="method" @click="selectedMethod = method"
                             class="rounded-2xl border w-full bg-white px-3 py-2 cursor-pointer transition hover:border-yellow-400 hover:shadow-sm"
-                            :class="selectedMethod === method ? 'bg-yellow-100 border-yellow-400' : 'border-gray-200'"
-                        >
+                            :class="selectedMethod === method ? 'bg-yellow-100 border-yellow-400' : 'border-gray-200'">
                             <p class="text-lg font-semibold text-center p-3 text-gray-800">Pay with {{ method }}</p>
                         </div>
                     </div>
@@ -43,11 +41,11 @@
                     </div>
 
                     <div class="mt-8 flex justify-center">
-                        <button @click="handlePay"
-                            :disabled="submitting || !selectedMethod"
+                        <button @click="handlePay" :disabled="submitting || !selectedMethod"
                             class="w-1/2 rounded-full uppercase bg-yellow-400 py-4 font-semibold text-black transition hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed">
                             <span v-if="submitting" class="inline-flex items-center gap-2">
-                                <span class="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                                <span
+                                    class="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
                                 Processing...
                             </span>
                             <span v-else>Pay</span>
@@ -57,7 +55,9 @@
 
                 <!-- Loading checkout -->
                 <div v-if="loadingCheckout" class="text-center py-12">
-                    <div class="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <div
+                        class="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto">
+                    </div>
                     <p class="mt-4 text-gray-600">Preparing payment...</p>
                 </div>
 
@@ -65,17 +65,12 @@
                 <div v-if="checkoutId" class="max-w-lg mx-auto">
                     <div class="bg-white rounded-2xl p-6 shadow-md">
                         <h2 class="text-lg font-semibold text-center mb-6">Enter your card details</h2>
-                        <form
-                            :action="hyperpayRedirectUrl"
-                            class="paymentWidgets"
-                            :data-brands="hyperpayBrands"
-                        ></form>
+                        <form :action="hyperpayRedirectUrl" class="paymentWidgets" :data-brands="hyperpayBrands"></form>
                     </div>
                 </div>
 
                 <!-- Cash on Delivery popup -->
-                <div v-if="showCodPopup"
-                    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+                <div v-if="showCodPopup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
                     <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
                         <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
                             <span class="text-3xl text-green-500">&#10003;</span>
@@ -94,9 +89,18 @@
 </template>
 
 <script setup>
+useHead({
+    meta: [
+        {
+            "http-equiv": "Content-Security-Policy",
+            content: "script-src 'self' https://ajax.googleapis.com/ https://test.oppwa.com 'unsafe-inline' 'unsafe-eval'; worker-src blob: https://test.oppwa.com; frame-src https://test.oppwa.com",
+        },
+    ],
+});
+
 const route = useRoute();
 const { getsingleOrder } = useGlobalApi();
-const { usePayment, tamaraPayment, tabyPayment, checkOnDelivery } = PayMents();
+const { usePayment, tamaraPayment, tabyPayment, checkOnDeliveryRequirements } = PayMents();
 
 const orderId = route.query.order_id;
 
@@ -104,6 +108,7 @@ const showCashOnDelivery = ref(false);
 const showCodPopup = ref(false);
 const codMessage = ref("");
 let codTimer = null;
+const totalAmount = ref(0);
 
 onUnmounted(() => {
     if (codTimer) clearTimeout(codTimer);
@@ -132,7 +137,8 @@ onMounted(async () => {
     try {
         const res = await getsingleOrder(orderId);
         const data = res?.data ?? res;
-        if (data?.open_cash === true ) {
+        totalAmount.value = data?.total_amount ?? 0;
+        if (data?.open_cache === true || data?.open_cache === 1 || data?.open_cache === "1") {
             showCashOnDelivery.value = true;
         }
     } catch (err) {
@@ -149,6 +155,12 @@ const hyperpayRedirectUrl = computed(() => {
 });
 
 const brandMap = {
+    Visa: "visa",
+    Mada: "mada",
+    MasterCard: "mastercard",
+};
+
+const hyperpayWidgetBrands = {
     Visa: "VISA",
     Mada: "MADA",
     MasterCard: "MASTER",
@@ -182,18 +194,19 @@ async function handleHyperpayPayment() {
     loadingCheckout.value = true;
 
     try {
-        const brand = brandMap[selectedMethod.value] || "VISA MASTER MADA";
+        const apiBrand = brandMap[selectedMethod.value];
+        const widgetBrands = hyperpayWidgetBrands[selectedMethod.value] || "VISA MASTER MADA";
 
-        const res = await usePayment(orderId, brand, null);
+        const res = await usePayment(Number(orderId), apiBrand, 0, Number(totalAmount.value));
         const data = res?.data ?? res;
-        const id = data?.id;
+        const id = data?.id ?? data?.checkout_id ?? data?.checkoutId;
 
         if (!id) {
             throw new Error("Failed to get checkout ID from HyperPay");
         }
 
         checkoutId.value = id;
-        hyperpayBrands.value = brand;
+        hyperpayBrands.value = widgetBrands;
 
         await nextTick();
         loadHyperpayWidget(id);
@@ -208,6 +221,19 @@ function loadHyperpayWidget(id) {
         existing.remove();
     }
 
+    const successUrl = `${origin}/payment/success?gateway=hyperpay&order_id=${orderId}`;
+    const failureUrl = `${origin}/payment/failure?gateway=hyperpay&order_id=${orderId}`;
+    const cancelUrl = `${origin}/payment/cancel?gateway=hyperpay&order_id=${orderId}`;
+
+    window.wpwlOptions = {
+        onCheckoutFailure: function () {
+            window.location.href = failureUrl;
+        },
+        onCheckoutCancel: function () {
+            window.location.href = cancelUrl;
+        },
+    };
+
     const script = document.createElement("script");
     script.src = `https://test.oppwa.com/v1/paymentWidgets.js?checkoutId=${id}`;
     script.async = true;
@@ -220,7 +246,7 @@ async function handleTamaraPayment() {
     const cancelUrl = `${origin}/payment/cancel?gateway=tamara&order_id=${orderId}`;
 
     const res = await tamaraPayment({
-        order_id: orderId,
+        order_id: Number(orderId),
         success_url: successUrl,
         failure_url: failureUrl,
         cancel_url: cancelUrl,
@@ -237,7 +263,7 @@ async function handleTamaraPayment() {
 }
 
 async function handleCashOnDelivery() {
-    const res = await checkOnDelivery(orderId);
+    const res = await checkOnDeliveryRequirements(orderId);
     const data = res?.data ?? res;
     codMessage.value = data?.refrence || "Your order will be delivered. Thank you!";
     showCodPopup.value = true;
@@ -252,7 +278,7 @@ async function handleTabbyPayment() {
     const cancelUrl = `${origin}/payment/cancel?gateway=tabby&order_id=${orderId}`;
 
     const res = await tabyPayment({
-        order_id: orderId,
+        order_id: Number(orderId),
         success_url: successUrl,
         failure_url: failureUrl,
         cancel_url: cancelUrl,
