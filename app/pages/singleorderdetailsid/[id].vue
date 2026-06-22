@@ -85,7 +85,7 @@
               {{ order.branch?.title || order.branch }}
             </h4>
 
-            <p class="text-red-500 mt-2">
+            <p class="text-red-500 mt-2 cursor-pointer" @click="openInMaps">
               Show In Maps
             </p>
           </div>
@@ -368,6 +368,15 @@ async function openReschedulePopup() {
     console.error("Failed to load times:", err);
   } finally {
     loadingTimes.value = false;
+  }
+}
+
+function openInMaps() {
+  const branch = order.value?.branch;
+  const lat = branch?.lat ?? branch?.latitude;
+  const lng = branch?.lng ?? branch?.longitude ?? branch?.lan;
+  if (lat && lng) {
+    window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
   }
 }
 
