@@ -93,7 +93,7 @@
           <div v-if="order.created_at" class="border rounded-3xl p-4 md:p-6 text-center">
             <icons-timerIcon class="w-6 h-6 md:w-8 md:h-8 mx-auto" />
             <h4 class="font-semibold text-sm md:text-lg mt-1">
-              {{ order.reservation_date || order.created_at }}
+              {{ rescheduled ? (newReservationDate + ' ' + newReservationTime) : (order.reservation_date || order.created_at) }}
             </h4>
 
             <p v-if="rescheduled" class="text-green-600 mt-2 font-medium">
@@ -189,7 +189,10 @@
               </svg>
             </button>
           </div>
-          <div class="p-6 space-y-6">
+          <div class="p-6 space-y-6 relative">
+            <div v-if="rescheduling" class="absolute inset-0 bg-white/80 rounded-b-3xl flex items-center justify-center z-10">
+              <div class="w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+            </div>
             <div v-if="loadingTimes" class="text-center py-8">
               <div class="w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
               <p class="mt-3 text-gray-500 text-sm">Loading available times...</p>
@@ -267,6 +270,9 @@ const availableDates = ref([]);
 const loadingTimes = ref(false);
 const timesError = ref("");
 const rescheduled = ref(false);
+const rescheduling = ref(false);
+const newReservationDate = ref("");
+const newReservationTime = ref("");
 
 const orderId = route.params.id;
 
@@ -299,7 +305,18 @@ const allItems = computed(() => {
   return [...items, ...services, ...offers, ...spareParts];
 });
 
-onMounted(fetchOrder);
+onMounted(() => {
+  const saved = localStorage.getItem(`reschedule_${orderId}`);
+  if (saved) {
+    try {
+      const { date, time } = JSON.parse(saved);
+      newReservationDate.value = date;
+      newReservationTime.value = time;
+      rescheduled.value = true;
+    } catch {}
+  }
+  fetchOrder();
+});
 
 async function fetchOrder() {
   loading.value = true;
@@ -356,12 +373,18 @@ async function openReschedulePopup() {
 
 async function selectTime(date, slot) {
   const time = slot.time || slot;
-  showReschedulePopup.value = false;
+  rescheduling.value = true;
   try {
     await resevationTime(orderId, date, time);
+    newReservationDate.value = date;
+    newReservationTime.value = time;
     rescheduled.value = true;
+    localStorage.setItem(`reschedule_${orderId}`, JSON.stringify({ date, time }));
+    showReschedulePopup.value = false;
   } catch (err) {
     console.error("Failed to reschedule:", err);
+  } finally {
+    rescheduling.value = false;
   }
 }
 </script>
