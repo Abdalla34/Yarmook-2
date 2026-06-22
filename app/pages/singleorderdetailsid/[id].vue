@@ -26,7 +26,7 @@
         <!-- Header -->
         <div class="flex flex-wrap justify-between items-center gap-6">
           <div class="flex items-center gap-4">
-            <img :src="allItems[0]?.image || 'https://via.placeholder.com/120'" class="w-24 h-24 object-contain"
+            <img :src="allItems[0]?.image || 'https://via.placeholder.com/120'" class="w-24 h-24 object-contain image-serv"
               alt="" />
 
             <div>
@@ -388,4 +388,11 @@ async function selectTime(date, slot) {
   }
 }
 </script>
-<!-- //////////////// -->
+
+<style scoped>
+.image-serv {
+    border-radius: 16px;
+    background: #f7f9f9;
+    padding: 8px;
+}
+</style>
