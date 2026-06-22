@@ -90,13 +90,13 @@
             </p>
           </div>
 
-          <div v-if="order.created_at" class="border rounded-3xl p-4 md:p-6 text-center cursor-pointer">
+          <div v-if="order.created_at" class="border rounded-3xl p-4 md:p-6 text-center">
             <icons-timerIcon class="w-6 h-6 md:w-8 md:h-8 mx-auto" />
             <h4 class="font-semibold text-sm md:text-lg mt-1">
               {{ order.reservation_date || order.created_at }}
             </h4>
 
-            <p class="text-red-500 mt-2">
+            <p v-if="order.can_reschedule" class="text-red-500 mt-2 cursor-pointer" @click="openReschedulePopup">
               Reschedule Order
             </p>
           </div>
@@ -171,6 +171,49 @@
 
       </div>
 
+      <!-- Reschedule Popup -->
+      <div v-if="showReschedulePopup"
+        class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-4"
+        @click.self="showReschedulePopup = false">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-lg max-h-[80vh] overflow-y-auto shadow-xl">
+          <div
+            class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between rounded-t-3xl">
+            <h3 class="text-lg font-bold">Available Times</h3>
+            <button @click="showReschedulePopup = false"
+              class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+          <div class="p-6 space-y-6">
+            <div v-if="loadingTimes" class="text-center py-8">
+              <div class="w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <p class="mt-3 text-gray-500 text-sm">Loading available times...</p>
+            </div>
+            <div v-else-if="timesError" class="text-center py-8">
+              <p class="text-red-500 text-sm">{{ timesError }}</p>
+            </div>
+            <div v-else-if="availableDates.length">
+              <div v-for="(dateItem, di) in availableDates" :key="di" class="mb-6">
+                <h4 class="font-semibold text-gray-700 mb-3">{{ dateItem.date }}</h4>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <div v-for="(slot, si) in dateItem.time_slots" :key="si"
+                    class="border rounded-xl p-3 text-center cursor-pointer hover:border-yellow-400 transition"
+                    @click="selectTime(slot)">
+                    <p class="font-medium text-sm">{{ slot.time }}</p>
+                    <p class="text-xs text-gray-400">{{ slot.available_orders }} available</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else class="text-center py-8">
+              <p class="text-gray-500">No available times found.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Items Popup -->
       <div v-if="showItemsPopup"
         class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-4"
@@ -210,11 +253,16 @@
 <script setup>
 const route = useRoute();
 const { getsingleOrder } = useGlobalApi();
+const { getAvailableBranchesTime } = useordersDetails();
 
 const order = ref(null);
 const loading = ref(true);
 const error = ref("");
 const showItemsPopup = ref(false);
+const showReschedulePopup = ref(false);
+const availableDates = ref([]);
+const loadingTimes = ref(false);
+const timesError = ref("");
 
 const orderId = route.params.id;
 
@@ -262,4 +310,50 @@ async function fetchOrder() {
     loading.value = false;
   }
 }
+
+async function openReschedulePopup() {
+  const branchId = order.value?.branch?.id;
+  const type = order.value?.type;
+  if (!branchId || !type) return;
+
+  showReschedulePopup.value = true;
+  loadingTimes.value = true;
+  timesError.value = "";
+  availableDates.value = [];
+
+  try {
+    const res = await getAvailableBranchesTime(branchId, type);
+    console.log("API response:", res);
+    if (Array.isArray(res)) {
+      availableDates.value = res;
+    } else if (res?.dates?.available_times) {
+      availableDates.value = res.dates.available_times;
+    } else if (res?.data?.dates?.available_times) {
+      availableDates.value = res.data.dates.available_times;
+    } else if (res?.data && Array.isArray(res.data)) {
+      availableDates.value = res.data;
+    } else if (res?.time_slots) {
+      availableDates.value = [res];
+    } else if (res?.data?.time_slots) {
+      availableDates.value = [res.data];
+    } else if (typeof res === 'object' && res !== null) {
+      const found = Object.values(res).find(v => Array.isArray(v) && v.length && v[0]?.time_slots);
+      availableDates.value = found ?? Object.values(res).find(v => Array.isArray(v) && v.length && v[0]?.date) ?? [];
+    } else {
+      availableDates.value = [];
+    }
+  } catch (err) {
+    timesError.value = err?.data?.message || err?.message || "Failed to load times.";
+    console.error("Failed to load times:", err);
+  } finally {
+    loadingTimes.value = false;
+  }
+}
+
+function selectTime(slot) {
+  const time = slot.time || slot;
+  console.log("Selected time:", time);
+  showReschedulePopup.value = false;
+}
 </script>
+<!-- //////////////// -->

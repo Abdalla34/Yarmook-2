@@ -1,6 +1,5 @@
-const { headers, token } = useGlobalApi()
-
-export const ordersDetails = async () => {
+export const useordersDetails = () => {
+    const { headers } = useGlobalApi();
     const config = useRuntimeConfig();
 
     const resevationTime = async (order_id: any, newTime: any) => {
@@ -10,5 +9,12 @@ export const ordersDetails = async () => {
             body: { reservation_time: newTime }
         })
     }
-    return { resevationTime }
+    const getAvailableBranchesTime = async (branch_id: any, type: any) => {
+        return await $fetch(`${config.public.apiBase}/core/branches/available-times`, {
+          method: "GET",
+          headers,
+          params: { branch_id, type },
+        });
+      };
+    return { resevationTime ,getAvailableBranchesTime}
 }
