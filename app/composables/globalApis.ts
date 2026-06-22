@@ -77,6 +77,7 @@ export const useGlobalApi = () => {
             headers
         })
     }
+    // done
     const getOrdersAll = async () => {
         return await $fetch(`${config.public.apiBase}/order/orders`, {
             headers,

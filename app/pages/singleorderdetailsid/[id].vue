@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-gray-100 py-10">
-    <div class="max-w-5xl mx-auto px-4">
+  <div class="min-h-screen bg-gray-100 py-4 md:py-10">
+    <div class="max-w-5xl mx-auto px-2 md:px-4">
 
       <button @click="navigateTo('/my-orders')"
         class="mb-6 flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 transition-colors">
@@ -21,7 +21,7 @@
           class="mt-4 px-6 py-2 bg-yellow-400 rounded-full font-semibold hover:bg-yellow-500 transition">Retry</button>
       </div>
 
-      <div v-else-if="order" class="bg-white rounded-3xl p-8 shadow">
+      <div v-else-if="order" class="bg-white rounded-3xl p-4 md:p-8 shadow">
 
         <!-- Header -->
         <div class="flex flex-wrap justify-between items-center gap-6">
@@ -30,8 +30,8 @@
               alt="" />
 
             <div>
-              <h1 class="text-3xl font-bold capitalize">{{ order.type || 'Order' }}</h1>
-              <p class="text-2xl font-semibold text-yellow-500">
+              <h1 class="text-xl md:text-3xl font-bold capitalize">{{ order.type || 'Order' }}</h1>
+              <p class="text-lg md:text-2xl font-semibold text-yellow-500">
                 {{ order.total_amount || order.amount_to_pay || '0' }}
                 <span class="uppercase text-base">SAR</span>
               </p>
@@ -48,17 +48,17 @@
         <!-- Car Info -->
         <div class="grid md:grid-cols-2 gap-4 mt-8">
 
-          <div class="border rounded-3xl p-5 flex justify-center align-center items-center gap-4">
+          <div class="border rounded-3xl p-3 md:p-5 flex justify-center align-center items-center gap-3 md:gap-4">
             <div>
-              <p class="text-gray-500">Car Model</p>
-              <p class="font-semibold">{{ order?.brand?.title }} - {{ order?.car_type?.title }}</p>
+              <p class="text-gray-500 text-sm md:text-base">Car Model</p>
+              <p class="font-semibold text-sm md:text-base">{{ order?.brand?.title }} - {{ order?.car_type?.title }}</p>
             </div>
-            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center shrink-0">
-              <icons-carIcon class="w-6 h-6" />
+            <div class="w-10 h-10 md:w-12 md:h-12 bg-yellow-100 rounded-full flex items-center justify-center shrink-0">
+              <icons-carIcon class="w-5 h-5 md:w-6 md:h-6" />
             </div>
           </div>
 
-          <div class="border rounded-3xl p-5 flex justify-center items-center gap-4">
+          <div class="border rounded-3xl p-3 md:p-5 flex justify-center items-center gap-3 md:gap-4">
             <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
               <svg class="w-6 h-6 text-yellow-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2">
@@ -70,33 +70,34 @@
             </div>
 
             <div>
-              <p class="text-gray-500">Order Number</p>
-              <p class="font-semibold">#{{ order.id }}</p>
+              <p class="text-gray-500 text-sm md:text-base">Order Number</p>
+              <p class="font-semibold text-sm md:text-base">#{{ order.id }}</p>
             </div>
           </div>
 
         </div>
 
-        <!-- Date & Branch -->
-        <div v-if="order.reservation_date || order.branch" class="grid md:grid-cols-2 gap-4 mt-6">
+        <!-- Branch & Timer Row -->
+        <div v-if="order.branch || order.created_at || order.reservation_date" class="grid md:grid-cols-2 gap-4 mt-6">
 
-          <div v-if="order.reservation_date" class="border rounded-3xl p-6 text-center cursor-pointer">
-            <h4 class="font-semibold text-lg">
-              {{ order.reservation_date }} <span v-if="order.reservation_time">{{ order.reservation_time }}</span>
-            </h4>
-
-            <p class="text-yellow-500 mt-2">
-              Reschedule Order
-            </p>
-          </div>
-
-          <div v-if="order.branch" class="border rounded-3xl p-6 text-center cursor-pointer">
-            <h4 class="font-semibold text-lg">
+          <div v-if="order.branch" class="border rounded-3xl p-4 md:p-6 text-center cursor-pointer">
+            <h4 class="font-semibold text-base md:text-lg">
               {{ order.branch?.title || order.branch }}
             </h4>
 
             <p class="text-red-500 mt-2">
               Show In Maps
+            </p>
+          </div>
+
+          <div v-if="order.created_at" class="border rounded-3xl p-4 md:p-6 text-center cursor-pointer">
+            <icons-timerIcon class="w-6 h-6 md:w-8 md:h-8 mx-auto" />
+            <h4 class="font-semibold text-sm md:text-lg mt-1">
+              {{ order.reservation_date || order.created_at }}
+            </h4>
+
+            <p class="text-red-500 mt-2">
+              Reschedule Order
             </p>
           </div>
 

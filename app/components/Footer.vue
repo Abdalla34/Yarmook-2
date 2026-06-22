@@ -6,7 +6,7 @@
         <!-- Logo & App -->
         <div>
           <img
-            src="/Yarmook Logo.png"
+            src="/Yarmook Logo (1).png"
             alt="Yarmook"
             class="h-10 mb-4 object-contain hover:opacity-80 transition-opacity"
           />
