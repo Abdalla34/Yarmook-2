@@ -96,7 +96,10 @@
               {{ order.reservation_date || order.created_at }}
             </h4>
 
-            <p v-if="order.can_reschedule" class="text-red-500 mt-2 cursor-pointer" @click="openReschedulePopup">
+            <p v-if="rescheduled" class="text-green-600 mt-2 font-medium">
+              Reservation time changed
+            </p>
+            <p v-else-if="order.can_reschedule" class="text-red-500 mt-2 cursor-pointer" @click="openReschedulePopup">
               Reschedule Order
             </p>
           </div>
@@ -200,7 +203,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   <div v-for="(slot, si) in dateItem.time_slots" :key="si"
                     class="border rounded-xl p-3 text-center cursor-pointer hover:border-yellow-400 transition"
-                    @click="selectTime(slot)">
+                    @click="selectTime(dateItem.date, slot)">
                     <p class="font-medium text-sm">{{ slot.time }}</p>
                     <p class="text-xs text-gray-400">{{ slot.available_orders }} available</p>
                   </div>
@@ -253,7 +256,7 @@
 <script setup>
 const route = useRoute();
 const { getsingleOrder } = useGlobalApi();
-const { getAvailableBranchesTime } = useordersDetails();
+const { getAvailableBranchesTime, resevationTime } = useordersDetails();
 
 const order = ref(null);
 const loading = ref(true);
@@ -263,6 +266,7 @@ const showReschedulePopup = ref(false);
 const availableDates = ref([]);
 const loadingTimes = ref(false);
 const timesError = ref("");
+const rescheduled = ref(false);
 
 const orderId = route.params.id;
 
@@ -350,10 +354,15 @@ async function openReschedulePopup() {
   }
 }
 
-function selectTime(slot) {
+async function selectTime(date, slot) {
   const time = slot.time || slot;
-  console.log("Selected time:", time);
   showReschedulePopup.value = false;
+  try {
+    await resevationTime(orderId, date, time);
+    rescheduled.value = true;
+  } catch (err) {
+    console.error("Failed to reschedule:", err);
+  }
 }
 </script>
 <!-- //////////////// -->
