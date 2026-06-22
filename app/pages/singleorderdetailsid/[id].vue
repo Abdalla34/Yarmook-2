@@ -96,7 +96,7 @@
               {{ rescheduled ? (newReservationDate + ' ' + newReservationTime) : (order.reservation_date || order.created_at) }}
             </h4>
 
-            <p v-if="rescheduled" class="text-green-600 mt-2 font-medium">
+            <p v-if="rescheduled" class="text-green-600 mt-2 font-medium cursor-pointer" @click="openReschedulePopup">
               Reservation time changed
             </p>
             <p v-else-if="order.can_reschedule" class="text-red-500 mt-2 cursor-pointer" @click="openReschedulePopup">
