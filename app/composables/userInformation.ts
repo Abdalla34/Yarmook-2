@@ -97,7 +97,7 @@ export const useUserinformation = () => {
     }
     // end vouchers
 
-    return { editeProfile, getDeactivatedReasons, logOut, deleteaccount, PointsUser, RedeemPoints, TransferPoints, getWallte, availableVouchers, usedVouchers, expiredVouchers }
+    return { editeProfile, getDeactivatedReasons, logOut, deleteaccount, PointsUser, RedeemPoints, TransferPoints, getWallte, CashbackWallet, usePaymentToChargeWallet, availableVouchers, usedVouchers, expiredVouchers }
 }
 // let paywithTamara = async () => {
 //   try {

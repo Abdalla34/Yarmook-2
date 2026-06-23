@@ -1,24 +1,74 @@
 <script setup>
-const { getWallte } = useUserinformation()
+const { getWallte, CashbackWallet } = useUserinformation()
 
 const loading = ref(true)
 const walletData = ref(null)
 const showDepositModal = ref(false)
 
 const balance = computed(() => walletData.value?.balance ?? 0)
-const transactions = computed(() => walletData.value?.transactions?.items ?? walletData.value?.data ?? [])
+const transactions = computed(() => {
+    if (!walletData.value) return []
+    if (Array.isArray(walletData.value)) return walletData.value
+    if (Array.isArray(walletData.value.data)) return walletData.value.data
+    if (Array.isArray(walletData.value.transactions)) return walletData.value.transactions
+    if (Array.isArray(walletData.value.transactions?.items)) return walletData.value.transactions.items
+    return []
+})
+const currentPage = ref(1)
+const totalPages = ref(1)
+const total = ref(0)
+const hasPrev = computed(() => currentPage.value > 1)
+const hasNext = computed(() => currentPage.value < totalPages.value)
 
-async function fetchWallet() {
+const depositAmount = ref('')
+const cashbackData = ref(null)
+const cashbackLoading = ref(false)
+let cashbackTimer = null
+
+const amountNum = computed(() => Number(depositAmount.value) || 0)
+const cashbackAmount = computed(() => Number(cashbackData.value?.cashback ?? cashbackData.value?.amount ?? 0))
+const totalAmount = computed(() => amountNum.value + cashbackAmount.value)
+
+watch(depositAmount, () => {
+    if (cashbackTimer) clearTimeout(cashbackTimer)
+    cashbackData.value = null
+    if (!depositAmount.value || amountNum.value <= 0) return
+    cashbackTimer = setTimeout(async () => {
+        cashbackLoading.value = true
+        try {
+            const res = await CashbackWallet(depositAmount.value)
+            if (res?.status) {
+                cashbackData.value = res.data
+            }
+        } catch {
+        } finally {
+            cashbackLoading.value = false
+        }
+    }, 1000)
+})
+
+async function fetchWallet(page = 1) {
     loading.value = true
     try {
-        const res = await getWallte()
+        const res = await getWallte(page)
         if (res?.status) {
             walletData.value = res.data
+            currentPage.value = res.data?.current_page ?? 1
+            totalPages.value = res.data?.total_pages ?? 1
+            total.value = res.data?.total ?? 0
         }
-    } catch {
+    } catch (e) {
     } finally {
         loading.value = false
     }
+}
+
+function prevPage() {
+    if (hasPrev.value) fetchWallet(currentPage.value - 1)
+}
+
+function nextPage() {
+    if (hasNext.value) fetchWallet(currentPage.value + 1)
 }
 
 function formatDate(dateStr) {
@@ -91,7 +141,7 @@ onMounted(() => {
                             <div class="flex items-center gap-4">
                                 <div :class="['flex h-12 w-12 items-center justify-center rounded-full', (t.type === 'deposit' || t.type === 'credit') ? 'bg-green-100' : 'bg-red-100']">
                                     <svg v-if="t.type === 'deposit' || t.type === 'credit'" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                        <path d="M14.6673 6.75065H9.25065V1.33398C9.25065 0.650651 8.68398 0.0839844 8.00065 0.0839844C7.31732 0.0839844 6.75065 0.650651 6.75065 1.33398V6.75065H1.33398C0.650651 6.75065 0.0839844 7.31732 0.0839844 8.00065C0.0839844 8.68398 0.650651 9.25065 1.33398 9.25065H6.75065V14.6673C6.75065 15.3507 7.31732 15.9173 8.00065 15.9173C8.68398 15.9173 9.25065 15.3507 9.25065 14.6673V9.25065H14.6673C15.3507 9.25065 15.9173 8.68398 15.9173 8.00065C15.9173 7.31732 15.3507 6.75065 14.6673 6.75065Z" fill="#41C980" />
+                                        <path d="M14.6673 6.75065H9.25065V1.33398C9.25065 0.650651 8.68398 0.0820312 8.00065 0.0820312C7.31732 0.0820312 6.75065 0.650651 6.75065 1.33398V6.75065H1.33398C0.650651 6.75065 0.0839844 7.31536 0.0839844 7.9987C0.0839844 8.68203 0.650651 9.2487 1.33398 9.2487H6.75065V14.6654C6.75065 15.3487 7.31732 15.9154 8.00065 15.9154C8.68398 15.9154 9.25065 15.3487 9.25065 14.6654V9.2487H14.6673C15.3507 9.2487 15.9173 8.68203 15.9173 7.9987C15.9173 7.31536 15.3507 6.7487 14.6673 6.7487Z" fill="#41C980" />
                                     </svg>
                                     <svg v-else width="16" height="4" viewBox="0 0 16 4" fill="none">
                                         <path d="M14.6673 3.25H1.33398C0.650651 3.25 0.0839844 2.68333 0.0839844 2C0.0839844 1.31667 0.650651 0.75 1.33398 0.75H14.6673C15.3507 0.75 15.9173 1.31667 15.9173 2C15.9173 2.68333 15.3507 3.25 14.6673 3.25Z" fill="#EB5757" />
@@ -111,6 +161,19 @@ onMounted(() => {
                             </div>
                         </div>
                     </div>
+
+                    <!-- Pagination -->
+                    <div v-if="totalPages > 1" class="mt-8 flex items-center justify-center gap-4">
+                        <button @click="prevPage" :disabled="!hasPrev"
+                            class="rounded-xl border border-gray-200 px-5 py-2 transition hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
+                            Prev
+                        </button>
+                        <span class="font-medium text-gray-700">Page {{ currentPage }} of {{ totalPages }}</span>
+                        <button @click="nextPage" :disabled="!hasNext"
+                            class="rounded-xl border border-gray-200 px-5 py-2 transition hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
+                            Next
+                        </button>
+                    </div>
                 </template>
 
             </div>
@@ -126,25 +189,33 @@ onMounted(() => {
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
                         </button>
                     </div>
-                    <input type="number" placeholder="Enter amount"
+
+                    <input v-model="depositAmount" type="number" placeholder="Enter amount"
                         class="mb-4 w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-black" />
+
+                    <label class="mb-4 flex cursor-pointer items-center gap-3">
+                        <input type="checkbox" class="h-5 w-5 accent-black" />
+                        <span class="text-sm font-medium text-gray-700">CashbackWallet</span>
+                    </label>
+
                     <div class="rounded-2xl bg-gray-50 p-4">
                         <div class="mb-3 flex justify-between">
                             <span class="text-gray-600">Amount</span>
-                            <span class="font-semibold">100 SAR</span>
+                            <span class="font-semibold">{{ amountNum }} SAR</span>
                         </div>
                         <div class="mb-3 flex justify-between">
                             <span class="text-gray-600">Cash Back</span>
-                            <span class="font-semibold text-green-600">+10 SAR</span>
+                            <span v-if="cashbackLoading" class="text-sm text-gray-400">calculating...</span>
+                            <span v-else class="font-semibold text-green-600">+{{ cashbackAmount }} SAR</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Expenses</span>
-                            <span class="font-semibold">5 SAR</span>
+                            <span class="font-semibold">0 SAR</span>
                         </div>
                     </div>
                     <div class="mt-4 rounded-2xl bg-black p-4 text-center text-white">
                         <p class="text-sm opacity-80">Total Amount</p>
-                        <h4 class="mt-1 text-2xl font-bold">115 SAR</h4>
+                        <h4 class="mt-1 text-2xl font-bold">{{ totalAmount }} <span class="uppercase text-sm text-gray-100">sar</span></h4>
                     </div>
                     <button class="mt-5 w-full rounded-2xl bg-black py-4 font-medium text-white transition hover:opacity-90">
                         Deposit Money
