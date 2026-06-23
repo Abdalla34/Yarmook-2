@@ -30,7 +30,7 @@ export const useUserinformation = () => {
             headers,
         });
     };
-
+    // start points calls
     const PointsUser = async () => {
         return await $fetch(`${config.public.apiBase}/customer/points-history`, {
             method: "GET",
@@ -51,13 +51,32 @@ export const useUserinformation = () => {
             body: { points, phone }
         })
     }
+    // end oints call
 
-    const getWallte = async () => {
-        return await $fetch(`${config.public.apiBase}/customer/wallet`, {
+    // start wallt calls
+    const getWallte = async (page = 1) => {
+        return await $fetch(`${config.public.apiBase}/customer/wallet?page=${page}`, {
             method: "GET",
             headers
         })
     }
+    const CashbackWallet = async (amount: any) => {
+        return await $fetch(`${config.public.apiBase}/wallet/get-cashback-wallet`, {
+            method: "POST",
+            headers,
+            body: { amount },
+        });
+    };
+    const usePaymentToChargeWallet = async (wallet_amount: any, brand: any) => {
+        return await $fetch(`${config.public.apiBase}/payment/hyper-pay/prepare-checkout`, {
+            method: "POST",
+            body: { wallet_amount: wallet_amount, brand: brand },
+            headers,
+        });
+    };
+    //   end wallet calls
+    
+    // start vouchers calls
     const availableVouchers = async () => {
         return await $fetch(`${config.public.apiBase}/vouchers/available`, {
             method: "GET",
@@ -76,6 +95,58 @@ export const useUserinformation = () => {
             headers
         })
     }
+    // end vouchers
 
     return { editeProfile, getDeactivatedReasons, logOut, deleteaccount, PointsUser, RedeemPoints, TransferPoints, getWallte, availableVouchers, usedVouchers, expiredVouchers }
 }
+// let paywithTamara = async () => {
+//   try {
+//     const walletToNum = Number(walletAmount.value);
+//     isLoading.value = true;
+//     if (id) {
+//       let res = await tamaraPayment({
+//         order_id: id,
+//         success_url: `${domain}/payment-tamara-status/success`,
+//         failure_url: `${domain}/payment-tamara-status/failed`,
+//         cancel_url: `${domain}/payment-tamara-status/cancel`,
+//       });
+//       if (!res?.status) {
+//         msg.value = res?.message;
+//       }
+//       if (res?.data?.checkout_url) {
+//         window.location.href = res.data.checkout_url;
+//       }
+//     } else if (membershipId) {
+//       let res = await tamaraPayment({
+//         membership_id: membershipId,
+//         success_url: `${domain}/payment-tamara-status/success`,
+//         failure_url: `${domain}/payment-tamara-status/failed`,
+//         cancel_url: `${domain}/payment-tamara-status/cancel`,
+//       });
+//       if (!res?.status) {
+//         msg.value = res?.message;
+//       }
+//       if (res?.data?.checkout_url) {
+//         window.location.href = res.data.checkout_url;
+//       }
+//     } else {
+//       let res = await tamaraPayment({
+//         wallet_amount: walletToNum,
+//         success_url: `${domain}/wallet`,
+//         failure_url: `${domain}/wallet`,
+//         cancel_url: `${domain}/wallet`,
+//       });
+//       if (!res.status) {
+//         walletChargeMsg.value = res?.message;
+//       }
+//       if (res?.data?.checkout_url) {
+//         window.location.href = res.data.checkout_url;
+//       }
+//     }
+//   } catch (err) {
+//     walletChargeMsg.value = "Something went wrong!";
+//     msg.value = err?.response?.message;
+//   } finally {
+//     isLoading.value = false;
+//   }
+// };
