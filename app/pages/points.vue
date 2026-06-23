@@ -184,10 +184,10 @@ onMounted(() => {
                             </button>
                         </div>
                         <div class="space-y-3">
-                            <button @click="showActionSheet = false; showRedeemModal = true" class="w-full rounded-2xl bg-black py-4 font-medium text-white">
+                            <button @click="showActionSheet = false; showRedeemModal = true" class="w-full rounded-2xl bg-black py-4 font-medium text-white transition hover:opacity-80">
                                 Redeem Points
                             </button>
-                            <button v-if="transferInfo?.can_transfer" @click="showActionSheet = false; showTransferModal = true" class="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 py-4 font-medium text-gray-700">
+                            <button @click="showActionSheet = false; showTransferModal = true" class="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 py-4 font-medium text-gray-700 transition hover:bg-gray-100">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
                                 Send Points
                             </button>

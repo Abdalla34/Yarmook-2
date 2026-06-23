@@ -22,6 +22,7 @@ const hasNext = computed(() => currentPage.value < totalPages.value)
 
 const depositAmount = ref('')
 const cashbackData = ref(null)
+const feesData = ref(null)
 const cashbackLoading = ref(false)
 let cashbackTimer = null
 
@@ -39,6 +40,7 @@ watch(depositAmount, () => {
             const res = await CashbackWallet(depositAmount.value)
             if (res?.status) {
                 cashbackData.value = res.data
+                feesData.value = res?.data?.fees
             }
         } catch {
         } finally {
@@ -105,7 +107,8 @@ onMounted(() => {
                         <div class="text-center md:text-right">
                             <p class="text-sm text-gray-500">Current Balance</p>
                             <div class="mt-1 flex items-center justify-center gap-2 md:justify-end">
-                                <span class="text-2xl font-bold text-gray-900">{{ Number(balance).toLocaleString() }}</span>
+                                <span class="text-2xl font-bold text-gray-900">{{ Number(balance).toLocaleString()
+                                    }}</span>
                                 <span class="text-sm uppercase text-gray-500">SAR</span>
                             </div>
                         </div>
@@ -135,27 +138,36 @@ onMounted(() => {
 
                 <!-- Transactions -->
                 <template v-else>
-                    <div v-for="t in transactions" :key="t.id"
-                        class="mb-4 rounded-3xl bg-white p-5 shadow-sm">
+                    <div v-for="t in transactions" :key="t.id" class="mb-4 rounded-3xl bg-white p-5 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-4">
-                                <div :class="['flex h-12 w-12 items-center justify-center rounded-full', (t.type === 'deposit' || t.type === 'credit') ? 'bg-green-100' : 'bg-red-100']">
-                                    <svg v-if="t.type === 'deposit' || t.type === 'credit'" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                        <path d="M14.6673 6.75065H9.25065V1.33398C9.25065 0.650651 8.68398 0.0820312 8.00065 0.0820312C7.31732 0.0820312 6.75065 0.650651 6.75065 1.33398V6.75065H1.33398C0.650651 6.75065 0.0839844 7.31536 0.0839844 7.9987C0.0839844 8.68203 0.650651 9.2487 1.33398 9.2487H6.75065V14.6654C6.75065 15.3487 7.31732 15.9154 8.00065 15.9154C8.68398 15.9154 9.25065 15.3487 9.25065 14.6654V9.2487H14.6673C15.3507 9.2487 15.9173 8.68203 15.9173 7.9987C15.9173 7.31536 15.3507 6.7487 14.6673 6.7487Z" fill="#41C980" />
+                                <div
+                                    :class="['flex h-12 w-12 items-center justify-center rounded-full', (t.type === 'deposit' || t.type === 'credit') ? 'bg-green-100' : 'bg-red-100']">
+                                    <svg v-if="t.type === 'deposit' || t.type === 'credit'" width="16" height="16"
+                                        viewBox="0 0 16 16" fill="none">
+                                        <path
+                                            d="M14.6673 6.75065H9.25065V1.33398C9.25065 0.650651 8.68398 0.0820312 8.00065 0.0820312C7.31732 0.0820312 6.75065 0.650651 6.75065 1.33398V6.75065H1.33398C0.650651 6.75065 0.0839844 7.31536 0.0839844 7.9987C0.0839844 8.68203 0.650651 9.2487 1.33398 9.2487H6.75065V14.6654C6.75065 15.3487 7.31732 15.9154 8.00065 15.9154C8.68398 15.9154 9.25065 15.3487 9.25065 14.6654V9.2487H14.6673C15.3507 9.2487 15.9173 8.68203 15.9173 7.9987C15.9173 7.31536 15.3507 6.7487 14.6673 6.7487Z"
+                                            fill="#41C980" />
                                     </svg>
                                     <svg v-else width="16" height="4" viewBox="0 0 16 4" fill="none">
-                                        <path d="M14.6673 3.25H1.33398C0.650651 3.25 0.0839844 2.68333 0.0839844 2C0.0839844 1.31667 0.650651 0.75 1.33398 0.75H14.6673C15.3507 0.75 15.9173 1.31667 15.9173 2C15.9173 2.68333 15.3507 3.25 14.6673 3.25Z" fill="#EB5757" />
+                                        <path
+                                            d="M14.6673 3.25H1.33398C0.650651 3.25 0.0839844 2.68333 0.0839844 2C0.0839844 1.31667 0.650651 0.75 1.33398 0.75H14.6673C15.3507 0.75 15.9173 1.31667 15.9173 2C15.9173 2.68333 15.3507 3.25 14.6673 3.25Z"
+                                            fill="#EB5757" />
                                     </svg>
                                 </div>
                                 <div>
-                                    <h5 class="font-semibold text-gray-900 capitalize">{{ t.type_value ?? t.type ?? '' }}</h5>
+                                    <h5 class="font-semibold text-gray-900 capitalize">{{ t.type_value ?? t.type ?? ''
+                                        }}</h5>
                                     <p class="text-sm text-gray-500">{{ formatDate(t.created_at ?? t.date) }}</p>
-                                    <p v-if="t.description" class="mt-1 text-sm font-semibold text-gray-700">{{ t.description }}</p>
+                                    <p v-if="t.description" class="mt-1 text-sm font-semibold text-gray-700">{{
+                                        t.description }}</p>
                                 </div>
                             </div>
                             <div class="text-right">
-                                <span :class="['text-lg font-bold', (t.type === 'deposit' || t.type === 'credit') ? 'text-green-600' : 'text-red-600']">
-                                    {{ (t.type === 'deposit' || t.type === 'credit') ? '+' : '-' }}{{ Math.abs(t.amount ?? t.points ?? 0) }}
+                                <span
+                                    :class="['text-lg font-bold', (t.type === 'deposit' || t.type === 'credit') ? 'text-green-600' : 'text-red-600']">
+                                    {{ (t.type === 'deposit' || t.type === 'credit') ? '+' : '-' }}{{ Math.abs(t.amount
+                                        ?? t.points ?? 0) }}
                                 </span>
                                 <span class="ml-1 text-sm text-gray-500">SAR</span>
                             </div>
@@ -181,12 +193,16 @@ onMounted(() => {
 
         <!-- Deposit Money Modal -->
         <Teleport to="body">
-            <div v-if="showDepositModal" @click.self="showDepositModal = false" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+            <div v-if="showDepositModal" @click.self="showDepositModal = false"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
                 <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
                     <div class="mb-5 flex items-center justify-between">
                         <h3 class="text-xl font-bold text-gray-900">Deposit Amount</h3>
-                        <button @click="showDepositModal = false" class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                        <button @click="showDepositModal = false"
+                            class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
                         </button>
                     </div>
 
@@ -210,14 +226,16 @@ onMounted(() => {
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Expenses</span>
-                            <span class="font-semibold">0 SAR</span>
+                            <span class="font-semibold">{{ feesData || 0 }} SAR</span>
                         </div>
                     </div>
                     <div class="mt-4 rounded-2xl bg-black p-4 text-center text-white">
                         <p class="text-sm opacity-80">Total Amount</p>
-                        <h4 class="mt-1 text-2xl font-bold">{{ totalAmount }} <span class="uppercase text-sm text-gray-100">sar</span></h4>
+                        <h4 class="mt-1 text-2xl font-bold">{{ totalAmount }} <span
+                                class="uppercase text-sm text-gray-100">sar</span></h4>
                     </div>
-                    <button class="mt-5 w-full rounded-2xl bg-black py-4 font-medium text-white transition hover:opacity-90">
+                    <button @click="navigateTo(`/payment?amount=${totalAmount}`)" :disabled="amountNum <= 0"
+                        class="mt-5 w-full rounded-2xl bg-black py-4 font-medium text-white transition hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed">
                         Deposit Money
                     </button>
                 </div>
