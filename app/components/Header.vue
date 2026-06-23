@@ -10,7 +10,7 @@
       <div class="flex items-center justify-between p-4">
         <NuxtLink to="/" class="font-bold text-lg"><img src="/Yarmook Logo.png" alt=""></NuxtLink>
         <div v-if="token" class="icons-user flex gap-2">
-          <div class="w-20 h-10 hidden bg-yellow-200 rounded-lg md:flex items-center justify-center">
+          <div @click="navigateTo('/profile')" class="w-20 h-10 cursor-pointer hidden bg-yellow-200 rounded-lg md:flex items-center justify-center">
             <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
