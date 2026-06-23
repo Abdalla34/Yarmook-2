@@ -31,5 +31,51 @@ export const useUserinformation = () => {
         });
     };
 
-    return { editeProfile, getDeactivatedReasons, logOut, deleteaccount }
+    const PointsUser = async () => {
+        return await $fetch(`${config.public.apiBase}/customer/points-history`, {
+            method: "GET",
+            headers
+        })
+    }
+    const RedeemPoints = async (points: any) => {
+        return await $fetch(`${config.public.apiBase}/customer/redeem-points`, {
+            method: "POST",
+            headers,
+            body: { points }
+        })
+    }
+    const TransferPoints = async (points: any, phone: any) => {
+        return await $fetch(`${config.public.apiBase}/point/transfer`, {
+            method: "POST",
+            headers,
+            body: { points, phone }
+        })
+    }
+
+    const getWallte = async () => {
+        return await $fetch(`${config.public.apiBase}/customer/wallet`, {
+            method: "GET",
+            headers
+        })
+    }
+    const availableVouchers = async () => {
+        return await $fetch(`${config.public.apiBase}/vouchers/available`, {
+            method: "GET",
+            headers
+        })
+    }
+    const usedVouchers = async () => {
+        return await $fetch(`${config.public.apiBase}/vouchers/used`, {
+            method: "GET",
+            headers
+        })
+    }
+    const expiredVouchers = async () => {
+        return await $fetch(`${config.public.apiBase}/vouchers/expired`, {
+            method: "GET",
+            headers
+        })
+    }
+
+    return { editeProfile, getDeactivatedReasons, logOut, deleteaccount, PointsUser, RedeemPoints, TransferPoints, getWallte, availableVouchers, usedVouchers, expiredVouchers }
 }

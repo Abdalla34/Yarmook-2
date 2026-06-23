@@ -166,6 +166,7 @@ async function saveProfile() {
 
 <template>
     <div class="personal-information">
+        <ProfileLinksBar />
         <div class="container mx-auto px-4">
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm p-6">
 
