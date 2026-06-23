@@ -16,12 +16,20 @@ export const useUserinformation = () => {
         });
     };
 
-    const logOut = async () => {
+    const logOut = async (reason_id?: any) => {
         return await $fetch(`${config.public.apiBase}/auth/logout`, {
             method: "POST",
-            headers
+            headers,
+            body: reason_id ? { reason_id } : {}
         })
     }
+    const deleteaccount = async (deactivated_reason_id: any, fcm_type: any) => {
+        return await $fetch(`${config.public.apiBase}/customer/delete-account`, {
+            method: "POST",
+            body: { deactivated_reason_id, fcm_type },
+            headers,
+        });
+    };
 
-    return { editeProfile, getDeactivatedReasons, logOut }
+    return { editeProfile, getDeactivatedReasons, logOut, deleteaccount }
 }
