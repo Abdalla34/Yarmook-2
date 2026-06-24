@@ -56,5 +56,12 @@ export const useCarServices = () => {
       body: { id }
     })
   }
-  return { getServices, getcarBrands, getcartypesbrand, createMycar, getMycars, deleteCar };
+  // done
+  const getPorblemsCar = async () => {
+    return await $fetch(`${config.public.apiBase}/core/problems`, {
+      method: "GET",
+      headers
+    })
+  }
+  return { getServices, getcarBrands, getcartypesbrand, createMycar, getMycars, deleteCar, getPorblemsCar };
 };

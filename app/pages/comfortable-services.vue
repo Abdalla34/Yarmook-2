@@ -1,23 +1,156 @@
 <script setup>
-const currentStep = ref(1)
+const { getMycars, getPorblemsCar, getServices } = useCarServices();
+
+const MY_CARS_CACHE_KEY = "my_cars_cache";
+const PROBLEMS_CACHE_KEY = "problems_cache";
+const SERVICES_CACHE_KEY = "services_cache";
+
+const currentStep = ref(1);
+const myCars = ref([]);
+const selectedCarId = ref(null);
+const showCarPicker = ref(false);
+
+const selectedCar = computed(() => myCars.value.find(c => c.id === selectedCarId.value));
+
+const problems = ref([]);
+const selectedProblems = ref([]);
+const showProblemsModal = ref(false);
+const loadingProblems = ref(false);
+
+const toggleProblem = (problem) => {
+    const idx = selectedProblems.value.findIndex(p => p.id === problem.id);
+    if (idx === -1) {
+        selectedProblems.value.push(problem);
+    } else {
+        selectedProblems.value.splice(idx, 1);
+    }
+};
+
+const isProblemSelected = (problem) => selectedProblems.value.some(p => p.id === problem.id);
+
+const openProblemsModal = async () => {
+    showProblemsModal.value = true;
+
+    if (problems.value.length) return;
+
+    if (import.meta.client) {
+        const cached = localStorage.getItem(PROBLEMS_CACHE_KEY);
+        if (cached) {
+            try {
+                problems.value = JSON.parse(cached);
+                return;
+            } catch (e) { /* ignore */ }
+        }
+    }
+    loadingProblems.value = true;
+    try {
+        const res = await getPorblemsCar();
+        const items = Array.isArray(res) ? res : (res?.data?.items ?? res?.items ?? []);
+        if (import.meta.client) {
+            localStorage.setItem(PROBLEMS_CACHE_KEY, JSON.stringify(items));
+        }
+        problems.value = items;
+    } catch (err) {
+        console.error(err);
+    } finally {
+        loadingProblems.value = false;
+    }
+};
+
+const services = ref([]);
+const selectedServices = ref([]);
+const showServicesModal = ref(false);
+const loadingServices = ref(false);
+
+const toggleService = (service) => {
+    const idx = selectedServices.value.findIndex(s => s.id === service.id);
+    if (idx === -1) {
+        selectedServices.value.push(service);
+    } else {
+        selectedServices.value.splice(idx, 1);
+    }
+};
+
+const isServiceSelected = (service) => selectedServices.value.some(s => s.id === service.id);
+
+const openServicesModal = async () => {
+    showServicesModal.value = true;
+
+    if (services.value.length) return;
+
+    if (import.meta.client) {
+        const cached = localStorage.getItem(SERVICES_CACHE_KEY);
+        if (cached) {
+            try {
+                services.value = JSON.parse(cached);
+                return;
+            } catch (e) { /* ignore */ }
+        }
+    }
+    loadingServices.value = true;
+    try {
+        const res = await getServices();
+        const items = Array.isArray(res) ? res : (res?.data?.items ?? res?.items ?? []);
+        if (import.meta.client) {
+            localStorage.setItem(SERVICES_CACHE_KEY, JSON.stringify(items));
+        }
+        services.value = items;
+    } catch (err) {
+        console.error(err);
+    } finally {
+        loadingServices.value = false;
+    }
+};
 
 const nextStep = () => {
-    currentStep.value = 2
-}
+    currentStep.value = 2;
+};
 
 const previousStep = () => {
-    currentStep.value = 1
-}
+    currentStep.value = 1;
+};
+
+const selectCar = (car) => {
+    selectedCarId.value = car.id;
+    showCarPicker.value = false;
+};
+onMounted(async () => {
+    if (import.meta.client) {
+        const cached = localStorage.getItem(MY_CARS_CACHE_KEY);
+        if (cached) {
+            try {
+                const items = JSON.parse(cached);
+                myCars.value = items;
+                if (items.length && !selectedCarId.value) {
+                    selectedCarId.value = items[0].id;
+                }
+            } catch (e) { /* ignore */ }
+        }
+    }
+
+    try {
+        const response = await getMycars();
+        const items = Array.isArray(response) ? response : (response?.data?.items ?? response?.data ?? response?.items ?? []);
+        if (import.meta.client) {
+            localStorage.setItem(MY_CARS_CACHE_KEY, JSON.stringify(items));
+        }
+        myCars.value = items;
+        if (items.length && !selectedCarId.value) {
+            selectedCarId.value = items[0].id;
+        }
+    } catch (err) {
+        console.error(err);
+    }
+});
 </script>
 
 <template>
-    <div class="container mx-w-auto">
-        <div class="min-h-screen bg-gray-100">
-
+    <div class="container mx-auto">
+        <div class="min-h-screen ">
             <!-- Header Steps -->
-            <div class="bg-white flex justify-between text-xs border-b">
+            <div class="bg-white flex justify-between  text-xs border-b">
                 <div class="flex-1 text-center py-4 font-semibold text-black">
-                    خدمة فرعية
+                    خدمة مرتاح
                 </div>
 
                 <div class="flex-1 text-center py-4"
@@ -34,38 +167,73 @@ const previousStep = () => {
             <div v-if="currentStep === 1" class="p-4 space-y-4">
 
                 <!-- Car -->
-                <div class="bg-white rounded-xl p-4 flex justify-between items-center">
-                    <div>
-                        <p class="text-sm text-gray-500">سيارتي</p>
-                        <p class="font-semibold">Jeep</p>
+                <div class="relative">
+                    <div @click="showCarPicker = !showCarPicker" class="box-car bg-gray-100 rounded-xl p-4 flex justify-between items-center cursor-pointer">
+                        <div>
+                            <p class="text-sm text-gray-500">سيارتي</p>
+                            <p v-if="selectedCar" class="font-semibold">{{ selectedCar.brand?.title }} - {{ selectedCar.car_type?.title }}</p>
+                            <p v-else class="text-gray-400">اختر سيارة</p>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <span v-if="selectedCar" class="text-sm">{{ selectedCar.brand?.title }}</span>
+                            <img v-if="selectedCar?.image" :src="selectedCar.image" class="w-10 h-10 rounded-full object-cover" />
+                            <img v-else src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full object-cover" />
+                        </div>
                     </div>
 
-                    <div class="flex items-center gap-2">
-                        <span>Jeep</span>
-                        <img src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full object-cover" />
+                    <div v-if="showCarPicker && myCars.length" class="absolute z-10 mt-1 w-full bg-white rounded-xl shadow-lg border max-h-48 overflow-y-auto">
+                        <div v-for="car in myCars" :key="car.id"
+                            @click="selectCar(car)"
+                            class="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b last:border-0"
+                            :class="{ 'bg-red-50': car.id === selectedCarId }">
+                            <img :src="car.image || 'https://via.placeholder.com/40'" class="w-10 h-10 rounded-full object-cover" />
+                            <div>
+                                <p class="font-semibold text-sm">{{ car.brand?.title }} - {{ car.car_type?.title }}</p>
+                                <p v-if="car.plate_number" class="text-xs text-gray-500">{{ car.plate_number }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Problems -->
-                <div class="bg-white rounded-xl p-5 text-center">
-                    <p class="text-gray-700 mb-3">
+                <div class="bg-gray-100 rounded-xl p-5">
+                    <p class="text-gray-700 mb-3 text-center">
                         ما هي المشاكل التي تعاني منها سيارتك؟
                     </p>
 
-                    <button class="text-red-500 font-medium">
-                        + أضف مشاكل
-                    </button>
+                    <div v-if="selectedProblems.length" class="flex flex-wrap gap-2 mb-3">
+                        <span v-for="p in selectedProblems" :key="p.id"
+                            class="bg-red-50 text-red-600 text-sm px-3 py-1 rounded-full border border-red-200">
+                            {{ p.title ?? p.name }}
+                        </span>
+                    </div>
+
+                    <div class="text-center">
+                        <button @click="openProblemsModal" class="text-red-500 font-medium">
+                            + {{ selectedProblems.length ? 'تعديل المشاكل' : 'أضف مشاكل' }}
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Services -->
-                <div class="bg-white rounded-xl p-5 text-center">
-                    <p class="text-gray-500 mb-3">
+                <div class="bg-gray-100 rounded-xl p-5">
+                    <p class="text-gray-500 mb-3 text-center">
                         الخدمات (اختياري)
                     </p>
 
-                    <button class="text-red-500 font-medium">
-                        + إضافة خدمة
-                    </button>
+                    <div v-if="selectedServices.length" class="flex flex-wrap gap-2 mb-3">
+                        <span v-for="s in selectedServices" :key="s.id"
+                            class="bg-red-50 text-red-600 text-sm px-3 py-1 rounded-full border border-red-200">
+                            {{ s.title ?? s.name }}
+                        </span>
+                    </div>
+
+                    <div class="text-center">
+                        <button @click="openServicesModal" class="text-red-500 font-medium">
+                            + {{ selectedServices.length ? 'تعديل الخدمات' : 'إضافة خدمة' }}
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Notes -->
@@ -75,7 +243,7 @@ const previousStep = () => {
 
                 <!-- Details -->
                 <textarea placeholder="المزيد من التفاصيل (اختياري)"
-                    class="w-full h-32 rounded-xl border-none bg-white p-4 outline-none"></textarea>
+                    class="w-full h-32 rounded-xl border-none p-4 outline-none bg-gray-100"></textarea>
 
                 <!-- Continue -->
                 <button @click="nextStep" class="w-full bg-yellow-400 rounded-full py-4 font-bold text-black">
@@ -155,4 +323,78 @@ const previousStep = () => {
 
         </div>
     </div>
+
+    <!-- Problems Modal -->
+    <Teleport to="body">
+        <div v-if="showProblemsModal" class="fixed inset-0 z-50 flex items-end justify-center">
+            <div class="fixed inset-0 bg-black/50" @click="showProblemsModal = false"></div>
+            <div class="relative bg-white rounded-t-2xl w-full max-w-lg max-h-[70vh] overflow-y-auto p-5 z-10">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">اختر المشاكل</h3>
+                    <button @click="showProblemsModal = false" class="text-gray-400 text-xl">&times;</button>
+                </div>
+
+                <div v-if="loadingProblems" class="flex justify-center py-8">
+                    <div class="w-8 h-8 border-4 border-gray-200 border-t-red-500 rounded-full animate-spin"></div>
+                </div>
+                <div v-else-if="problems.length" class="space-y-2">
+                    <div v-for="problem in problems" :key="problem.id"
+                        @click="toggleProblem(problem)"
+                        class="flex items-center gap-3 p-3 rounded-xl cursor-pointer border"
+                        :class="isProblemSelected(problem) ? 'border-red-500 bg-red-50' : 'border-gray-200'">
+                        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                            :class="isProblemSelected(problem) ? 'border-red-500 bg-red-500' : 'border-gray-300'">
+                            <span v-if="isProblemSelected(problem)" class="text-white text-xs font-bold">✓</span>
+                        </div>
+                        <span class="text-sm">{{ problem.title ?? problem.name }}</span>
+                    </div>
+                </div>
+                <div v-else class="text-center text-gray-400 py-8">
+                    لا توجد مشاكل متاحة
+                </div>
+
+                <button @click="showProblemsModal = false"
+                    class="w-full mt-4 bg-yellow-400 rounded-full py-3 font-bold text-black">
+                    {{ selectedProblems.length ? 'تأكيد الاختيار' : 'إغلاق' }}
+                </button>
+            </div>
+        </div>
+    </Teleport>
+
+    <!-- Services Modal -->
+    <Teleport to="body">
+        <div v-if="showServicesModal" class="fixed inset-0 z-50 flex items-end justify-center">
+            <div class="fixed inset-0 bg-black/50" @click="showServicesModal = false"></div>
+            <div class="relative bg-white rounded-t-2xl w-full max-w-lg max-h-[70vh] overflow-y-auto p-5 z-10">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">اختر الخدمات</h3>
+                    <button @click="showServicesModal = false" class="text-gray-400 text-xl">&times;</button>
+                </div>
+
+                <div v-if="loadingServices" class="flex justify-center py-8">
+                    <div class="w-8 h-8 border-4 border-gray-200 border-t-red-500 rounded-full animate-spin"></div>
+                </div>
+                <div v-else-if="services.length" class="space-y-2">
+                    <div v-for="service in services" :key="service.id"
+                        @click="toggleService(service)"
+                        class="flex items-center gap-3 p-3 rounded-xl cursor-pointer border"
+                        :class="isServiceSelected(service) ? 'border-red-500 bg-red-50' : 'border-gray-200'">
+                        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                            :class="isServiceSelected(service) ? 'border-red-500 bg-red-500' : 'border-gray-300'">
+                            <span v-if="isServiceSelected(service)" class="text-white text-xs font-bold">✓</span>
+                        </div>
+                        <span class="text-sm">{{ service.title ?? service.name }}</span>
+                    </div>
+                </div>
+                <div v-else class="text-center text-gray-400 py-8">
+                    لا توجد خدمات متاحة
+                </div>
+
+                <button @click="showServicesModal = false"
+                    class="w-full mt-4 bg-yellow-400 rounded-full py-3 font-bold text-black">
+                    {{ selectedServices.length ? 'تأكيد الاختيار' : 'إغلاق' }}
+                </button>
+            </div>
+        </div>
+    </Teleport>
 </template>
