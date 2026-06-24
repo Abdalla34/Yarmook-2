@@ -66,11 +66,40 @@ const { getServices } = useCarServices();
 const { addCart } = useAddToCart();
 const { token } = useGlobalApi();
 
+const SERVICES_CACHE_KEY = "services_cache";
+
 const carServices = ref([]);
 const loading = ref(true);
 const showAuthModal = ref(false);
 const pendingItem = ref(null);
 const loadingServiceId = ref(null);
+
+onMounted(async () => {
+  if (import.meta.client) {
+    const cached = localStorage.getItem(SERVICES_CACHE_KEY);
+    if (cached) {
+      try {
+        carServices.value = JSON.parse(cached);
+        loading.value = false;
+      } catch (e) {
+        // ignore invalid cache
+      }
+    }
+  }
+
+  try {
+    const response = await getServices();
+    const items = Array.isArray(response) ? response?.data?.items : (response.data?.items ?? []);
+    if (import.meta.client) {
+      localStorage.setItem(SERVICES_CACHE_KEY, JSON.stringify(items));
+    }
+    carServices.value = items;
+  } catch (err) {
+    console.error(err);
+  } finally {
+    loading.value = false;
+  }
+});
 
 async function addServiceToCart(service) {
   if (service.in_cart || loadingServiceId.value === service.id) return;
@@ -98,15 +127,4 @@ function handleAuthSuccess() {
   if (service) service.in_cart = true;
   pendingItem.value = null;
 }
-
-onMounted(async () => {
-  try {
-    const response = await getServices();
-    carServices.value = Array.isArray(response) ? response?.data?.items : (response.data?.items ?? []);
-  } catch (err) {
-    console.error(err);
-  } finally {
-    loading.value = false;
-  }
-});
 </script>

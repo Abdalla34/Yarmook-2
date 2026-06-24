@@ -3,7 +3,7 @@ const token = useCookie("token");
 const userCookie = useCookie("user", { maxAge: 365 * 24 * 60 * 60 });
 const { getCountries, getAreasByCountry, getCitiesByArea } = useGlobalApi();
 const { editeProfile, getDeactivatedReasons, logOut, deleteaccount } = useUserinformation();
-
+const { cartCount } = useAddToCart()
 const user = computed(() => {
     if (!userCookie.value) return null;
     const data = typeof userCookie.value === "string" ? JSON.parse(userCookie.value) : userCookie.value;
@@ -36,7 +36,9 @@ async function confirmLogout() {
     try {
         const res = await logOut(selectedReason.value || undefined);
         if (res?.status) {
+            token.value = null;
             userCookie.value = null;
+            cartCount.value = 0
             navigateTo("/");
         }
     } catch { } finally {
@@ -188,7 +190,6 @@ async function saveProfile() {
                                 </label>
                                 <input v-model="firstName" type="text" placeholder="Your First Name"
                                     :disabled="!editing"
-                                    
                                     class="border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed" />
                             </div>
 
@@ -307,15 +308,15 @@ async function saveProfile() {
                 <h2 class="text-xl font-bold text-gray-800 mb-4">Reason for Logout</h2>
 
                 <div v-if="loadingReasons" class="flex justify-center py-6">
-                    <span class="w-6 h-6 border-2 border-main-color border-t-transparent rounded-full animate-spin"></span>
+                    <span
+                        class="w-6 h-6 border-2 border-main-color border-t-transparent rounded-full animate-spin"></span>
                 </div>
 
                 <div v-else class="space-y-3 mb-6">
                     <label v-for="reason in deactivatedReasons" :key="reason.id"
                         class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition"
                         :class="selectedReason === reason.id ? 'border-main-color bg-main-color/10' : 'border-gray-200 hover:border-gray-300'">
-                        <input type="radio" :value="reason.id" v-model="selectedReason"
-                            class="accent-main-color" />
+                        <input type="radio" :value="reason.id" v-model="selectedReason" class="accent-main-color" />
                         <span class="text-sm text-gray-700">{{ reason.title }}</span>
                     </label>
                 </div>
@@ -343,15 +344,15 @@ async function saveProfile() {
                 <h2 class="text-xl font-bold text-gray-800 mb-4">Reason for Deleting Account</h2>
 
                 <div v-if="loadingDeleteReasons" class="flex justify-center py-6">
-                    <span class="w-6 h-6 border-2 border-main-color border-t-transparent rounded-full animate-spin"></span>
+                    <span
+                        class="w-6 h-6 border-2 border-main-color border-t-transparent rounded-full animate-spin"></span>
                 </div>
 
                 <div v-else class="space-y-3 mb-6">
                     <label v-for="reason in deleteReasons" :key="reason.id"
                         class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition"
                         :class="selectedDeleteReason === reason.id ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'">
-                        <input type="radio" :value="reason.id" v-model="selectedDeleteReason"
-                            class="accent-red-500" />
+                        <input type="radio" :value="reason.id" v-model="selectedDeleteReason" class="accent-red-500" />
                         <span class="text-sm text-gray-700">{{ reason.title }}</span>
                     </label>
                 </div>

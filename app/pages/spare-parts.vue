@@ -65,6 +65,8 @@
 const { getSpareParts, token } = useGlobalApi();
 const { addCart } = useAddToCart();
 
+const SPARE_PARTS_CACHE_KEY = "spare_parts_cache";
+
 const spareParts = ref([]);
 const loading = ref(true);
 const showAuthModal = ref(false);
@@ -99,9 +101,25 @@ function handleAuthSuccess() {
 }
 
 onMounted(async () => {
+  if (import.meta.client) {
+    const cached = localStorage.getItem(SPARE_PARTS_CACHE_KEY);
+    if (cached) {
+      try {
+        spareParts.value = JSON.parse(cached);
+        loading.value = false;
+      } catch (e) {
+        // ignore invalid cache
+      }
+    }
+  }
+
   try {
     const response = await getSpareParts();
-    spareParts.value = Array.isArray(response) ? response?.data?.items : (response.data?.items ?? []);
+    const items = Array.isArray(response) ? response?.data?.items : (response.data?.items ?? []);
+    if (import.meta.client) {
+      localStorage.setItem(SPARE_PARTS_CACHE_KEY, JSON.stringify(items));
+    }
+    spareParts.value = items;
   } catch (err) {
     console.error(err);
   } finally {

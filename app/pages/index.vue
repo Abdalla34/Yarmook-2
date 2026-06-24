@@ -6,11 +6,43 @@ import "swiper/css/pagination";
 
 const { getHome, getOffers } = useGlobalApi();
 
-const { data: homeData } = await useAsyncData("home", () => getHome());
-const { data: offersData } = await useAsyncData("offers", () => getOffers());
+const HOME_CACHE_KEY = "home_cache";
+const OFFERS_CACHE_KEY = "offers_cache";
+
+const homeData = ref(null);
+const offersData = ref(null);
 
 const sliders = computed(() => homeData.value?.data?.sliders ?? []);
 const offers = computed(() => offersData.value?.data?.items ?? offersData.value?.data ?? []);
+
+onMounted(async () => {
+  if (import.meta.client) {
+    const cachedHome = localStorage.getItem(HOME_CACHE_KEY);
+    if (cachedHome) {
+      try {
+        homeData.value = JSON.parse(cachedHome);
+      } catch (e) { /* ignore */ }
+    }
+    const cachedOffers = localStorage.getItem(OFFERS_CACHE_KEY);
+    if (cachedOffers) {
+      try {
+        offersData.value = JSON.parse(cachedOffers);
+      } catch (e) { /* ignore */ }
+    }
+  }
+
+  try {
+    const [homeRes, offersRes] = await Promise.all([getHome(), getOffers()]);
+    if (import.meta.client) {
+      localStorage.setItem(HOME_CACHE_KEY, JSON.stringify(homeRes));
+      localStorage.setItem(OFFERS_CACHE_KEY, JSON.stringify(offersRes));
+    }
+    homeData.value = homeRes;
+    offersData.value = offersRes;
+  } catch (err) {
+    console.error(err);
+  }
+});
 </script>
 
 <template>

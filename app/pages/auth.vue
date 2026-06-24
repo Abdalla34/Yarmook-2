@@ -48,9 +48,9 @@ const handleOtpComplete = async (value) => {
     <div class="container mx-auto px-4">
       <div class="max-w-md mx-auto mt-12">
         <div>
-          <div class="bg-white rounded-lg shadow-md p-6">
-            <img src="/newLogo.png" alt="">
-            <h2 class="text-xl font-bold text-center mb-6">Verify OTP</h2>
+          <div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <img src="/newLogo.png" alt="" class="mx-auto mb-2">
+            <h2 class="text-xl font-bold text-center mb-3">Verify OTP</h2>
             <p class="text-center text-gray-500 mb-4">Enter the code sent to your phone</p>
             <p v-if="error" class="text-red-500 text-sm text-center mb-2">{{ error }}</p>
             <div class="flex justify-center">
