@@ -102,6 +102,8 @@ const openServicesModal = async () => {
     }
 };
 
+const deliveryType = ref("one_way");
+
 const nextStep = () => {
     currentStep.value = 2;
 };
@@ -146,9 +148,9 @@ onMounted(async () => {
 
 <template>
     <div class="container mx-auto">
-        <div class="min-h-screen ">
+        <div class="min-h-screen bg-white">
             <!-- Header Steps -->
-            <div class="bg-white flex justify-between  text-xs border-b">
+            <div class="bg-white flex justify-between text-xs border-b shadow-sm">
                 <div class="flex-1 text-center py-4 font-semibold text-black">
                     خدمة مرتاح
                 </div>
@@ -168,7 +170,7 @@ onMounted(async () => {
 
                 <!-- Car -->
                 <div class="relative">
-                    <div @click="showCarPicker = !showCarPicker" class="box-car bg-gray-100 rounded-xl p-4 flex justify-between items-center cursor-pointer">
+                    <div @click="showCarPicker = !showCarPicker" class="box-car bg-gray-100 rounded-xl p-4 flex justify-between items-center cursor-pointer shadow-sm">
                         <div>
                             <p class="text-sm text-gray-500">سيارتي</p>
                             <p v-if="selectedCar" class="font-semibold">{{ selectedCar.brand?.title }} - {{ selectedCar.car_type?.title }}</p>
@@ -197,7 +199,7 @@ onMounted(async () => {
                 </div>
 
                 <!-- Problems -->
-                <div class="bg-gray-100 rounded-xl p-5">
+                <div class="bg-gray-50 rounded-xl p-5 shadow-md">
                     <p class="text-gray-700 mb-3 text-center">
                         ما هي المشاكل التي تعاني منها سيارتك؟
                     </p>
@@ -217,7 +219,7 @@ onMounted(async () => {
                 </div>
 
                 <!-- Services -->
-                <div class="bg-gray-100 rounded-xl p-5">
+                <div class="bg-gray-50 rounded-xl p-5 shadow-md">
                     <p class="text-gray-500 mb-3 text-center">
                         الخدمات (اختياري)
                     </p>
@@ -237,16 +239,16 @@ onMounted(async () => {
                 </div>
 
                 <!-- Notes -->
-                <div class="bg-cyan-50 rounded-xl p-4 text-sm text-gray-600">
+                <div class="bg-cyan-50 text-end  mx-auto rounded-xl p-4 text-sm text-gray-600 border border-cyan-100 shadow-sm">
                     أخبرنا إذا وجد لديك تفاصيل إضافية تخص سيارتك.
                 </div>
 
                 <!-- Details -->
                 <textarea placeholder="المزيد من التفاصيل (اختياري)"
-                    class="w-full h-32 rounded-xl border-none p-4 outline-none bg-gray-100"></textarea>
+                    class="w-full h-32 rounded-xl border p-4 outline-none resize-none bg-white shadow-sm"></textarea>
 
                 <!-- Continue -->
-                <button @click="nextStep" class="w-full bg-yellow-400 rounded-full py-4 font-bold text-black">
+                <button @click="nextStep" class="w-full bg-yellow-400 rounded-full py-4 font-bold text-black shadow-md">
                     الاستمرار للتأكيد
                 </button>
 
@@ -256,7 +258,7 @@ onMounted(async () => {
             <div v-else class="p-4 space-y-4">
 
                 <!-- Branch -->
-                <div class="bg-white rounded-xl p-4 flex justify-between items-center">
+                <div class="bg-gray-50 rounded-xl p-4 flex justify-between items-center">
                     <span class="text-gray-500">الفرع</span>
 
                     <svg class="w-5 h-5">
@@ -301,12 +303,20 @@ onMounted(async () => {
                 </div>
 
                 <!-- Delivery Type -->
-                <div class="bg-white rounded-xl p-4 flex justify-between items-center">
-                    <span class="text-gray-500">نوع التوصيل</span>
-
-                    <svg class="w-5 h-5">
-                        <path />
-                    </svg>
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <p class="text-gray-500 mb-3">نوع التوصيل</p>
+                    <div class="flex gap-3">
+                        <button @click="deliveryType = 'one_way'"
+                            class="flex-1 py-3 rounded-xl border font-semibold text-sm transition-colors"
+                            :class="deliveryType === 'one_way' ? 'bg-red-500 text-white border-red-500' : 'bg-white text-gray-700 border-gray-300'">
+                            oneway
+                        </button>
+                        <button @click="deliveryType = 'two_way'"
+                            class="flex-1 capitalize py-3 rounded-xl border font-semibold text-sm transition-colors"
+                            :class="deliveryType === 'two_way' ? 'bg-red-500 text-white border-red-500' : 'bg-white text-gray-700 border-gray-300'">
+                            towway
+                        </button>
+                    </div>
                 </div>
 
                 <div class="flex gap-3">
