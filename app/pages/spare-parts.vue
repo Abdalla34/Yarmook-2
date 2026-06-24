@@ -1,34 +1,53 @@
 <template>
   <div class="spare-parts-page mt-0 lg:mt-3 min-h-screen py-8">
     <div class="container mx-auto px-4">
-      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div v-for="n in 6" :key="n"
-          class="bg-white flex flex-col items-center rounded-2xl shadow-md p-6 animate-pulse">
-          <div class="w-[100px] h-[100px] bg-gray-200 rounded-lg mb-4"></div>
-          <div class="h-6 w-3/4 bg-gray-200 rounded mb-4"></div>
-          <div class="flex items-center justify-between w-full">
-            <div class="h-6 w-24 bg-gray-200 rounded"></div>
-            <div class="h-9 w-28 bg-gray-200 rounded-lg"></div>
+      <template v-if="loading">
+        <div class="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-for="n in 6" :key="n"
+            class="bg-white flex flex-col items-center rounded-2xl shadow-md p-6 animate-pulse">
+            <div class="w-[100px] h-[100px] bg-gray-200 rounded-lg mb-4"></div>
+            <div class="h-6 w-3/4 bg-gray-200 rounded mb-4"></div>
+            <div class="flex items-center justify-between w-full">
+              <div class="h-6 w-24 bg-gray-200 rounded"></div>
+              <div class="h-9 w-28 bg-gray-200 rounded-lg"></div>
+            </div>
           </div>
         </div>
-      </div>
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div v-for="item in spareParts" :key="item.id"
-          class="bg-white flex flex-col items-center rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow">
-          <img :src="item.image" class="max-w-[100px]" alt="">
-          <h2 class="text-xl font-bold text-gray-800 mb-2">{{ item.title }}</h2>
-          <div class="flex items-center justify-between w-full">
-            <span class="text-lg font-semibold text-black-600">{{ item.price }} <span class="text-gray-400 uppercase text-sm">sar</span></span>
-            <button @click="addToCart(item)" :disabled="loadingId === item.id"
-              class="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
-              :class="item.in_cart ? 'bg-white text-black border rounded-lg' : 'bg-main-color text-black hover:bg-yellow-200'">
-              <span v-if="loadingId === item.id"
-                class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-              {{ item.in_cart ? 'Added to Cart' : (loadingId === item.id ? 'Adding...' : 'Add to Cart') }}
-            </button>
+        <div class="flex lg:hidden flex-col gap-4">
+          <div v-for="n in 4" :key="n"
+            class="bg-white rounded-2xl border border-gray-100 p-4 animate-pulse">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 bg-gray-200 rounded-xl shrink-0"></div>
+              <div class="flex-1 space-y-2">
+                <div class="h-5 w-40 bg-gray-200 rounded"></div>
+                <div class="h-4 w-20 bg-gray-200 rounded"></div>
+              </div>
+              <div class="w-14 h-14 bg-gray-200 rounded-xl shrink-0"></div>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
+
+      <template v-else>
+        <div class="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ProductCard
+            v-for="item in spareParts"
+            :key="item.id"
+            :item="item"
+            :loading-id="loadingId"
+            @add-to-cart="addToCart"
+          />
+        </div>
+        <div class="flex lg:hidden flex-col gap-4">
+          <ProductListItem
+            v-for="item in spareParts"
+            :key="item.id"
+            :item="item"
+            :loading-id="loadingId"
+            @add-to-cart="addToCart"
+          />
+        </div>
+      </template>
     </div>
 
     <AuthCartModal

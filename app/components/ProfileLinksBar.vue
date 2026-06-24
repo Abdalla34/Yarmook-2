@@ -11,7 +11,14 @@
 </template>
 
 <script setup>
-const links = [
+const props = defineProps({
+  isLoggedIn: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+const allLinks = [
   { to: '/my-cars', label: 'My Cars' },
   { to: '/wallet', label: 'Wallet' },
   { to: '/language', label: 'Language' },
@@ -19,4 +26,11 @@ const links = [
   { to: '/vouchers', label: 'Vouchers' },
   { to: '/help', label: 'Help' },
 ]
+
+const guestOnly = ['/language', '/help']
+
+const links = computed(() => {
+  if (props.isLoggedIn) return allLinks
+  return allLinks.filter(link => guestOnly.includes(link.to))
+})
 </script>

@@ -166,8 +166,8 @@ async function saveProfile() {
 
 <template>
     <div class="personal-information">
-        <ProfileLinksBar />
-        <div class="container mx-auto px-4">
+        <ProfileLinksBar :isLoggedIn="isLoggedIn" />
+        <div v-if="isLoggedIn" class="container mx-auto px-4">
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm p-6">
 
                 <div class="flex justify-between items-center mb-6">
@@ -287,6 +287,15 @@ async function saveProfile() {
                     </div>
                 </form>
 
+            </div>
+        </div>
+        <div v-else class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm p-6 text-center">
+                <p class="text-gray-600 mb-4">Please create an account to access your profile.</p>
+                <button @click="navigateTo('/create-account')"
+                    class="bg-main-color text-black px-8 py-3 rounded-full font-medium hover:opacity-90 transition">
+                    Create Account
+                </button>
             </div>
         </div>
     </div>

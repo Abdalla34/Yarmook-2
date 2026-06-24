@@ -1,6 +1,6 @@
 <template>
     <div class="min-h-screen bg-gray-50 py-10 mt-2">
-        <div class="container mx-auto px-4">
+        <div v-if="isLoggedIn" class="container mx-auto px-4">
             <h1 class="mb-8 text-2xl font-bold text-gray-800 text-center">
                 My Orders
             </h1>
@@ -81,11 +81,20 @@
                 </div>
             </div>
         </div>
+        <div v-else class="container mx-auto px-4 text-center py-12">
+            <p class="text-gray-600 mb-4">Please create an account to view your orders.</p>
+            <button @click="navigateTo('/create-account')"
+                class="bg-main-color text-black px-8 py-3 rounded-full font-medium hover:opacity-90 transition">
+                Create Account
+            </button>
+        </div>
     </div>
 
 </template>
 
 <script setup>
+const token = useCookie("token");
+const isLoggedIn = computed(() => !!token.value);
 const { getOrdersAll } = useGlobalApi();
 
 const orders = ref([]);
