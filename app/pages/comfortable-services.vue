@@ -104,6 +104,18 @@ const openServicesModal = async () => {
 };
 
 const deliveryType = ref("one_way");
+const bookingType = ref(null);
+
+const toggleBookingType = (type) => {
+    if (bookingType.value === type) {
+        bookingType.value = null;
+    } else {
+        bookingType.value = type;
+        if (type === 'normal') {
+            openDateTimePicker();
+        }
+    }
+};
 
 const branches = ref([]);
 const selectedBranch = ref(null);
@@ -169,6 +181,7 @@ const selectCar = (car) => {
     showCarPicker.value = false;
 };
 onMounted(async () => {
+    bookingType.value = 'urgent';
     if (import.meta.client) {
         const cached = localStorage.getItem(MY_CARS_CACHE_KEY);
         if (cached) {
@@ -347,7 +360,9 @@ onMounted(async () => {
                         </div>
 
                         <!-- Future -->
-                        <div class="border border-red-300 rounded-xl p-4 mb-4 bg-red-50 urgent">
+                        <div @click="toggleBookingType('urgent')"
+                            class="border rounded-xl p-4 mb-4 cursor-pointer"
+                            :class="bookingType === 'urgent' ? 'border-red-300 bg-red-50' : 'border-gray-200'">
                             <div class="flex justify-between">
                                 <div>
                                     <h4 class="font-semibold">مستعجل</h4>
@@ -356,26 +371,26 @@ onMounted(async () => {
                                     </p>
                                 </div>
 
-                                <div class="bg-red-500 text-white rounded-full px-3 py-1 text-xs">
+                                <div class="bg-red-500 text-white rounded-full px-3 py-1 flex justify-center items-center text-xs">
                                     1 ساعة
                                 </div>
                             </div>
                         </div>
 
                         <!-- Normal -->
-                        <div @click="openDateTimePicker"
+                        <div @click="toggleBookingType('normal')"
                             class="border rounded-xl p-4 flex justify-between items-center cursor-pointer"
-                            :class="selectedDate && selectedTime ? 'border-green-400 bg-green-50' : ''">
+                            :class="bookingType === 'normal' ? 'border-red-300 bg-red-50' : 'border-gray-200'">
                             <div>
                                 <h4 class="font-semibold">عادي</h4>
-                                <p v-if="!selectedDate || !selectedTime" class="text-xs text-gray-500">
+                                <p v-if="bookingType !== 'normal'" class="text-xs text-gray-500">
                                     يتم تحديد موعدك بعد المراجعة.
                                 </p>
                                 <p v-else class="text-xs text-green-600 font-medium">
-                                    {{ selectedDate }} - {{ selectedTime }}
+                                    {{ selectedDate && selectedTime ? `${selectedDate} - ${selectedTime}` : 'اختر الوقت' }}
                                 </p>
                             </div>
-                            <div v-if="selectedDate && selectedTime"
+                            <div v-if="bookingType === 'normal' && selectedDate && selectedTime"
                                 class="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
                                 <span class="text-white text-xs font-bold">✓</span>
                             </div>
