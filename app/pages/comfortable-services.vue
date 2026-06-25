@@ -300,12 +300,16 @@ onMounted(async () => {
                 <div v-else class="p-4 space-y-4">
 
                     <!-- Branch -->
-                    <div @click="openBranchPicker"
-                        class="bg-gray-50 rounded-xl p-4 flex justify-between items-center cursor-pointer">
-                        <span class="text-gray-500">{{ selectedBranch?.title ?? 'الفرع' }}</span>
-                        <svg class="w-5 h-5">
-                            <path />
-                        </svg>
+                    <div class="bg-gray-50 rounded-xl p-5 shadow-md">
+                        <p class="text-gray-700 mb-3 text-center">اختر الفرع</p>
+                        <div v-if="selectedBranch" class="bg-white w-full rounded-md px-4 py-3 border border-gray-200 text-sm text-gray-800 mb-3">
+                            {{ selectedBranch.title }}
+                        </div>
+                        <div class="text-center">
+                            <button @click="openBranchPicker" class="text-red-500 font-medium">
+                                + {{ selectedBranch ? 'تغيير الفرع' : 'اختر فرع' }}
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Booking Time -->
