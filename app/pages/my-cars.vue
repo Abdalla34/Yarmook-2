@@ -1,5 +1,5 @@
 <template>
-  <ProfileLinksBar />
+  <ProfileLinksBar :isLoggedIn="isLoggedIn" />
   <div class="min-h-screen mt-2 bg-gray-50 py-10">
     <div class="container mx-auto max-w-5xl px-4">
 
@@ -27,18 +27,20 @@
         <div
           v-for="car in cars"
           :key="car.id"
-          class="rounded-3xl  bg-white p-5 shadow-sm transition hover:shadow-md"
+          class="rounded-3xl  bg-white p-5 shadow-md transition "
         >
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div class="flex items-center gap-4">
               <div
                 class="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gray-100"
               >
-                <img
-                  :src="car.image || 'https://via.placeholder.com/80'"
+                <img v-if="car.image" :src="car.image" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='flex'"
                   alt="car"
                   class="h-14 w-14 object-contain"
                 />
+                <svg v-else class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 17v2a1 1 0 001 1h12a1 1 0 001-1v-2M5 17l2-9h10l2 9M5 17H3m16 0h2M8 12h8m-6 4h4"/>
+                </svg>
               </div>
               <div class="min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
@@ -60,9 +62,21 @@
             <div class="flex items-center gap-2">
               <button
                 @click="handleCarDetails(car)"
-                class="w-full sm:w-auto rounded-xl border border-yellow-500 px-4 py-2 text-sm font-medium text-black-500 transition hover:bg-red-50"
+                :disabled="loadingDetailsId === car.id"
+                class="w-full sm:w-auto rounded-xl border border-yellow-500 px-4 py-2 text-sm font-medium transition hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                :class="loadingDetailsId === car.id ? 'text-gray-400' : 'text-black-500'"
               >
-                Car Details
+                <span v-if="loadingDetailsId === car.id" class="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
+                {{ loadingDetailsId === car.id ? 'Loading...' : 'Car Details' }}
+              </button>
+              <button
+                v-if="!car.is_default"
+                @click="handleSetDefault(car)"
+                :disabled="settingDefaultId === car.id"
+                class="w-full sm:w-auto rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <span v-if="settingDefaultId === car.id" class="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
+                {{ settingDefaultId === car.id ? 'Setting...' : 'Set as Default' }}
               </button>
               <button
                 @click="handleDelete(car)"
@@ -140,11 +154,16 @@
 </template>
 
 <script setup>
-const { getMycars, deleteCar, getUserCarId } = useCarServices();
+const token = useCookie("token");
+const isLoggedIn = computed(() => !!token.value);
+
+const { getMycars, deleteCar, getUserCarId, setCarDefault } = useCarServices();
 
 const cars = ref([]);
 const loading = ref(true);
 const deletingId = ref(null);
+const loadingDetailsId = ref(null);
+const settingDefaultId = ref(null);
 const showDeletePopup = ref(false);
 const carToDelete = ref(null);
 
@@ -160,11 +179,28 @@ async function fetchCars() {
 }
 
 async function handleCarDetails(car) {
+  loadingDetailsId.value = car.id;
   try {
     const res = await getUserCarId(car.id);
     navigateTo(`/car-details/${car.id}`);
   } catch (err) {
     console.error(err);
+  } finally {
+    loadingDetailsId.value = null;
+  }
+}
+
+async function handleSetDefault(car) {
+  settingDefaultId.value = car.id;
+  try {
+    const res = await setCarDefault(car.id);
+    if (res?.status) {
+      cars.value.forEach(c => c.is_default = c.id === car.id);
+    }
+  } catch (err) {
+    console.error(err);
+  } finally {
+    settingDefaultId.value = null;
   }
 }
 

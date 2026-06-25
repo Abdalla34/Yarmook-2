@@ -70,5 +70,13 @@ export const useCarServices = () => {
       headers,
     });
   };
-  return { getServices, getcarBrands, getcartypesbrand, createMycar, getMycars, deleteCar, getPorblemsCar, getUserCarId };
+  // done
+  const setCarDefault = async (id: any) => {
+    return await $fetch(`${config.public.apiBase}/customer/change-car-to-default/${id}`, {
+      method: "POST",
+      headers,
+    })
+  }
+  
+  return { getServices, getcarBrands, getcartypesbrand, createMycar, getMycars, deleteCar, getPorblemsCar, getUserCarId, setCarDefault };
 };

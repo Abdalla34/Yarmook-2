@@ -1,4 +1,7 @@
 <script setup>
+const token = useCookie("token");
+const isLoggedIn = computed(() => !!token.value);
+
 const { availableVouchers, usedVouchers, expiredVouchers } = useUserinformation()
 
 const loading = ref(false)
@@ -56,7 +59,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <ProfileLinksBar />
+    <ProfileLinksBar :isLoggedIn="isLoggedIn" />
     <div class="vaouchers-page">
         <div class="min-h-screen bg-gray-50 py-8">
             <div class="mx-auto max-w-4xl px-4">

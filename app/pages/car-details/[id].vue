@@ -1,5 +1,5 @@
 <template>
-  <ProfileLinksBar />
+  <ProfileLinksBar :isLoggedIn="isLoggedIn" />
   <div class="min-h-screen bg-gray-50 py-10">
     <div class="container mx-auto max-w-5xl px-4">
       <button @click="navigateTo('/my-cars')" class="mb-4 text-sm text-gray-500 hover:text-gray-700">&larr; Back to My Cars</button>
@@ -14,7 +14,12 @@
         <h1 class="text-2xl font-bold text-gray-800">{{ car.name }}</h1>
         <div class="rounded-3xl bg-white p-6 shadow-sm">
           <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
-            <img :src="car.image || 'https://via.placeholder.com/120'" class="h-28 w-28 rounded-2xl object-cover shrink-0" />
+            <img v-if="car.image" :src="car.image" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='flex'" class="h-28 w-28 rounded-2xl object-cover shrink-0" />
+            <div v-else class="h-28 w-28 rounded-2xl bg-gray-100 flex items-center justify-center shrink-0">
+              <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 17v2a1 1 0 001 1h12a1 1 0 001-1v-2M5 17l2-9h10l2 9M5 17H3m16 0h2M8 12h8m-6 4h4"/>
+              </svg>
+            </div>
             <div>
               <h2 class="text-xl font-semibold">{{ car.brand?.title }} - {{ car.car_type?.title }}</h2>
               <p v-if="car.plate_number" class="text-gray-500">{{ car.plate_number }}</p>
@@ -83,6 +88,9 @@
 </template>
 
 <script setup>
+const token = useCookie("token");
+const isLoggedIn = computed(() => !!token.value);
+
 const { getUserCarId } = useCarServices();
 const route = useRoute();
 

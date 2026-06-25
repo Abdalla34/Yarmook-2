@@ -1,4 +1,7 @@
 <script setup>
+const token = useCookie("token");
+const isLoggedIn = computed(() => !!token.value);
+
 const { PointsUser, RedeemPoints, TransferPoints } = useUserinformation()
 
 const loading = ref(true)
@@ -119,7 +122,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <ProfileLinksBar />
+    <ProfileLinksBar :isLoggedIn="isLoggedIn" />
     <div class="points">
         <div class="container mx-auto px-4">
             <div class="flex justify-center">
