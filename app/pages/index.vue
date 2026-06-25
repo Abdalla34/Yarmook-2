@@ -16,32 +16,32 @@ const sliders = computed(() => homeData.value?.data?.sliders ?? []);
 const offers = computed(() => offersData.value?.data?.items ?? offersData.value?.data ?? []);
 
 onMounted(async () => {
-  if (import.meta.client) {
-    const cachedHome = localStorage.getItem(HOME_CACHE_KEY);
-    if (cachedHome) {
-      try {
-        homeData.value = JSON.parse(cachedHome);
-      } catch (e) { /* ignore */ }
-    }
-    const cachedOffers = localStorage.getItem(OFFERS_CACHE_KEY);
-    if (cachedOffers) {
-      try {
-        offersData.value = JSON.parse(cachedOffers);
-      } catch (e) { /* ignore */ }
-    }
-  }
-
-  try {
-    const [homeRes, offersRes] = await Promise.all([getHome(), getOffers()]);
     if (import.meta.client) {
-      localStorage.setItem(HOME_CACHE_KEY, JSON.stringify(homeRes));
-      localStorage.setItem(OFFERS_CACHE_KEY, JSON.stringify(offersRes));
+        const cachedHome = localStorage.getItem(HOME_CACHE_KEY);
+        if (cachedHome) {
+            try {
+                homeData.value = JSON.parse(cachedHome);
+            } catch (e) { /* ignore */ }
+        }
+        const cachedOffers = localStorage.getItem(OFFERS_CACHE_KEY);
+        if (cachedOffers) {
+            try {
+                offersData.value = JSON.parse(cachedOffers);
+            } catch (e) { /* ignore */ }
+        }
     }
-    homeData.value = homeRes;
-    offersData.value = offersRes;
-  } catch (err) {
-    console.error(err);
-  }
+
+    try {
+        const [homeRes, offersRes] = await Promise.all([getHome(), getOffers()]);
+        if (import.meta.client) {
+            localStorage.setItem(HOME_CACHE_KEY, JSON.stringify(homeRes));
+            localStorage.setItem(OFFERS_CACHE_KEY, JSON.stringify(offersRes));
+        }
+        homeData.value = homeRes;
+        offersData.value = offersRes;
+    } catch (err) {
+        console.error(err);
+    }
 });
 </script>
 
@@ -83,7 +83,7 @@ onMounted(async () => {
                                 </div>
                             </div>
 
-                            <div
+                            <div @click="navigateTo('/comfortable-services')"
                                 class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                                 <div class="h-28 md:h-auto flex items-center justify-center">
                                     <img src="/Carcomfortable.png" alt="comfortable service"
@@ -158,7 +158,8 @@ onMounted(async () => {
                             class="min-w-[calc(50%-0.5rem)] w-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] flex-shrink-0 snap-start md:min-w-0 md:w-auto md:max-w-none bg-white rounded-2xl border border-gray-300 shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                             <div class="relative">
                                 <img :src="offer.image || '/offerimage.jpeg'" :alt="offer.title"
-                                    class="w-full h-28 md:h-[50%] object-cover" @error="$event.target.src = '/offerimage.jpeg'" />
+                                    class="w-full h-28 md:h-[50%] object-cover"
+                                    @error="$event.target.src = '/offerimage.jpeg'" />
                                 <span v-if="offer.discount_percentage_text"
                                     class="hidden md:inline absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                                     {{ offer.discount_percentage_text }}
@@ -175,7 +176,7 @@ onMounted(async () => {
                                 </p>
                                 <div class="flex flex-col gap-0.5 md:flex-row md:items-center md:gap-2 md:mb-3">
                                     <span class="text-sm md:text-lg font-bold text-black">{{ offer.price_after_discount
-                                        }}
+                                    }}
                                         <span class="text-gray-400 uppercase text-[10px] md:text-xs">sar</span>
                                     </span>
                                     <span v-if="offer.price_before_discount"

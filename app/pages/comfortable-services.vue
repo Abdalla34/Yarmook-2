@@ -1,5 +1,6 @@
 <script setup>
 const { getMycars, getPorblemsCar, getServices } = useCarServices();
+const { getBranches } = useGlobalApi();
 
 const MY_CARS_CACHE_KEY = "my_cars_cache";
 const PROBLEMS_CACHE_KEY = "problems_cache";
@@ -104,6 +105,30 @@ const openServicesModal = async () => {
 
 const deliveryType = ref("one_way");
 
+const branches = ref([]);
+const selectedBranch = ref(null);
+const showBranchPicker = ref(false);
+const loadingBranches = ref(false);
+
+const openBranchPicker = async () => {
+    showBranchPicker.value = true;
+    if (branches.value.length) return;
+    loadingBranches.value = true;
+    try {
+        const res = await getBranches();
+        branches.value = res?.data?.items ?? res?.data ?? [];
+    } catch (err) {
+        console.error(err);
+    } finally {
+        loadingBranches.value = false;
+    }
+};
+
+const selectBranch = (branch) => {
+    selectedBranch.value = branch;
+    showBranchPicker.value = false;
+};
+
 const nextStep = () => {
     currentStep.value = 2;
 };
@@ -166,188 +191,191 @@ onMounted(async () => {
             </div>
 
             <div class="w-full md:w-[70%] mx-auto">
-            <!-- step 1-->
-            <div v-if="currentStep === 1" class="p-4 space-y-4">
+                <!-- step 1-->
+                <div v-if="currentStep === 1" class="p-4 space-y-4">
 
-                <!-- Car -->
-                <div class="relative shadow-md">
-                    <div class="box-car bg-gray-100 rounded-xl p-4 shadow-sm">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-sm text-gray-500">سيارتي</p>
-                                <p v-if="selectedCar" class="font-semibold">{{ selectedCar.brand?.title }} - {{
-                                    selectedCar.car_type?.title }}</p>
-                                <p v-else class="text-gray-400" @click="showCarPicker = !showCarPicker">+ اختر سيارة</p>
+                    <!-- Car -->
+                    <div class="relative shadow-md">
+                        <div class="box-car bg-gray-100 rounded-xl p-4 shadow-sm">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-sm text-gray-500">سيارتي</p>
+                                    <p v-if="selectedCar" class="font-semibold">{{ selectedCar.brand?.title }} - {{
+                                        selectedCar.car_type?.title }}</p>
+                                    <p v-else class="text-gray-400" @click="showCarPicker = !showCarPicker">+ اختر سيارة
+                                    </p>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <span v-if="selectedCar" class="text-sm">{{ selectedCar.brand?.title }}</span>
+                                    <img v-if="selectedCar?.image" :src="selectedCar.image"
+                                        @error="$event.target.style.display = 'none'; $event.target.nextElementSibling.style.display = 'flex'"
+                                        class="w-10 h-10 rounded-full object-cover" />
+                                    <img v-else-if="selectedCar?.brand?.image" :src="selectedCar.brand.image"
+                                        class="w-10 h-10 rounded-full object-cover" />
+                                    <img v-else src="https://via.placeholder.com/40"
+                                        class="w-10 h-10 rounded-full object-cover" />
+                                    <button v-if="selectedCar" @click="showCarPicker = !showCarPicker"
+                                        class="bg-red-500 text-white text-xs font-medium px-3 py-1.5 rounded-full">تغيير</button>
+                                </div>
                             </div>
+                        </div>
 
-                            <div class="flex items-center gap-2">
-                                <span v-if="selectedCar" class="text-sm">{{ selectedCar.brand?.title }}</span>
-                                <img v-if="selectedCar?.image" :src="selectedCar.image"
-                                    @error="$event.target.style.display = 'none'; $event.target.nextElementSibling.style.display = 'flex'"
+                        <div v-if="showCarPicker && myCars.length"
+                            class="absolute z-10 mt-1 w-full bg-white rounded-xl shadow-lg border max-h-48 overflow-y-auto">
+                            <div v-for="car in myCars" :key="car.id" @click="selectCar(car)"
+                                class="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b last:border-0"
+                                :class="{ 'bg-red-50': car.id === selectedCarId }">
+                                <img :src="car.image || car.brand?.image || 'https://via.placeholder.com/40'"
+                                    @error="$event.target.src = 'https://via.placeholder.com/40'"
                                     class="w-10 h-10 rounded-full object-cover" />
-                                <img v-else-if="selectedCar?.brand?.image" :src="selectedCar.brand.image"
-                                    class="w-10 h-10 rounded-full object-cover" />
-                                <img v-else src="https://via.placeholder.com/40"
-                                    class="w-10 h-10 rounded-full object-cover" />
-                                <button v-if="selectedCar" @click="showCarPicker = !showCarPicker"
-                                    class="bg-red-500 text-white text-xs font-medium px-3 py-1.5 rounded-full">تغيير</button>
+                                <div>
+                                    <p class="font-semibold text-sm">{{ car.brand?.title }} - {{ car.car_type?.title }}
+                                    </p>
+                                    <p v-if="car.plate_number" class="text-xs text-gray-500">{{ car.plate_number }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div v-if="showCarPicker && myCars.length"
-                        class="absolute z-10 mt-1 w-full bg-white rounded-xl shadow-lg border max-h-48 overflow-y-auto">
-                        <div v-for="car in myCars" :key="car.id" @click="selectCar(car)"
-                            class="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b last:border-0"
-                            :class="{ 'bg-red-50': car.id === selectedCarId }">
-                            <img :src="car.image || car.brand?.image || 'https://via.placeholder.com/40'"
-                                @error="$event.target.src = 'https://via.placeholder.com/40'"
-                                class="w-10 h-10 rounded-full object-cover" />
-                            <div>
-                                <p class="font-semibold text-sm">{{ car.brand?.title }} - {{ car.car_type?.title }}</p>
-                                <p v-if="car.plate_number" class="text-xs text-gray-500">{{ car.plate_number }}</p>
+                    <!-- Problems -->
+                    <div class="bg-gray-50 rounded-xl p-5 shadow-md">
+                        <p class="text-gray-700 mb-3 text-center">
+                            ما هي المشاكل التي تعاني منها سيارتك؟
+                        </p>
+
+                        <div v-if="selectedProblems.length" class="flex flex-col gap-2 mb-3">
+                            <div v-for="p in selectedProblems" :key="p.id"
+                                class="bg-white w-full rounded-md px-4 py-3 border border-gray-200 text-sm text-gray-800">
+                                {{ p.title ?? p.name }}
                             </div>
                         </div>
+
+                        <div class="text-center">
+                            <button @click="openProblemsModal" class="text-red-500 font-medium">
+                                + {{ selectedProblems.length ? 'تعديل المشاكل' : 'أضف مشاكل' }}
+                            </button>
+                        </div>
                     </div>
+
+                    <!-- Services -->
+                    <div class="bg-gray-50 rounded-xl p-5 shadow-md">
+                        <p class="text-gray-500 mb-3 text-center">
+                            الخدمات (اختياري)
+                        </p>
+
+                        <div v-if="selectedServices.length" class="flex flex-col gap-2 mb-3">
+                            <div v-for="s in selectedServices" :key="s.id"
+                                class="bg-white w-full rounded-md px-4 py-3 border border-gray-200 text-sm text-gray-800">
+                                {{ s.title ?? s.name }}
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button @click="openServicesModal" class="text-red-500 font-medium">
+                                + {{ selectedServices.length ? 'تعديل الخدمات' : 'إضافة خدمة' }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div
+                        class="bg-cyan-50 text-end  mx-auto rounded-xl p-4 text-sm text-gray-600 border border-cyan-100 shadow-sm">
+                        أخبرنا إذا وجد لديك تفاصيل إضافية تخص سيارتك.
+                    </div>
+
+                    <!-- Details -->
+                    <textarea placeholder="المزيد من التفاصيل (اختياري)"
+                        class="w-full h-32 rounded-xl border p-4 outline-none resize-none bg-white shadow-sm"></textarea>
+
+                    <!-- Continue -->
+                    <button @click="nextStep"
+                        class="w-full bg-yellow-400 rounded-full py-4 font-bold text-black shadow-md">
+                        الاستمرار للتأكيد
+                    </button>
+
                 </div>
 
-                <!-- Problems -->
-                <div class="bg-gray-50 rounded-xl p-5 shadow-md">
-                    <p class="text-gray-700 mb-3 text-center">
-                        ما هي المشاكل التي تعاني منها سيارتك؟
-                    </p>
+                <!-- step 2 -->
+                <div v-else class="p-4 space-y-4">
 
-                    <div v-if="selectedProblems.length" class="flex flex-wrap gap-2 mb-3">
-                        <span v-for="p in selectedProblems" :key="p.id"
-                            class="bg-red-50 text-red-600 text-sm px-3 py-1 rounded-full border border-red-200">
-                            {{ p.title ?? p.name }}
-                        </span>
+                    <!-- Branch -->
+                    <div @click="openBranchPicker"
+                        class="bg-gray-50 rounded-xl p-4 flex justify-between items-center cursor-pointer">
+                        <span class="text-gray-500">{{ selectedBranch?.title ?? 'الفرع' }}</span>
+                        <svg class="w-5 h-5">
+                            <path />
+                        </svg>
                     </div>
 
-                    <div class="text-center">
-                        <button @click="openProblemsModal" class="text-red-500 font-medium">
-                            + {{ selectedProblems.length ? 'تعديل المشاكل' : 'أضف مشاكل' }}
-                        </button>
-                    </div>
-                </div>
+                    <!-- Booking Time -->
+                    <div class="bg-white rounded-xl p-4">
+                        <div class="flex justify-between mb-4">
+                            <h3 class="font-semibold">تفاصيل الوقت</h3>
+                            <span class="text-red-500 text-sm">1</span>
+                        </div>
 
-                <!-- Services -->
-                <div class="bg-gray-50 rounded-xl p-5 shadow-md">
-                    <p class="text-gray-500 mb-3 text-center">
-                        الخدمات (اختياري)
-                    </p>
+                        <!-- Future -->
+                        <div class="border border-red-300 rounded-xl p-4 mb-4 bg-red-50">
+                            <div class="flex justify-between">
+                                <div>
+                                    <h4 class="font-semibold">مستقبلي</h4>
+                                    <p class="text-xs text-gray-500 mt-2">
+                                        ملاحظات: هذا الخيار مستقبلي وسيتم فتحه قريباً
+                                    </p>
+                                </div>
 
-                    <div v-if="selectedServices.length" class="flex flex-wrap gap-2 mb-3">
-                        <span v-for="s in selectedServices" :key="s.id"
-                            class="bg-red-50 text-red-600 text-sm px-3 py-1 rounded-full border border-red-200">
-                            {{ s.title ?? s.name }}
-                        </span>
-                    </div>
+                                <div class="bg-red-500 text-white rounded-full px-3 py-1 text-xs">
+                                    1 ساعة
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="text-center">
-                        <button @click="openServicesModal" class="text-red-500 font-medium">
-                            + {{ selectedServices.length ? 'تعديل الخدمات' : 'إضافة خدمة' }}
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Notes -->
-                <div
-                    class="bg-cyan-50 text-end  mx-auto rounded-xl p-4 text-sm text-gray-600 border border-cyan-100 shadow-sm">
-                    أخبرنا إذا وجد لديك تفاصيل إضافية تخص سيارتك.
-                </div>
-
-                <!-- Details -->
-                <textarea placeholder="المزيد من التفاصيل (اختياري)"
-                    class="w-full h-32 rounded-xl border p-4 outline-none resize-none bg-white shadow-sm"></textarea>
-
-                <!-- Continue -->
-                <button @click="nextStep" class="w-full bg-yellow-400 rounded-full py-4 font-bold text-black shadow-md">
-                    الاستمرار للتأكيد
-                </button>
-
-            </div>
-
-            <!-- step 2 -->
-            <div v-else class="p-4 space-y-4">
-
-                <!-- Branch -->
-                <div class="bg-gray-50 rounded-xl p-4 flex justify-between items-center">
-                    <span class="text-gray-500">الفرع</span>
-
-                    <svg class="w-5 h-5">
-                        <path />
-                    </svg>
-                </div>
-
-                <!-- Booking Time -->
-                <div class="bg-white rounded-xl p-4">
-                    <div class="flex justify-between mb-4">
-                        <h3 class="font-semibold">تفاصيل الوقت</h3>
-                        <span class="text-red-500 text-sm">1</span>
-                    </div>
-
-                    <!-- Future -->
-                    <div class="border border-red-300 rounded-xl p-4 mb-4 bg-red-50">
-                        <div class="flex justify-between">
+                        <!-- Normal -->
+                        <div class="border rounded-xl p-4 flex justify-between items-center">
                             <div>
-                                <h4 class="font-semibold">مستقبلي</h4>
-                                <p class="text-xs text-gray-500 mt-2">
-                                    ملاحظات: هذا الخيار مستقبلي وسيتم فتحه قريباً
+                                <h4 class="font-semibold">عادي</h4>
+                                <p class="text-xs text-gray-500">
+                                    يتم تحديد موعدك بعد المراجعة.
                                 </p>
                             </div>
 
-                            <div class="bg-red-500 text-white rounded-full px-3 py-1 text-xs">
-                                1 ساعة
-                            </div>
+                            <input type="radio" />
                         </div>
                     </div>
 
-                    <!-- Normal -->
-                    <div class="border rounded-xl p-4 flex justify-between items-center">
-                        <div>
-                            <h4 class="font-semibold">عادي</h4>
-                            <p class="text-xs text-gray-500">
-                                يتم تحديد موعدك بعد المراجعة.
-                            </p>
+                    <!-- Delivery Type -->
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <p class="text-gray-500 mb-3">نوع التوصيل</p>
+                        <div class="flex gap-3">
+                            <button @click="deliveryType = 'one_way'"
+                                class="flex-1 py-3 rounded-xl border font-semibold text-sm transition-colors"
+                                :class="deliveryType === 'one_way' ? 'bg-red-500 text-white border-red-500' : 'bg-white text-gray-700 border-gray-300'">
+                                oneway
+                            </button>
+                            <button @click="deliveryType = 'two_way'"
+                                class="flex-1 capitalize py-3 rounded-xl border font-semibold text-sm transition-colors"
+                                :class="deliveryType === 'two_way' ? 'bg-red-500 text-white border-red-500' : 'bg-white text-gray-700 border-gray-300'">
+                                towway
+                            </button>
                         </div>
-
-                        <input type="radio" />
                     </div>
-                </div>
 
-                <!-- Delivery Type -->
-                <div class="bg-white rounded-xl p-4 shadow-sm">
-                    <p class="text-gray-500 mb-3">نوع التوصيل</p>
                     <div class="flex gap-3">
-                        <button @click="deliveryType = 'one_way'"
-                            class="flex-1 py-3 rounded-xl border font-semibold text-sm transition-colors"
-                            :class="deliveryType === 'one_way' ? 'bg-red-500 text-white border-red-500' : 'bg-white text-gray-700 border-gray-300'">
-                            oneway
+                        <button @click="previousStep" class="flex-1 border rounded-full py-4 font-semibold">
+                            رجوع
                         </button>
-                        <button @click="deliveryType = 'two_way'"
-                            class="flex-1 capitalize py-3 rounded-xl border font-semibold text-sm transition-colors"
-                            :class="deliveryType === 'two_way' ? 'bg-red-500 text-white border-red-500' : 'bg-white text-gray-700 border-gray-300'">
-                            towway
+
+                        <button class="flex-1 bg-yellow-400 rounded-full py-4 font-bold">
+                            الاستمرار للتأكيد
                         </button>
                     </div>
+
                 </div>
-
-                <div class="flex gap-3">
-                    <button @click="previousStep" class="flex-1 border rounded-full py-4 font-semibold">
-                        رجوع
-                    </button>
-
-                    <button class="flex-1 bg-yellow-400 rounded-full py-4 font-bold">
-                        الاستمرار للتأكيد
-                    </button>
-                </div>
-
+                <!-- close step wrapper -->
             </div>
-            <!-- close step wrapper -->
-        </div>
 
-    </div>
+        </div>
     </div>
 
     <!-- problems modal -->
@@ -382,6 +410,33 @@ onMounted(async () => {
                     class="w-full mt-4 bg-yellow-400 rounded-full py-3 font-bold text-black">
                     {{ selectedProblems.length ? 'تأكيد الاختيار' : 'إغلاق' }}
                 </button>
+            </div>
+        </div>
+    </Teleport>
+
+    <!-- Branch modal -->
+    <Teleport to="body">
+        <div v-if="showBranchPicker" class="fixed inset-0 z-50 flex items-end justify-center">
+            <div class="fixed inset-0 bg-black/50" @click="showBranchPicker = false"></div>
+            <div class="relative bg-white rounded-t-2xl w-full max-w-lg max-h-[70vh] overflow-y-auto p-5 z-10">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">اختر الفرع</h3>
+                    <button @click="showBranchPicker = false" class="text-gray-400 text-xl">&times;</button>
+                </div>
+
+                <div v-if="loadingBranches" class="flex justify-center py-8">
+                    <div class="w-8 h-8 border-4 border-gray-200 border-t-red-500 rounded-full animate-spin"></div>
+                </div>
+                <div v-else-if="branches.length" class="space-y-2">
+                    <div v-for="branch in branches" :key="branch.id" @click="selectBranch(branch)"
+                        class="flex items-center gap-3 p-3 rounded-xl cursor-pointer border"
+                        :class="selectedBranch?.id === branch.id ? 'border-red-500 bg-red-50' : 'border-gray-200'">
+                        <span class="text-sm">{{ branch.title }}</span>
+                    </div>
+                </div>
+                <div v-else class="text-center text-gray-400 py-8">
+                    لا توجد فروع متاحة
+                </div>
             </div>
         </div>
     </Teleport>
