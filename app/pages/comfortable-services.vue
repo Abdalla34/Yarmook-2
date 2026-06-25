@@ -106,15 +106,22 @@ const openServicesModal = async () => {
 const deliveryType = ref("one_way");
 const bookingType = ref(null);
 const pickupLocation = ref(null);
+const returnLocation = ref(null);
 const showMapModal = ref(false);
+const mapMode = ref("pickup");
 const mapLoading = ref(false);
 
-const openMapPicker = () => {
+const openMapPicker = (mode = "pickup") => {
+    mapMode.value = mode;
     showMapModal.value = true;
 };
 
 const onLocationSelected = (location) => {
-    pickupLocation.value = location;
+    if (mapMode.value === "pickup") {
+        pickupLocation.value = location;
+    } else {
+        returnLocation.value = location;
+    }
     showMapModal.value = false;
 };
 
@@ -425,10 +432,17 @@ onMounted(async () => {
                             </button>
                         </div>
 
-                        <div v-if="deliveryType === 'one_way'" @click="openMapPicker" class="mt-4 bg-gray-50 rounded-xl p-4 text-center cursor-pointer">
+                        <div @click="openMapPicker('pickup')" class="mt-4 bg-gray-50 rounded-xl p-4 text-center cursor-pointer">
                             <p class="text-gray-500 mb-2">موقع استلام السيارة</p>
                             <p class="text-sm font-medium" :class="pickupLocation ? 'text-gray-800' : 'text-red-500'">
                                 {{ pickupLocation?.address || '+ اختر الموقع' }}
+                            </p>
+                        </div>
+
+                        <div v-if="deliveryType === 'two_way'" @click="openMapPicker('return')" class="mt-2 bg-gray-50 rounded-xl p-4 text-center cursor-pointer">
+                            <p class="text-gray-500 mb-2">موقع إرجاع السيارة</p>
+                            <p class="text-sm font-medium" :class="returnLocation ? 'text-gray-800' : 'text-red-500'">
+                                {{ returnLocation?.address || '+ اختر الموقع' }}
                             </p>
                         </div>
                     </div>
@@ -492,7 +506,7 @@ onMounted(async () => {
             <div class="fixed inset-0 bg-black/50" @click="showMapModal = false"></div>
             <div class="relative bg-white rounded-t-2xl w-full max-w-lg h-[80vh] flex flex-col p-5 z-10">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">اختر موقع الاستلام</h3>
+                    <h3 class="font-bold text-lg">{{ mapMode === 'pickup' ? 'اختر موقع الاستلام' : 'اختر موقع الإرجاع' }}</h3>
                     <button @click="showMapModal = false" class="text-gray-400 text-xl">&times;</button>
                 </div>
 
