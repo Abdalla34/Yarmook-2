@@ -147,7 +147,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="container mx-auto">
+    <div class="container mx-w-auto lg:p-6">
         <div class="min-h-screen bg-white">
             <!-- Header Steps -->
             <div class="bg-white flex justify-between text-xs border-b shadow-sm">
@@ -165,31 +165,44 @@ onMounted(async () => {
                 </div>
             </div>
 
-            <!-- ================= STEP 1 ================= -->
+            <div class="w-full md:w-[70%] mx-auto">
+            <!-- step 1-->
             <div v-if="currentStep === 1" class="p-4 space-y-4">
 
                 <!-- Car -->
                 <div class="relative">
-                    <div @click="showCarPicker = !showCarPicker" class="box-car bg-gray-100 rounded-xl p-4 flex justify-between items-center cursor-pointer shadow-sm">
-                        <div>
-                            <p class="text-sm text-gray-500">سيارتي</p>
-                            <p v-if="selectedCar" class="font-semibold">{{ selectedCar.brand?.title }} - {{ selectedCar.car_type?.title }}</p>
-                            <p v-else class="text-gray-400">اختر سيارة</p>
-                        </div>
+                    <div class="box-car bg-gray-100 rounded-xl p-4 shadow-sm">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500">سيارتي</p>
+                                <p v-if="selectedCar" class="font-semibold">{{ selectedCar.brand?.title }} - {{
+                                    selectedCar.car_type?.title }}</p>
+                                <p v-else class="text-gray-400" @click="showCarPicker = !showCarPicker">+ اختر سيارة</p>
+                            </div>
 
-                        <div class="flex items-center gap-2">
-                            <span v-if="selectedCar" class="text-sm">{{ selectedCar.brand?.title }}</span>
-                            <img v-if="selectedCar?.image" :src="selectedCar.image" class="w-10 h-10 rounded-full object-cover" />
-                            <img v-else src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full object-cover" />
+                            <div class="flex items-center gap-2">
+                                <span v-if="selectedCar" class="text-sm">{{ selectedCar.brand?.title }}</span>
+                                <img v-if="selectedCar?.image" :src="selectedCar.image"
+                                    @error="$event.target.style.display = 'none'; $event.target.nextElementSibling.style.display = 'flex'"
+                                    class="w-10 h-10 rounded-full object-cover" />
+                                <img v-else-if="selectedCar?.brand?.image" :src="selectedCar.brand.image"
+                                    class="w-10 h-10 rounded-full object-cover" />
+                                <img v-else src="https://via.placeholder.com/40"
+                                    class="w-10 h-10 rounded-full object-cover" />
+                                <button v-if="selectedCar" @click="showCarPicker = !showCarPicker"
+                                    class="bg-red-500 text-white text-xs font-medium px-3 py-1.5 rounded-full">تغيير</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div v-if="showCarPicker && myCars.length" class="absolute z-10 mt-1 w-full bg-white rounded-xl shadow-lg border max-h-48 overflow-y-auto">
-                        <div v-for="car in myCars" :key="car.id"
-                            @click="selectCar(car)"
+                    <div v-if="showCarPicker && myCars.length"
+                        class="absolute z-10 mt-1 w-full bg-white rounded-xl shadow-lg border max-h-48 overflow-y-auto">
+                        <div v-for="car in myCars" :key="car.id" @click="selectCar(car)"
                             class="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b last:border-0"
                             :class="{ 'bg-red-50': car.id === selectedCarId }">
-                            <img :src="car.image || 'https://via.placeholder.com/40'" class="w-10 h-10 rounded-full object-cover" />
+                            <img :src="car.image || car.brand?.image || 'https://via.placeholder.com/40'"
+                                @error="$event.target.src = 'https://via.placeholder.com/40'"
+                                class="w-10 h-10 rounded-full object-cover" />
                             <div>
                                 <p class="font-semibold text-sm">{{ car.brand?.title }} - {{ car.car_type?.title }}</p>
                                 <p v-if="car.plate_number" class="text-xs text-gray-500">{{ car.plate_number }}</p>
@@ -239,7 +252,8 @@ onMounted(async () => {
                 </div>
 
                 <!-- Notes -->
-                <div class="bg-cyan-50 text-end  mx-auto rounded-xl p-4 text-sm text-gray-600 border border-cyan-100 shadow-sm">
+                <div
+                    class="bg-cyan-50 text-end  mx-auto rounded-xl p-4 text-sm text-gray-600 border border-cyan-100 shadow-sm">
                     أخبرنا إذا وجد لديك تفاصيل إضافية تخص سيارتك.
                 </div>
 
@@ -254,7 +268,7 @@ onMounted(async () => {
 
             </div>
 
-            <!-- ================= STEP 2 ================= -->
+            <!-- step 2 -->
             <div v-else class="p-4 space-y-4">
 
                 <!-- Branch -->
@@ -330,11 +344,13 @@ onMounted(async () => {
                 </div>
 
             </div>
-
+            <!-- close step wrapper -->
         </div>
+
+    </div>
     </div>
 
-    <!-- Problems Modal -->
+    <!-- problems modal -->
     <Teleport to="body">
         <div v-if="showProblemsModal" class="fixed inset-0 z-50 flex items-end justify-center">
             <div class="fixed inset-0 bg-black/50" @click="showProblemsModal = false"></div>
@@ -348,8 +364,7 @@ onMounted(async () => {
                     <div class="w-8 h-8 border-4 border-gray-200 border-t-red-500 rounded-full animate-spin"></div>
                 </div>
                 <div v-else-if="problems.length" class="space-y-2">
-                    <div v-for="problem in problems" :key="problem.id"
-                        @click="toggleProblem(problem)"
+                    <div v-for="problem in problems" :key="problem.id" @click="toggleProblem(problem)"
                         class="flex items-center gap-3 p-3 rounded-xl cursor-pointer border"
                         :class="isProblemSelected(problem) ? 'border-red-500 bg-red-50' : 'border-gray-200'">
                         <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
@@ -371,7 +386,7 @@ onMounted(async () => {
         </div>
     </Teleport>
 
-    <!-- Services Modal -->
+    <!-- Services modal -->
     <Teleport to="body">
         <div v-if="showServicesModal" class="fixed inset-0 z-50 flex items-end justify-center">
             <div class="fixed inset-0 bg-black/50" @click="showServicesModal = false"></div>
@@ -385,8 +400,7 @@ onMounted(async () => {
                     <div class="w-8 h-8 border-4 border-gray-200 border-t-red-500 rounded-full animate-spin"></div>
                 </div>
                 <div v-else-if="services.length" class="space-y-2">
-                    <div v-for="service in services" :key="service.id"
-                        @click="toggleService(service)"
+                    <div v-for="service in services" :key="service.id" @click="toggleService(service)"
                         class="flex items-center gap-3 p-3 rounded-xl cursor-pointer border"
                         :class="isServiceSelected(service) ? 'border-red-500 bg-red-50' : 'border-gray-200'">
                         <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center"

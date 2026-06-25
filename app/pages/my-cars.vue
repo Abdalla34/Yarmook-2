@@ -38,6 +38,10 @@
                   alt="car"
                   class="h-14 w-14 object-contain"
                 />
+                <img v-else-if="car.brand?.image" :src="car.brand.image" @error="$event.target.style.display='none'; $event.target.nextElementSibling.style.display='flex'"
+                  alt="brand"
+                  class="h-14 w-14 object-contain"
+                />
                 <svg v-else class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 17v2a1 1 0 001 1h12a1 1 0 001-1v-2M5 17l2-9h10l2 9M5 17H3m16 0h2M8 12h8m-6 4h4"/>
                 </svg>
