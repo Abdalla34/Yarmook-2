@@ -127,6 +127,33 @@ const openBranchPicker = async () => {
 const selectBranch = (branch) => {
     selectedBranch.value = branch;
     showBranchPicker.value = false;
+    dates.value = branch.available_times || [];
+    selectedDate.value = "";
+    selectedTime.value = "";
+};
+
+const showDateTimePicker = ref(false);
+const dateTimeStep = ref(1);
+const dates = ref([]);
+const selectedDate = ref("");
+const availableTimes = ref([]);
+const selectedTime = ref("");
+
+const openDateTimePicker = () => {
+    if (!selectedBranch.value) return;
+    dateTimeStep.value = 1;
+    showDateTimePicker.value = true;
+};
+
+const selectDate = (date) => {
+    selectedDate.value = date.date;
+    availableTimes.value = date.time_slots || [];
+    dateTimeStep.value = 2;
+};
+
+const selectTime = (time) => {
+    selectedTime.value = time;
+    showDateTimePicker.value = false;
 };
 
 const nextStep = () => {
@@ -320,12 +347,12 @@ onMounted(async () => {
                         </div>
 
                         <!-- Future -->
-                        <div class="border border-red-300 rounded-xl p-4 mb-4 bg-red-50">
+                        <div class="border border-red-300 rounded-xl p-4 mb-4 bg-red-50 urgent">
                             <div class="flex justify-between">
                                 <div>
-                                    <h4 class="font-semibold">مستقبلي</h4>
+                                    <h4 class="font-semibold">مستعجل</h4>
                                     <p class="text-xs text-gray-500 mt-2">
-                                        ملاحظات: هذا الخيار مستقبلي وسيتم فتحه قريباً
+                                        ملاحظات: عند اختيار مستعجل سوف يرتفع سعر النقل
                                     </p>
                                 </div>
 
@@ -336,15 +363,22 @@ onMounted(async () => {
                         </div>
 
                         <!-- Normal -->
-                        <div class="border rounded-xl p-4 flex justify-between items-center">
+                        <div @click="openDateTimePicker"
+                            class="border rounded-xl p-4 flex justify-between items-center cursor-pointer"
+                            :class="selectedDate && selectedTime ? 'border-green-400 bg-green-50' : ''">
                             <div>
                                 <h4 class="font-semibold">عادي</h4>
-                                <p class="text-xs text-gray-500">
+                                <p v-if="!selectedDate || !selectedTime" class="text-xs text-gray-500">
                                     يتم تحديد موعدك بعد المراجعة.
                                 </p>
+                                <p v-else class="text-xs text-green-600 font-medium">
+                                    {{ selectedDate }} - {{ selectedTime }}
+                                </p>
                             </div>
-
-                            <input type="radio" />
+                            <div v-if="selectedDate && selectedTime"
+                                class="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">✓</span>
+                            </div>
                         </div>
                     </div>
 
@@ -414,6 +448,46 @@ onMounted(async () => {
                     class="w-full mt-4 bg-yellow-400 rounded-full py-3 font-bold text-black">
                     {{ selectedProblems.length ? 'تأكيد الاختيار' : 'إغلاق' }}
                 </button>
+            </div>
+        </div>
+    </Teleport>
+
+    <!-- Date/Time modal -->
+    <Teleport to="body">
+        <div v-if="showDateTimePicker" class="fixed inset-0 z-50 flex items-end justify-center">
+            <div class="fixed inset-0 bg-black/50" @click="showDateTimePicker = false"></div>
+            <div class="relative bg-white rounded-t-2xl w-full max-w-lg max-h-[70vh] overflow-y-auto p-5 z-10">
+                <div class="flex items-center mb-4">
+                    <button v-if="dateTimeStep === 2" @click="dateTimeStep = 1" class="text-gray-500 text-xl ml-2">&larr;</button>
+                    <h3 class="font-bold text-lg">{{ dateTimeStep === 1 ? 'اختر التاريخ' : 'اختر الوقت' }}</h3>
+                    <button @click="showDateTimePicker = false" class="mr-auto text-gray-400 text-xl">&times;</button>
+                </div>
+
+                <div v-if="dateTimeStep === 1" class="space-y-2">
+                    <div v-if="dates.length">
+                        <div v-for="date in dates" :key="date.date" @click="selectDate(date)"
+                            class="rounded-xl border border-gray-200 px-4 py-3 cursor-pointer hover:bg-yellow-50">
+                            <p class="font-medium">{{ date.date }}</p>
+                            <p class="text-sm text-gray-500">{{ date.time_slots?.length || 0 }} مواعيد متاحة</p>
+                        </div>
+                    </div>
+                    <div v-else class="text-center text-gray-400 py-8">
+                        لا توجد تواريخ متاحة
+                    </div>
+                </div>
+
+                <div v-else-if="dateTimeStep === 2">
+                    <div v-if="availableTimes.length" class="grid grid-cols-3 gap-3">
+                        <div v-for="time in availableTimes" :key="time.time" @click="selectTime(time.time)"
+                            class="rounded-xl border border-gray-200 px-3 py-3 text-center cursor-pointer hover:bg-yellow-50"
+                            :class="{ 'bg-yellow-50 border-yellow-400': selectedTime === time.time }">
+                            <p class="font-medium text-sm">{{ time.time }}</p>
+                        </div>
+                    </div>
+                    <div v-else class="text-center text-gray-400 py-8">
+                        لا توجد أوقات متاحة
+                    </div>
+                </div>
             </div>
         </div>
     </Teleport>
