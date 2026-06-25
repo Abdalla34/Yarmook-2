@@ -63,5 +63,12 @@ export const useCarServices = () => {
       headers
     })
   }
-  return { getServices, getcarBrands, getcartypesbrand, createMycar, getMycars, deleteCar, getPorblemsCar };
+  // done
+  const getUserCarId = async (user_car_id: any) => {
+    return $fetch(`${config.public.apiBase}/car/show/${user_car_id}`, {
+      method: "GET",
+      headers,
+    });
+  };
+  return { getServices, getcarBrands, getcartypesbrand, createMycar, getMycars, deleteCar, getPorblemsCar, getUserCarId };
 };

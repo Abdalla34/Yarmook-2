@@ -59,6 +59,7 @@
             </div>
             <div class="flex items-center gap-2">
               <button
+                @click="handleCarDetails(car)"
                 class="w-full sm:w-auto rounded-xl border border-yellow-500 px-4 py-2 text-sm font-medium text-black-500 transition hover:bg-red-50"
               >
                 Car Details
@@ -139,7 +140,7 @@
 </template>
 
 <script setup>
-const { getMycars, deleteCar } = useCarServices();
+const { getMycars, deleteCar, getUserCarId } = useCarServices();
 
 const cars = ref([]);
 const loading = ref(true);
@@ -155,6 +156,15 @@ async function fetchCars() {
     console.error(err);
   } finally {
     loading.value = false;
+  }
+}
+
+async function handleCarDetails(car) {
+  try {
+    const res = await getUserCarId(car.id);
+    navigateTo(`/car-details/${car.id}`);
+  } catch (err) {
+    console.error(err);
   }
 }
 

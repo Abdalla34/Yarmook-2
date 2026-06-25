@@ -29,6 +29,20 @@
             </div>
 
             <div v-else class="max-w-3xl mx-auto">
+                <div v-if="alerts.length" class="mb-4 space-y-2">
+                    <div v-for="(alert, i) in alerts" :key="i"
+                        class="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700 flex items-start gap-2">
+                        <span class="mt-0.5 shrink-0">&#9888;</span>
+                        <span>{{ alert.title ?? alert.message ?? alert }}</span>
+                    </div>
+                </div>
+
+                <div v-if="latestOrder" class="mb-4 bg-yellow-50 border border-yellow-200 rounded-2xl p-4">
+                    <p class="text-xs font-semibold text-yellow-700 uppercase mb-1">Latest Order</p>
+                    <p class="font-semibold text-gray-800">Order #{{ latestOrder.id }} — {{ latestOrder.status }}</p>
+                    <p v-if="latestOrder.created_at" class="text-xs text-gray-500 mt-1">{{ latestOrder.created_at }}</p>
+                </div>
+
                 <div class="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide snap-x">
                     <button @click="activeFilter = 'all'"
                         class="shrink-0 snap-start px-5 py-2 rounded-full text-sm font-medium transition-all duration-300"
@@ -116,6 +130,9 @@ const filteredOrders = computed(() => {
     return orders.value.filter((o) => o?.status === activeFilter.value || o?.type === activeFilter.value);
 });
 
+const latestOrder = ref(null);
+const alerts = ref([]);
+
 onMounted(fetchOrders);
 
 async function fetchOrders() {
@@ -124,7 +141,17 @@ async function fetchOrders() {
     try {
         const res = await getOrdersAll();
         const data = res?.data ?? res;
-        orders.value = data?.items ?? data?.data ?? (Array.isArray(data) ? data : []);
+
+        if (data?.latest_order) {
+            latestOrder.value = data.latest_order;
+            orders.value = [data.latest_order, ...(Array.isArray(data?.orders ?? data?.items) ? (data.orders ?? data.items) : [])];
+        } else {
+            orders.value = data?.items ?? data?.data ?? (Array.isArray(data) ? data : []);
+        }
+
+        if (data?.alerts) {
+            alerts.value = Array.isArray(data.alerts) ? data.alerts : [data.alerts];
+        }
     } catch (err) {
         error.value = err?.data?.message || err?.message || "Failed to load orders.";
         console.error("Failed to load orders:", err);
