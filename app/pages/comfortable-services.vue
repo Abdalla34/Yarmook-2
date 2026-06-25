@@ -105,6 +105,18 @@ const openServicesModal = async () => {
 
 const deliveryType = ref("one_way");
 const bookingType = ref(null);
+const pickupLocation = ref(null);
+const showMapModal = ref(false);
+const mapLoading = ref(false);
+
+const openMapPicker = () => {
+    showMapModal.value = true;
+};
+
+const onLocationSelected = (location) => {
+    pickupLocation.value = location;
+    showMapModal.value = false;
+};
 
 const toggleBookingType = (type) => {
     if (bookingType.value === type) {
@@ -412,6 +424,13 @@ onMounted(async () => {
                                 towway
                             </button>
                         </div>
+
+                        <div v-if="deliveryType === 'one_way'" @click="openMapPicker" class="mt-4 bg-gray-50 rounded-xl p-4 text-center cursor-pointer">
+                            <p class="text-gray-500 mb-2">موقع استلام السيارة</p>
+                            <p class="text-sm font-medium" :class="pickupLocation ? 'text-gray-800' : 'text-red-500'">
+                                {{ pickupLocation?.address || '+ اختر الموقع' }}
+                            </p>
+                        </div>
                     </div>
 
                     <div class="flex gap-3">
@@ -463,6 +482,23 @@ onMounted(async () => {
                     class="w-full mt-4 bg-yellow-400 rounded-full py-3 font-bold text-black">
                     {{ selectedProblems.length ? 'تأكيد الاختيار' : 'إغلاق' }}
                 </button>
+            </div>
+        </div>
+    </Teleport>
+
+    <!-- Map modal -->
+    <Teleport to="body">
+        <div v-if="showMapModal" class="fixed inset-0 z-50 flex items-end justify-center">
+            <div class="fixed inset-0 bg-black/50" @click="showMapModal = false"></div>
+            <div class="relative bg-white rounded-t-2xl w-full max-w-lg h-[80vh] flex flex-col p-5 z-10">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">اختر موقع الاستلام</h3>
+                    <button @click="showMapModal = false" class="text-gray-400 text-xl">&times;</button>
+                </div>
+
+                <div class="flex-1 rounded-xl overflow-hidden border">
+                    <MapPicker @location-selected="onLocationSelected" />
+                </div>
             </div>
         </div>
     </Teleport>
