@@ -170,7 +170,7 @@ onMounted(async () => {
             <div v-if="currentStep === 1" class="p-4 space-y-4">
 
                 <!-- Car -->
-                <div class="relative">
+                <div class="relative shadow-md">
                     <div class="box-car bg-gray-100 rounded-xl p-4 shadow-sm">
                         <div class="flex justify-between items-center">
                             <div>
