@@ -5,25 +5,8 @@
                 Payment Method
             </h1>
 
-            <!-- No order ID -->
-            <div v-if="!orderId" class="text-center py-12">
-                <p class="text-gray-500 text-lg">No order found. Please go back to cart.</p>
-                <NuxtLink to="/cart"
-                    class="inline-block mt-4 px-6 py-2 bg-main-color rounded-lg font-medium hover:opacity-90 transition">
-                    Back to Cart
-                </NuxtLink>
-            </div>
-
-            <!-- Loading order -->
-            <div v-else-if="loadingOrder" class="text-center py-12">
-                <div
-                    class="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto">
-                </div>
-                <p class="mt-4 text-gray-600">Loading order details...</p>
-            </div>
-
             <!-- Payment method selection -->
-            <template v-else>
+            <template>
                 <div v-if="!checkoutId">
                     <div v-if="!paymentMethods.length" class="text-center py-12">
                         <p class="text-gray-500 text-lg">No payment methods available.</p>
@@ -104,36 +87,8 @@ const { usePayment, tamaraPayment, tabyPayment, checkOnDelivery } = PayMents();
 
 const orderId = route.query.order_id;
 
-const showCashOnDelivery = ref(false);
-const showCodPopup = ref(false);
-const codMessage = ref("");
-let codTimer = null;
-const totalAmount = ref(0);
-
-onUnmounted(() => {
-    if (codTimer) clearTimeout(codTimer);
-});
-const selectedMethod = ref("");
-const submitting = ref(false);
-const error = ref("");
-const checkoutId = ref(null);
-const loadingCheckout = ref(false);
-const loadingOrder = ref(true);
-const hyperpayBrands = ref("");
-
-const paymentMethods = computed(() => {
-    const methods = ["Visa", "Mada", "MasterCard", "Tabby", "Tamara"];
-    if (showCashOnDelivery.value) {
-        methods.push("Cash on Delivery");
-    }
-    return methods;
-});
-
 onMounted(async () => {
-    if (!orderId) {
-        loadingOrder.value = false;
-        return;
-    }
+    if (!orderId) return;
     try {
         const res = await getsingleOrder(orderId);
         const data = res?.data ?? res;
@@ -143,9 +98,31 @@ onMounted(async () => {
         }
     } catch (err) {
         console.error("Failed to fetch order:", err);
-    } finally {
-        loadingOrder.value = false;
     }
+});
+
+const showCashOnDelivery = ref(false);
+const showCodPopup = ref(false);
+const codMessage = ref("");
+const codTimer = ref(null);
+const totalAmount = ref(0);
+
+onUnmounted(() => {
+    if (codTimer.value) clearTimeout(codTimer.value);
+});
+const selectedMethod = ref("");
+const submitting = ref(false);
+const error = ref("");
+const checkoutId = ref(null);
+const loadingCheckout = ref(false);
+const hyperpayBrands = ref("");
+
+const paymentMethods = computed(() => {
+    const methods = ["Visa", "Mada", "MasterCard", "Tabby", "Tamara"];
+    if (showCashOnDelivery.value) {
+        methods.push("Cash on Delivery");
+    }
+    return methods;
 });
 
 const origin = import.meta.client ? window.location.origin : "";
@@ -167,7 +144,7 @@ const hyperpayWidgetBrands = {
 };
 
 async function handlePay() {
-    if (!selectedMethod.value || submitting.value || !orderId) return;
+    if (!selectedMethod.value || submitting.value) return;
 
     error.value = "";
     submitting.value = true;
@@ -270,7 +247,7 @@ async function handleCashOnDelivery() {
     const data = res?.data ?? res;
     codMessage.value = data?.refrence || "Your order will be delivered. Thank you!";
     showCodPopup.value = true;
-    codTimer = setTimeout(() => {
+    codTimer.value = setTimeout(() => {
         navigateTo("/");
     }, 3000);
 }
