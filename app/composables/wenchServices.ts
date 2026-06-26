@@ -1,17 +1,24 @@
-const { headers } = useGlobalApi();
 export const useWenchServices = () => {
+    const token = useCookie("token");
     const config = useRuntimeConfig();
-    const createWenchOrder = async (payload: any, type: any) => {
-        return await $fetch(`${config.public.apiBase}ح`, {
+    const createWenchOrder = async (formData: FormData) => {
+        return await $fetch(`${config.public.apiBase}/order/orders`, {
             method: "POST",
-            body: { payload, type },
-            headers,
+            body: formData,
+            headers: {
+                Authorization: `Bearer ${token.value}`,
+                Accept: "application/json",
+            },
         });
     };
-    const getWenchInCart = async () => {
-        return $fetch(`${config.public.apiBase}/order/wench-cart`, {
+    const getWenchInCart = async (id?: string | number) => {
+        const url = id ? `${config.public.apiBase}/order/orders/${id}` : `${config.public.apiBase}/order/wench-cart`;
+        return await $fetch(url, {
             method: "GET",
-            headers,
+            headers: {
+                Authorization: `Bearer ${token.value}`,
+                Accept: "application/json",
+            },
         });
     };
     return { createWenchOrder, getWenchInCart }

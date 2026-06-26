@@ -3,6 +3,7 @@ import { useForm, Field, ErrorMessage } from "vee-validate";
 
 const { getMycars, getPorblemsCar, getServices } = useCarServices();
 const { getBranches } = useGlobalApi();
+const { createWenchOrder } = useWenchServices();
 const { errors, validate } = useForm();
 
 const MY_CARS_CACHE_KEY = "my_cars_cache";
@@ -113,6 +114,7 @@ const returnLocation = ref(null);
 const showMapModal = ref(false);
 const mapMode = ref("pickup");
 const mapLoading = ref(false);
+const notes = ref("");
 
 const openMapPicker = (mode = "pickup") => {
     mapMode.value = mode;
@@ -205,8 +207,43 @@ const nextStep = async () => {
 
 const confirmStep2 = async () => {
     const { valid } = await validate();
-    if (valid) {
-        // proceed to confirmation
+    if (!valid) return;
+
+    const fd = new FormData();
+    fd.append("type", "wench");
+    fd.append("brand_id", selectedCar.value?.brand?.id);
+    fd.append("car_type_id", selectedCar.value?.car_type?.id);
+    fd.append("branch_id", selectedBranch.value?.id);
+    fd.append("problem_id", selectedProblems.value[0]?.id);
+    fd.append("reservation_time", `${selectedDate.value} ${selectedTime.value}`);
+    fd.append("user_car_id", selectedCar.value?.id);
+    fd.append("customer_note", notes.value);
+    fd.append("delivery_direction", deliveryType.value === "two_way" ? "twoWay" : "oneWay");
+    fd.append("is_booking_now", bookingType.value === "urgent" ? "1" : "0");
+
+    selectedServices.value.forEach((s) => {
+        fd.append("services[][service_id]", s.id);
+    });
+
+    if (pickupLocation.value) {
+        fd.append("address", pickupLocation.value.address);
+        fd.append("lat", pickupLocation.value.lat);
+        fd.append("lng", pickupLocation.value.lng);
+    }
+
+    if (returnLocation.value) {
+        fd.append("address_return", returnLocation.value.address);
+        fd.append("lat_return", returnLocation.value.lat);
+        fd.append("lng_return", returnLocation.value.lng);
+    }
+
+    try {
+        const res = await createWenchOrder(fd,'wench');
+        if (res && res.status) {
+            navigateTo((`/cart-comfortable-services/${res?.data?.id}`));
+        }
+    } catch (err) {
+        console.error(err);
     }
 };
 
@@ -322,7 +359,8 @@ onMounted(async () => {
                             ما هي المشاكل التي تعاني منها سيارتك؟
                         </p>
 
-                        <Field name="problems" :rules="problemsRequired" :model-value="selectedProblems" type="hidden" />
+                        <Field name="problems" :rules="problemsRequired" :model-value="selectedProblems"
+                            type="hidden" />
                         <ErrorMessage name="problems" class="text-red-500 text-sm text-center block mb-2" />
 
                         <div v-if="selectedProblems.length" class="flex flex-col gap-2 mb-3">
@@ -366,7 +404,7 @@ onMounted(async () => {
                     </div>
 
                     <!-- Details -->
-                    <textarea placeholder="المزيد من التفاصيل (اختياري)"
+                    <textarea v-model="notes" placeholder="المزيد من التفاصيل (اختياري)"
                         class="w-full h-32 rounded-xl border p-4 outline-none resize-none bg-white shadow-sm"></textarea>
 
                     <!-- Continue -->
@@ -384,7 +422,8 @@ onMounted(async () => {
                         <p class="text-gray-700 mb-3 text-center">اختر الفرع</p>
                         <Field name="branch" :rules="branchRequired" :model-value="selectedBranch" type="hidden" />
                         <ErrorMessage name="branch" class="text-red-500 text-sm text-center block mb-2" />
-                        <div v-if="selectedBranch" class="bg-white w-full rounded-md px-4 py-3 border border-gray-200 text-sm text-gray-800 mb-3">
+                        <div v-if="selectedBranch"
+                            class="bg-white w-full rounded-md px-4 py-3 border border-gray-200 text-sm text-gray-800 mb-3">
                             {{ selectedBranch.title }}
                         </div>
                         <div class="text-center">
@@ -402,8 +441,7 @@ onMounted(async () => {
                         </div>
 
                         <!-- Future -->
-                        <div @click="toggleBookingType('urgent')"
-                            class="border rounded-xl p-4 mb-4 cursor-pointer"
+                        <div @click="toggleBookingType('urgent')" class="border rounded-xl p-4 mb-4 cursor-pointer"
                             :class="bookingType === 'urgent' ? 'border-red-300 bg-red-50' : 'border-gray-200'">
                             <div class="flex justify-between">
                                 <div>
@@ -413,7 +451,8 @@ onMounted(async () => {
                                     </p>
                                 </div>
 
-                                <div class="bg-red-500 text-white rounded-full px-3 py-1 flex justify-center items-center text-xs">
+                                <div
+                                    class="bg-red-500 text-white rounded-full px-3 py-1 flex justify-center items-center text-xs">
                                     1 ساعة
                                 </div>
                             </div>
@@ -429,7 +468,8 @@ onMounted(async () => {
                                     يتم تحديد موعدك بعد المراجعة.
                                 </p>
                                 <p v-else class="text-xs text-green-600 font-medium">
-                                    {{ selectedDate && selectedTime ? `${selectedDate} - ${selectedTime}` : 'اختر الوقت' }}
+                                    {{ selectedDate && selectedTime ? `${selectedDate} - ${selectedTime}` : 'اختر الوقت'
+                                    }}
                                 </p>
                             </div>
                             <div v-if="bookingType === 'normal' && selectedDate && selectedTime"
@@ -455,14 +495,16 @@ onMounted(async () => {
                             </button>
                         </div>
 
-                        <div @click="openMapPicker('pickup')" class="mt-4 bg-gray-50 rounded-xl p-4 text-center cursor-pointer">
+                        <div @click="openMapPicker('pickup')"
+                            class="mt-4 bg-gray-50 rounded-xl p-4 text-center cursor-pointer">
                             <p class="text-gray-500 mb-2">موقع استلام السيارة</p>
                             <p class="text-sm font-medium" :class="pickupLocation ? 'text-gray-800' : 'text-red-500'">
                                 {{ pickupLocation?.address || '+ اختر الموقع' }}
                             </p>
                         </div>
 
-                        <div v-if="deliveryType === 'two_way'" @click="openMapPicker('return')" class="mt-2 bg-gray-50 rounded-xl p-4 text-center cursor-pointer">
+                        <div v-if="deliveryType === 'two_way'" @click="openMapPicker('return')"
+                            class="mt-2 bg-gray-50 rounded-xl p-4 text-center cursor-pointer">
                             <p class="text-gray-500 mb-2">موقع إرجاع السيارة</p>
                             <p class="text-sm font-medium" :class="returnLocation ? 'text-gray-800' : 'text-red-500'">
                                 {{ returnLocation?.address || '+ اختر الموقع' }}
@@ -529,7 +571,8 @@ onMounted(async () => {
             <div class="fixed inset-0 bg-black/50" @click="showMapModal = false"></div>
             <div class="relative bg-white rounded-t-2xl w-full max-w-lg h-[80vh] flex flex-col p-5 z-10">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">{{ mapMode === 'pickup' ? 'اختر موقع الاستلام' : 'اختر موقع الإرجاع' }}</h3>
+                    <h3 class="font-bold text-lg">{{ mapMode === 'pickup' ? 'اختر موقع الاستلام' : 'اختر موقع الإرجاع'
+                        }}</h3>
                     <button @click="showMapModal = false" class="text-gray-400 text-xl">&times;</button>
                 </div>
 
@@ -546,7 +589,8 @@ onMounted(async () => {
             <div class="fixed inset-0 bg-black/50" @click="showDateTimePicker = false"></div>
             <div class="relative bg-white rounded-t-2xl w-full max-w-lg max-h-[70vh] overflow-y-auto p-5 z-10">
                 <div class="flex items-center justify-between mb-4">
-                    <button v-if="dateTimeStep === 2" @click="dateTimeStep = 1" class="text-gray-500 text-xl">&larr;</button>
+                    <button v-if="dateTimeStep === 2" @click="dateTimeStep = 1"
+                        class="text-gray-500 text-xl">&larr;</button>
                     <span v-else></span>
                     <h3 class="font-bold text-lg">{{ dateTimeStep === 1 ? 'اختر التاريخ' : 'اختر الوقت' }}</h3>
                     <button @click="showDateTimePicker = false" class="text-gray-400 text-xl">&times;</button>
