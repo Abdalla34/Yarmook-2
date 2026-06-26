@@ -1,6 +1,9 @@
 <script setup>
+import { useForm, Field, ErrorMessage } from "vee-validate";
+
 const { getMycars, getPorblemsCar, getServices } = useCarServices();
 const { getBranches } = useGlobalApi();
+const { errors, validate } = useForm();
 
 const MY_CARS_CACHE_KEY = "my_cars_cache";
 const PROBLEMS_CACHE_KEY = "problems_cache";
@@ -187,8 +190,24 @@ const selectTime = (time) => {
     showDateTimePicker.value = false;
 };
 
-const nextStep = () => {
-    currentStep.value = 2;
+const problemsRequired = (value) => {
+    return (selectedProblems.value && selectedProblems.value.length > 0) || 'الرجاء اختيار مشكلة واحدة على الأقل';
+};
+
+const branchRequired = (value) => {
+    return !!selectedBranch.value || 'الرجاء اختيار الفرع';
+};
+
+const nextStep = async () => {
+    const { valid } = await validate();
+    if (valid) currentStep.value = 2;
+};
+
+const confirmStep2 = async () => {
+    const { valid } = await validate();
+    if (valid) {
+        // proceed to confirmation
+    }
 };
 
 const previousStep = () => {
@@ -303,6 +322,9 @@ onMounted(async () => {
                             ما هي المشاكل التي تعاني منها سيارتك؟
                         </p>
 
+                        <Field name="problems" :rules="problemsRequired" :model-value="selectedProblems" type="hidden" />
+                        <ErrorMessage name="problems" class="text-red-500 text-sm text-center block mb-2" />
+
                         <div v-if="selectedProblems.length" class="flex flex-col gap-2 mb-3">
                             <div v-for="p in selectedProblems" :key="p.id"
                                 class="bg-white w-full rounded-md px-4 py-3 border border-gray-200 text-sm text-gray-800">
@@ -357,10 +379,11 @@ onMounted(async () => {
 
                 <!-- step 2 -->
                 <div v-else class="p-4 space-y-4">
-
                     <!-- Branch -->
                     <div class="bg-gray-50 rounded-xl p-5 shadow-md">
                         <p class="text-gray-700 mb-3 text-center">اختر الفرع</p>
+                        <Field name="branch" :rules="branchRequired" :model-value="selectedBranch" type="hidden" />
+                        <ErrorMessage name="branch" class="text-red-500 text-sm text-center block mb-2" />
                         <div v-if="selectedBranch" class="bg-white w-full rounded-md px-4 py-3 border border-gray-200 text-sm text-gray-800 mb-3">
                             {{ selectedBranch.title }}
                         </div>
@@ -452,7 +475,7 @@ onMounted(async () => {
                             رجوع
                         </button>
 
-                        <button class="flex-1 bg-yellow-400 rounded-full py-4 font-bold">
+                        <button @click="confirmStep2" class="flex-1 bg-yellow-400 rounded-full py-4 font-bold">
                             الاستمرار للتأكيد
                         </button>
                     </div>
@@ -522,16 +545,18 @@ onMounted(async () => {
         <div v-if="showDateTimePicker" class="fixed inset-0 z-50 flex items-end justify-center">
             <div class="fixed inset-0 bg-black/50" @click="showDateTimePicker = false"></div>
             <div class="relative bg-white rounded-t-2xl w-full max-w-lg max-h-[70vh] overflow-y-auto p-5 z-10">
-                <div class="flex items-center mb-4">
-                    <button v-if="dateTimeStep === 2" @click="dateTimeStep = 1" class="text-gray-500 text-xl ml-2">&larr;</button>
+                <div class="flex items-center justify-between mb-4">
+                    <button v-if="dateTimeStep === 2" @click="dateTimeStep = 1" class="text-gray-500 text-xl">&larr;</button>
+                    <span v-else></span>
                     <h3 class="font-bold text-lg">{{ dateTimeStep === 1 ? 'اختر التاريخ' : 'اختر الوقت' }}</h3>
-                    <button @click="showDateTimePicker = false" class="mr-auto text-gray-400 text-xl">&times;</button>
+                    <button @click="showDateTimePicker = false" class="text-gray-400 text-xl">&times;</button>
                 </div>
 
-                <div v-if="dateTimeStep === 1" class="space-y-2">
-                    <div v-if="dates.length">
+                <div v-if="dateTimeStep === 1">
+                    <div v-if="dates.length" class="flex gap-2 flex-wrap">
                         <div v-for="date in dates" :key="date.date" @click="selectDate(date)"
-                            class="rounded-xl border border-gray-200 px-4 py-3 cursor-pointer hover:bg-yellow-50">
+                            class="flex-shrink-0 rounded-xl border px-4 py-3 cursor-pointer hover:bg-yellow-50"
+                            :class="selectedDate === date.date ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'">
                             <p class="font-medium">{{ date.date }}</p>
                             <p class="text-sm text-gray-500">{{ date.time_slots?.length || 0 }} مواعيد متاحة</p>
                         </div>
