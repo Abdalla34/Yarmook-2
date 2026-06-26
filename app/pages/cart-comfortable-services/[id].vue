@@ -129,17 +129,10 @@ const fetchOrder = async () => {
     }
 };
 
-const updateQty = async (itemId, qty) => {
-    if (qty < 1) return;
-    // update qty via API if needed
-};
 
-const removeItem = async (itemId) => {
-    // remove item via API if needed
-};
 
 const continueOrder = () => {
-    // proceed to next step
+    navigateTo(`/payment?order_id=${route.params.id}`)
 };
 
 onMounted(fetchOrder);
