@@ -108,7 +108,7 @@ onMounted(async () => {
                                 <span
                                     class="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full uppercase">soon</span>
                                 <div class="p-2 text-center">
-                                    <h3 class="text-xs font-bold uppercase">spare parts</h3>
+                                    <h3 class="text-xs font-bold uppercase">maitenance</h3>
                                 </div>
                             </div>
 

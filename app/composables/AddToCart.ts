@@ -135,5 +135,33 @@ export const useAddToCart = () => {
             }
         );
     };
-    return { addCart, addCartMulti, getMyCart, cartCount, deleteItemsFromCart, updateQtyCart, updateCartDetails };
+
+    const applyVoucherToCart = async (cart_id: any, promo_code_id: any) => {
+        return await $fetch(
+            `${config.public.apiBase}/marketplace/cart/apply-voucher/${cart_id}`,
+            {
+                method: "POST",
+                body: { promo_code_id },
+                headers: getHeaders()
+            }
+        );
+    };
+    const deleteVoucherFromCart = async (cart_id: any) => {
+        return await $fetch(
+            `${config.public.apiBase}/marketplace/cart/delete-voucher/${cart_id}`,
+            {
+                method: "POST",
+                body: {},
+                headers: getHeaders()
+            }
+        );
+    };
+    const toggleUseWallet = async (order_id: any, response_type: any) => {
+        return await $fetch(`${config.public.apiBase}/marketplace/order/use_wallet/${order_id}`, {
+            method: "POST",
+            headers: getHeaders(),
+          body: { response_type },
+        });
+    };
+    return { addCart, addCartMulti, getMyCart, cartCount, deleteItemsFromCart, updateQtyCart, updateCartDetails, applyVoucherToCart, deleteVoucherFromCart, toggleUseWallet };
 };

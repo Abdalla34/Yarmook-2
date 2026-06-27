@@ -124,13 +124,24 @@
                             <hr class="my-6" />
 
                             <div class="mt-5 relative">
-                                <input type="text" placeholder="Promocode"
-                                    class="w-full rounded-lg border border-gray-200 px-4 py-3 pr-20 outline-none focus:border-yellow-400" />
-                                <button
-                                    class="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg bg-yellow-400 px-4 py-2 text-sm font-medium text-black transition hover:bg-yellow-500">
-                                    Apply
+                                <input v-model="promoCode" type="text" placeholder="Promocode"
+                                    class="w-full rounded-lg border border-gray-200 px-4 py-3 pr-20 outline-none focus:border-yellow-400"
+                                    :disabled="!!voucherCode" />
+                                <button v-if="!voucherCode" @click="applyPromoCode" :disabled="promoApplying || !promoCode.trim()"
+                                    class="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg bg-yellow-400 px-4 py-2 text-sm font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
+                                    <span v-if="promoApplying"
+                                        class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin inline-block"></span>
+                                    <span v-else>Apply</span>
+                                </button>
+                                <button v-else @click="deletevoucher" :disabled="promoDeleting"
+                                    class="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg bg-red-400 px-4 py-2 text-sm font-medium text-black transition hover:bg-red-500 disabled:opacity-50">
+                                    <span v-if="promoDeleting"
+                                        class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin inline-block"></span>
+                                    <span v-else>delete</span>
                                 </button>
                             </div>
+                            <div v-if="voucherCode" class="mt-2 text-sm text-green-600">Promo code "{{ voucherCode }}" applied</div>
+                            <div v-if="promoError" class="mt-2 text-sm text-red-600">{{ promoError }}</div>
 
                             <div class="mt-4 flex items-center justify-between rounded-xl bg-green-50 px-4 py-3">
                                 <span class="font-semibold text-gray-700">
@@ -162,7 +173,7 @@
 <script setup>
 const router = useRouter();
 const route = useRoute();
-const { getMyCart, deleteItemsFromCart, updateQtyCart, cartCount } = useAddToCart();
+const { getMyCart, deleteItemsFromCart, updateQtyCart, cartCount, applyVoucherToCart, deleteVoucherFromCart } = useAddToCart();
 
 const orderIdFromQuery = route.query.order_id;
 
@@ -178,10 +189,56 @@ const branch = ref("");
 const deletingId = ref(null);
 const updatingQtyId = ref(null);
 const submitting = ref(false);
+const promoCode = ref("");
+const promoApplying = ref(false);
+const promoMessage = ref("");
+const promoError = ref("");
+const voucherCode = ref("");
+const promoDeleting = ref(false);
+
+async function applyPromoCode() {
+    if (!promoCode.value.trim() || promoApplying.value) return;
+    promoApplying.value = true;
+    promoMessage.value = "";
+    promoError.value = "";
+    try {
+        const res = await applyVoucherToCart(orderIdFromQuery, promoCode.value.trim());
+        const data = res?.data ?? res;
+        const isSuccess = data?.status === true || data?.status === "true";
+        if (isSuccess) {
+            voucherCode.value = promoCode.value.trim();
+            promoCode.value = "";
+            await syncCart();
+        } else {
+            promoError.value = data?.message || data?.msg || "Failed to apply promo code.";
+        }
+    } catch (err) {
+        promoError.value = err?.data?.message || err?.data?.msg || err?.message || "Failed to apply promo code.";
+        console.error("Promo code error:", err);
+    } finally {
+        promoApplying.value = false;
+    }
+}
+
+async function deletevoucher() {
+    if (promoDeleting.value) return;
+    promoDeleting.value = true;
+    promoError.value = "";
+    try {
+        await deleteVoucherFromCart(orderIdFromQuery);
+        voucherCode.value = "";
+        promoMessage.value = "";
+        await syncCart();
+    } catch (err) {
+        promoError.value = err?.data?.message || err?.data?.msg || err?.message || "Failed to remove promo code.";
+        console.error("Delete promo code error:", err);
+    } finally {
+        promoDeleting.value = false;
+    }
+}
 
 function continueOrder() {
-  submitting.value = true;
-  router.push(`/payment?order_id=${orderIdFromQuery}`);
+    router.push(`/payment?order_id=${orderIdFromQuery}`);
 }
 
 async function fetchCart() {
@@ -202,6 +259,7 @@ async function fetchCart() {
         reservationDate.value = data.reservation_date ?? data.created_at ?? "";
         reservationTime.value = data.reservation_time ?? "";
         branch.value = data.branch ?? "";
+        voucherCode.value = data.voucher_code || data.promo_code || data.coupon_code || data.discount_code || "";
     } catch (err) {
         error.value = "Failed to load cart";
         console.error(err);
@@ -224,6 +282,7 @@ async function syncCart() {
         reservationDate.value = data.reservation_date ?? data.created_at ?? "";
         reservationTime.value = data.reservation_time ?? "";
         branch.value = data.branch ?? "";
+        voucherCode.value = data.voucher_code || data.promo_code || data.coupon_code || data.discount_code || "";
     } catch (err) {
         console.error("Failed to sync cart", err);
     }

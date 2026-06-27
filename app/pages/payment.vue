@@ -138,7 +138,7 @@ const paymentMethods = computed(() => {
 const origin = import.meta.client ? window.location.origin : "";
 
 const hyperpayRedirectUrl = computed(() => {
-    return `${origin}/payment/success?gateway=hyperpay&order_id=${orderId.value}`;
+    return `${origin}/payment/status?gateway=hyperpay&order_id=${orderId.value}`;
 });
 
 const brandMap = {
@@ -208,7 +208,7 @@ function loadHyperpayWidget(id) {
         existing.remove();
     }
 
-    const successUrl = `${origin}/payment/success?gateway=hyperpay&order_id=${orderId.value}`;
+    const successUrl = `${origin}/payment/status?gateway=hyperpay&order_id=${orderId.value}`;
     const failureUrl = `${origin}/payment/failure?gateway=hyperpay&order_id=${orderId.value}`;
     const cancelUrl = `${origin}/payment/cancel?gateway=hyperpay&order_id=${orderId.value}`;
 
@@ -225,13 +225,13 @@ function loadHyperpayWidget(id) {
     };
 
     const script = document.createElement("script");
-    script.src = `https://test.oppwa.com/v1/paymentWidgets.js?checkoutId=${id}`;
+    script.src = `https://test.oppwa.com/v2/paymentWidgets.js?checkoutId=${id}`;
     script.async = true;
     document.head.appendChild(script);
 }
 
 async function handleTamaraPayment() {
-    const successUrl = `${origin}/payment/success?gateway=tamara&order_id=${orderId.value}`;
+    const successUrl = `${origin}/payment/status?gateway=tamara&order_id=${orderId.value}`;
     const failureUrl = `${origin}/payment/failure?gateway=tamara&order_id=${orderId.value}`;
     const cancelUrl = `${origin}/payment/cancel?gateway=tamara&order_id=${orderId.value}`;
 
@@ -263,7 +263,7 @@ async function handleCashOnDelivery() {
 }
 
 async function handleTabbyPayment() {
-    const successUrl = `${origin}/payment/success?gateway=tabby&order_id=${orderId.value}`;
+    const successUrl = `${origin}/payment/status?gateway=tabby&order_id=${orderId.value}`;
     const failureUrl = `${origin}/payment/failure?gateway=tabby&order_id=${orderId.value}`;
     const cancelUrl = `${origin}/payment/cancel?gateway=tabby&order_id=${orderId.value}`;
 
