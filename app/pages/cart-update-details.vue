@@ -143,21 +143,39 @@
                             <div v-if="voucherCode" class="mt-2 text-sm text-green-600">Promo code "{{ voucherCode }}" applied</div>
                             <div v-if="promoError" class="mt-2 text-sm text-red-600">{{ promoError }}</div>
 
-                            <div v-if="Number(balance) > 0" class="mt-4 flex items-center justify-between rounded-xl bg-green-50 px-4 py-3">
-                                <span class="text-sm font-medium text-gray-700">Use Wallet</span>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs text-gray-500">Balance: {{ balance }} SAR</span>
+                            <div v-if="Number(balance) > 0" class="mt-4 rounded-xl border border-green-200 bg-white px-4 py-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                                            <svg class="h-4 w-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-700">Use Wallet</span>
+                                            <p class="flex items-center gap-1 text-xs text-gray-400">
+                                                <span>Balance: {{ balance }} SAR</span>
+                                                <span v-if="walletLoading" class="inline-block h-3 w-3 animate-spin rounded-full border-2 border-gray-400 border-t-transparent"></span>
+                                            </p>
+                                        </div>
+                                    </div>
                                     <button @click="handleWalletToggle" :disabled="walletLoading" type="button"
                                         :class="['relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none', useWalletActive ? 'bg-green-500' : 'bg-gray-200']">
                                         <span v-if="walletLoading"
-                                            class="inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out animate-pulse mx-auto"></span>
+                                            class="inline-block h-5 w-5 translate-x-0.5 transform rounded-full bg-white transition duration-200 ease-in-out animate-pulse"></span>
                                         <span v-else
-                                            :class="['inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out', useWalletActive ? 'translate-x-5' : 'translate-x-0']"></span>
+                                            :class="['inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out', useWalletActive ? 'translate-x-5' : 'translate-x-0.5']"></span>
                                     </button>
+                                </div>
+                                <div v-if="useWalletActive && Number(amountToPay) === 0 && Number(balance) > 0" class="mt-2 flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-2">
+                                    <svg class="h-3.5 w-3.5 shrink-0 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span class="text-xs font-medium text-green-700">Wallet covers the full amount</span>
                                 </div>
                             </div>
 
-                            <div class="mt-4 flex items-center justify-between rounded-xl bg-green-50 px-4 py-3">
+                            <div class="mt-4 flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3">
                                 <span class="font-semibold text-gray-700">
                                     Total Amount
                                 </span>
@@ -165,10 +183,6 @@
                                     <span class="text-2xl font-bold">{{ amountToPay }}</span>
                                     <span class="text-xs text-gray-400">SAR</span>
                                 </div>
-                            </div>
-
-                            <div v-if="useWalletActive && Number(amountToPay) === 0 && Number(balance) > 0" class="mt-2 text-xs text-green-600 text-center">
-                                Wallet covers the full amount
                             </div>
 
                             <div class="mt-6 flex flex-col sm:flex-row gap-3">
@@ -185,6 +199,34 @@
             </div>
         </div>
     </div>
+
+    <!-- Success Popup -->
+    <Teleport to="body">
+        <div v-if="showSuccessPopup"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+            <div class="w-full max-w-sm animate-[fadeIn_0.2s_ease-out] rounded-2xl bg-white px-8 py-10 text-center shadow-2xl">
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                    <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <h3 class="mb-2 text-lg font-semibold text-gray-800">Payment Successful</h3>
+                <p class="mb-6 text-sm text-gray-500">Your order has been paid using your wallet balance.</p>
+                <div class="flex flex-col gap-3">
+                    <button @click="goToOrder" :disabled="popupLoading"
+                        class="flex w-full items-center justify-center gap-2 rounded-full bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-60">
+                        <span v-if="popupLoading" class="h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent"></span>
+                        <span>Track Order</span>
+                    </button>
+                    <button @click="goToHome" :disabled="popupLoading"
+                        class="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white py-3 font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-60">
+                        <span v-if="popupLoading" class="h-4 w-4 animate-spin rounded-full border-2 border-gray-500 border-t-transparent"></span>
+                        <span>Go to Home</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </Teleport>
 </template>
 
 <script setup>
@@ -218,6 +260,10 @@ const useWalletActive = ref(false);
 const balance = ref("0");
 const walletLoading = ref(false);
 const checkoutLoading = ref(false);
+const showSuccessPopup = ref(false);
+const completedOrderId = ref(null);
+const popupLoading = ref(false);
+let successTimer = null;
 
 async function handleWalletToggle() {
   if (walletLoading.value) return;
@@ -251,7 +297,12 @@ async function handleContinue() {
     if (res?.status) {
       cartCount.value = 0;
       localStorage.removeItem("yarmook-cart");
-      await router.push("/");
+      completedOrderId.value = res?.data?.id || orderIdFromQuery;
+      showSuccessPopup.value = true;
+      successTimer = setTimeout(() => {
+        showSuccessPopup.value = false;
+        router.push("/");
+      }, 4000);
     } else {
       throw new Error(res?.message || "Failed to convert cart to order");
     }
@@ -262,6 +313,22 @@ async function handleContinue() {
   } finally {
     checkoutLoading.value = false;
   }
+}
+
+function goToHome() {
+  if (popupLoading.value) return;
+  popupLoading.value = true;
+  clearTimeout(successTimer);
+  showSuccessPopup.value = false;
+  router.push("/");
+}
+
+function goToOrder() {
+  if (popupLoading.value) return;
+  popupLoading.value = true;
+  clearTimeout(successTimer);
+  showSuccessPopup.value = false;
+  router.push(`/singleorderdetailsid/${completedOrderId.value}`);
 }
 
 async function applyPromoCode() {
@@ -401,10 +468,25 @@ async function updateQty(item, qty) {
 }
 
 onMounted(fetchCart);
+
+onUnmounted(() => {
+  clearTimeout(successTimer);
+});
 </script>
 
 <style scoped>
 .box-design {
     background-color: #f7f9f9;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 </style>
