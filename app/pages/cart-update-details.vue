@@ -143,6 +143,20 @@
                             <div v-if="voucherCode" class="mt-2 text-sm text-green-600">Promo code "{{ voucherCode }}" applied</div>
                             <div v-if="promoError" class="mt-2 text-sm text-red-600">{{ promoError }}</div>
 
+                            <div v-if="Number(balance) > 0" class="mt-4 flex items-center justify-between rounded-xl bg-green-50 px-4 py-3">
+                                <span class="text-sm font-medium text-gray-700">Use Wallet</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-gray-500">Balance: {{ balance }} SAR</span>
+                                    <button @click="handleWalletToggle" :disabled="walletLoading" type="button"
+                                        :class="['relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none', useWalletActive ? 'bg-green-500' : 'bg-gray-200']">
+                                        <span v-if="walletLoading"
+                                            class="inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out animate-pulse mx-auto"></span>
+                                        <span v-else
+                                            :class="['inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out', useWalletActive ? 'translate-x-5' : 'translate-x-0']"></span>
+                                    </button>
+                                </div>
+                            </div>
+
                             <div class="mt-4 flex items-center justify-between rounded-xl bg-green-50 px-4 py-3">
                                 <span class="font-semibold text-gray-700">
                                     Total Amount
@@ -153,11 +167,14 @@
                                 </div>
                             </div>
 
-                            <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                            <div v-if="useWalletActive && Number(amountToPay) === 0 && Number(balance) > 0" class="mt-2 text-xs text-green-600 text-center">
+                                Wallet covers the full amount
+                            </div>
 
-                                <button @click="continueOrder" :disabled="submitting"
+                            <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                                <button @click="handleContinue" :disabled="checkoutLoading"
                                     class="flex-1 rounded-full bg-yellow-400 py-4 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
-                                    {{ submitting ? 'Loading...' : 'Continue' }}
+                                    {{ checkoutLoading ? 'Loading...' : 'Continue' }}
                                 </button>
                             </div>
 
@@ -173,7 +190,8 @@
 <script setup>
 const router = useRouter();
 const route = useRoute();
-const { getMyCart, deleteItemsFromCart, updateQtyCart, cartCount, applyVoucherToCart, deleteVoucherFromCart } = useAddToCart();
+const { getMyCart, deleteItemsFromCart, updateQtyCart, cartCount, applyVoucherToCart, deleteVoucherFromCart, toggleUseWallet, changeCartToOrder } = useAddToCart();
+const { getsingleOrder } = useGlobalApi();
 
 const orderIdFromQuery = route.query.order_id;
 
@@ -195,6 +213,56 @@ const promoMessage = ref("");
 const promoError = ref("");
 const voucherCode = ref("");
 const promoDeleting = ref(false);
+
+const useWalletActive = ref(false);
+const balance = ref("0");
+const walletLoading = ref(false);
+const checkoutLoading = ref(false);
+
+async function handleWalletToggle() {
+  if (walletLoading.value) return;
+  walletLoading.value = true;
+  const previousState = useWalletActive.value;
+  try {
+    const res = await toggleUseWallet(orderIdFromQuery, "cart_type");
+    const data = res?.data ?? {};
+    useWalletActive.value = data.use_wallet ?? false;
+    balance.value = data.user_balance ?? balance.value;
+    amountToPay.value = data.amount_to_pay ?? amountToPay.value;
+  } catch (err) {
+    useWalletActive.value = previousState;
+    const message = err?.data?.message || err?.message || "Failed to update wallet";
+    console.error("Wallet toggle failed:", message);
+    error.value = message;
+  } finally {
+    walletLoading.value = false;
+  }
+}
+
+async function handleContinue() {
+  if (checkoutLoading.value) return;
+  checkoutLoading.value = true;
+  try {
+    if (Number(amountToPay.value) > 0) {
+      await router.push(`/payment?order_id=${orderIdFromQuery}`);
+      return;
+    }
+    const res = await changeCartToOrder(orderIdFromQuery);
+    if (res?.status) {
+      cartCount.value = 0;
+      localStorage.removeItem("yarmook-cart");
+      await router.push("/");
+    } else {
+      throw new Error(res?.message || "Failed to convert cart to order");
+    }
+  } catch (err) {
+    const message = err?.data?.message || err?.message || "Failed to process order";
+    console.error("Continue failed:", message);
+    error.value = message;
+  } finally {
+    checkoutLoading.value = false;
+  }
+}
 
 async function applyPromoCode() {
     if (!promoCode.value.trim() || promoApplying.value) return;
@@ -237,10 +305,6 @@ async function deletevoucher() {
     }
 }
 
-function continueOrder() {
-    router.push(`/payment?order_id=${orderIdFromQuery}`);
-}
-
 async function fetchCart() {
     loading.value = true;
     error.value = "";
@@ -260,6 +324,15 @@ async function fetchCart() {
         reservationTime.value = data.reservation_time ?? "";
         branch.value = data.branch ?? "";
         voucherCode.value = data.voucher_code || data.promo_code || data.coupon_code || data.discount_code || "";
+
+        if (orderIdFromQuery) {
+            const orderRes = await getsingleOrder(orderIdFromQuery);
+            const orderData = orderRes?.data ?? {};
+            useWalletActive.value = orderData.use_wallet ?? false;
+            balance.value = orderData.user_balance ?? "0";
+            amountToPay.value = orderData.amount_to_pay ?? amountToPay.value;
+            cartTotal.value = orderData.total_amount ?? cartTotal.value;
+        }
     } catch (err) {
         error.value = "Failed to load cart";
         console.error(err);
@@ -283,6 +356,15 @@ async function syncCart() {
         reservationTime.value = data.reservation_time ?? "";
         branch.value = data.branch ?? "";
         voucherCode.value = data.voucher_code || data.promo_code || data.coupon_code || data.discount_code || "";
+
+        if (orderIdFromQuery) {
+            const orderRes = await getsingleOrder(orderIdFromQuery);
+            const orderData = orderRes?.data ?? {};
+            useWalletActive.value = orderData.use_wallet ?? false;
+            balance.value = orderData.user_balance ?? "0";
+            amountToPay.value = orderData.amount_to_pay ?? amountToPay.value;
+            cartTotal.value = orderData.total_amount ?? cartTotal.value;
+        }
     } catch (err) {
         console.error("Failed to sync cart", err);
     }

@@ -160,8 +160,14 @@ export const useAddToCart = () => {
         return await $fetch(`${config.public.apiBase}/marketplace/order/use_wallet/${order_id}`, {
             method: "POST",
             headers: getHeaders(),
-          body: { response_type },
+            body: { response_type },
         });
     };
-    return { addCart, addCartMulti, getMyCart, cartCount, deleteItemsFromCart, updateQtyCart, updateCartDetails, applyVoucherToCart, deleteVoucherFromCart, toggleUseWallet };
+    const changeCartToOrder = async (order_id: any) => {
+        return $fetch(`${config.public.apiBase}/order/orders/change-cart-to-order/${order_id}`, {
+            method: "POST",
+            headers: getHeaders(),
+        });
+    };
+    return { addCart, addCartMulti, getMyCart, cartCount, deleteItemsFromCart, updateQtyCart, updateCartDetails, applyVoucherToCart, deleteVoucherFromCart, toggleUseWallet, changeCartToOrder };
 };
