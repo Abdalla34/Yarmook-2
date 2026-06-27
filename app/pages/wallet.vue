@@ -4,6 +4,8 @@ const isLoggedIn = computed(() => !!token.value);
 
 const { getWallte, CashbackWallet } = useUserinformation()
 
+const WALLET_CACHE_KEY = "wallet_cache";
+
 const loading = ref(true)
 const walletData = ref(null)
 const showDepositModal = ref(false)
@@ -53,6 +55,22 @@ watch(depositAmount, () => {
 })
 
 async function fetchWallet(page = 1) {
+    if (page === 1 && import.meta.client) {
+        const cached = localStorage.getItem(WALLET_CACHE_KEY);
+        if (cached) {
+            try {
+                const parsed = JSON.parse(cached);
+                walletData.value = parsed.data;
+                currentPage.value = parsed.current_page ?? 1;
+                totalPages.value = parsed.total_pages ?? 1;
+                total.value = parsed.total ?? 0;
+                loading.value = false
+            } catch (e) {
+                // ignore invalid cache
+            }
+        }
+    }
+
     loading.value = true
     try {
         const res = await getWallte(page)
@@ -61,6 +79,9 @@ async function fetchWallet(page = 1) {
             currentPage.value = res.data?.current_page ?? 1
             totalPages.value = res.data?.total_pages ?? 1
             total.value = res.data?.total ?? 0
+            if (page === 1 && import.meta.client) {
+                localStorage.setItem(WALLET_CACHE_KEY, JSON.stringify(res.data));
+            }
         }
     } catch (e) {
     } finally {
