@@ -4,6 +4,8 @@ const isLoggedIn = computed(() => !!token.value);
 
 const { PointsUser, RedeemPoints, TransferPoints } = useUserinformation()
 
+const POINTS_CACHE_KEY = "points_cache";
+
 const loading = ref(true)
 const pointsData = ref(null)
 const activeTab = ref('earned')
@@ -46,11 +48,28 @@ const filteredTransactions = computed(() => {
 })
 
 async function fetchPoints() {
-    loading.value = true
+    let hasCached = false;
+    if (import.meta.client) {
+        const cached = localStorage.getItem(POINTS_CACHE_KEY);
+        if (cached) {
+            try {
+                pointsData.value = JSON.parse(cached);
+                hasCached = true;
+                loading.value = false;
+            } catch (e) {
+                // ignore invalid cache
+            }
+        }
+    }
+
+    if (!hasCached) loading.value = true;
     try {
         const res = await PointsUser()
         if (res?.status) {
             pointsData.value = res.data
+            if (import.meta.client) {
+                localStorage.setItem(POINTS_CACHE_KEY, JSON.stringify(res.data));
+            }
         }
     } catch {
     } finally {

@@ -73,8 +73,8 @@
                                     {{ order.type }}
                                 </span>
                             </span>
-                            <span class="text-xs font-medium px-3 py-1 rounded-full"
-                                :class="order.status === 'completed' || order.status === 'paid' ? 'bg-green-100 text-green-700' : order.status === 'cancelled' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'">
+                            <span class="text-xs font-medium px-3 py-1 rounded-full capitalize"
+                                :class="statusClass(order.status)">
                                 {{ order.status }}
                             </span>
                         </div>
@@ -129,6 +129,19 @@ const filteredOrders = computed(() => {
     if (activeFilter.value === "all") return orders.value;
     return orders.value.filter((o) => o?.status === activeFilter.value || o?.type === activeFilter.value);
 });
+
+function statusClass(status) {
+  if (!status) return 'bg-gray-100 text-gray-600';
+  const s = status.toLowerCase();
+  if (s === 'completed' || s === 'paid' || s === 'booking_done') return 'bg-green-100 text-green-700';
+  if (s === 'cancelled' || s === 'failed' || s === 'refunded') return 'bg-red-100 text-red-700';
+  if (s === 'our_date') return 'bg-blue-100 text-blue-700';
+  if (s === 'booking_now' || s === 'urgent') return 'bg-orange-100 text-orange-700';
+  if (s === 'pending') return 'bg-yellow-100 text-yellow-700';
+  if (s === 'confirmed') return 'bg-indigo-100 text-indigo-700';
+  if (s === 'processing' || s === 'in_progress') return 'bg-cyan-100 text-cyan-700';
+  return 'bg-gray-100 text-gray-600';
+}
 
 const latestOrder = ref(null);
 const alerts = ref([]);
