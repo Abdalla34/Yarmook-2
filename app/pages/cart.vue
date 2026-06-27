@@ -2,7 +2,16 @@
   <div class="cart-page mt-0 lg:mt-3 min-h-screen py-8">
     <div class="min-h-screen  ">
       <div class="mx-auto max-w-6xl px-4">
-        <div class="grid gap-6 lg:grid-cols-3 new-style">
+
+        <div v-if="!isLoggedIn" class="text-center py-20">
+          <p class="text-gray-600 text-lg mb-4">You should create an account to view your cart.</p>
+          <button @click="navigateTo('/create-account')"
+            class="bg-yellow-400 text-black px-8 py-3 rounded-full font-semibold hover:bg-yellow-500 transition">
+            Create Account
+          </button>
+        </div>
+
+        <div v-else class="grid gap-6 lg:grid-cols-3 new-style">
 
           <!-- Left Side -->
           <div class="lg:col-span-2 min-w-0">
@@ -134,6 +143,8 @@
 
 <script setup>
 const router = useRouter();
+const token = useCookie("token");
+const isLoggedIn = computed(() => !!token.value);
 const { getMyCart, deleteItemsFromCart, updateQtyCart, cartCount } = useAddToCart();
 
 const cartItems = ref([]);
