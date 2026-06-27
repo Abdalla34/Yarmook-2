@@ -163,6 +163,8 @@ const isLoggedIn = computed(() => !!token.value);
 
 const { getMycars, deleteCar, getUserCarId, setCarDefault } = useCarServices();
 
+const MY_CARS_CACHE_KEY = "my_cars_cache";
+
 const cars = ref([]);
 const loading = ref(true);
 const deletingId = ref(null);
@@ -172,9 +174,26 @@ const showDeletePopup = ref(false);
 const carToDelete = ref(null);
 
 async function fetchCars() {
+  if (import.meta.client) {
+    const cached = localStorage.getItem(MY_CARS_CACHE_KEY);
+    if (cached) {
+      try {
+        cars.value = JSON.parse(cached);
+        loading.value = false
+
+      } catch (e) {
+        // ignore invalid cache
+      }
+    }
+  }
+
   try {
     const response = await getMycars();
-    cars.value = response?.data?.data ?? response?.data ?? [];
+    const items = response?.data?.data ?? response?.data ?? [];
+    if (import.meta.client) {
+      localStorage.setItem(MY_CARS_CACHE_KEY, JSON.stringify(items));
+    }
+    cars.value = items;
   } catch (err) {
     console.error(err);
   } finally {
