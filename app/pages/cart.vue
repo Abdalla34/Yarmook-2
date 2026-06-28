@@ -11,6 +11,25 @@
           </button>
         </div>
 
+        <!-- Empty cart (centered full-width) -->
+          <div v-if="isLoggedIn && !loading && !cartItems.length && !error"
+            class="flex flex-col items-center justify-center py-16 px-4">
+            <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
+              <svg class="h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Your cart is empty</h3>
+            <p class="text-gray-500 text-sm mb-6 max-w-xs text-center">Looks like you haven't added any services or products yet.</p>
+            <NuxtLink to="/services"
+              class="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-8 py-3 font-semibold text-black transition hover:bg-yellow-500">
+              Browse Services
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </NuxtLink>
+          </div>
+
         <div v-else class="grid gap-6 lg:grid-cols-3 new-style">
 
           <!-- Left Side -->
@@ -37,14 +56,6 @@
                 class="mt-4 px-6 py-2 bg-main-color rounded-lg font-medium hover:opacity-90 transition">
                 Retry
               </button>
-            </div>
-
-            <div v-else-if="!cartItems.length" class="text-center py-12">
-              <p class="text-gray-500 text-lg">Your cart is empty</p>
-              <NuxtLink to="/services"
-                class="inline-block mt-4 px-6 py-2 bg-main-color rounded-lg font-medium hover:opacity-90 transition">
-                Browse Services
-              </NuxtLink>
             </div>
 
             <div v-else
