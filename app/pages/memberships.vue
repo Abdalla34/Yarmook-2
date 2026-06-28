@@ -45,11 +45,11 @@
                                     <h3 class="text-lg font-bold text-white">{{ m.title || m.name }}</h3>
                                     <p class="mt-1 text-sm text-gray-300">{{ selectedCar?.brand?.title }} - {{ selectedCar?.car_type?.title }}</p>
                                 </div>
-                                <div class="shrink-0">
+                                <!-- <div class="shrink-0">
                                     <span class="inline-flex items-center rounded-full bg-yellow-400 px-4 py-1.5 text-sm font-semibold text-black">
                                         {{ m.price }} SAR
                                     </span>
-                                </div>
+                                </div> -->
                             </div>
                             <p class="mt-3 text-sm text-gray-200 leading-relaxed">{{ m.description }}</p>
                             <div class="mt-4 flex items-center gap-4 text-sm">
