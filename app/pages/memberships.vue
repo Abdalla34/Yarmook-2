@@ -24,7 +24,7 @@
                 <select v-model="selectedCarId" @change="fetchMemberships"
                     class="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-yellow-500 bg-white">
                     <option v-for="car in cars" :key="car.id" :value="car.id">
-                        {{ car?.brand?.title }} - {{ car?.car_type?.title }}
+                       <img :src="car?.brand?.image" alt=""> {{ car?.brand?.title }} - {{ car?.car_type?.title }}
                     </option>
                 </select>
             </div>
