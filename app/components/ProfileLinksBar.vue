@@ -24,6 +24,7 @@ const allLinks = [
   { to: '/language', label: 'Language' },
   { to: '/points', label: 'Points' },
   { to: '/vouchers', label: 'Vouchers' },
+  { to: '/memberships', label: 'Memberships' },
   { to: '/help', label: 'Help' },
 ]
 
