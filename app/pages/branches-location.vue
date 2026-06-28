@@ -5,7 +5,7 @@
                 <div class="col-md-8 col-padding">
 
                     <!-- Breadcrumb -->
-                    <div class="go-page-arrow d-flex align-items-center gap-2 mb-4">
+                    <div @click="navigateTo('/help')" class="go-page-arrow d-flex align-items-center gap-2 mb-4">
                         <span>←</span>
                         <span>help > our branches</span>
                     </div>
@@ -79,6 +79,8 @@
 
 <script setup>
 const { getBranches } = useGlobalApi();
+
+const BRANCHES_CACHE_KEY = "branches_cache"
 
 const loading = ref(true);
 const branches = ref([]);
@@ -172,7 +174,11 @@ async function fetchBranches() {
     loading.value = true;
     try {
         const response = await getBranches();
-        branches.value = response?.data?.items ?? response?.data ?? [];
+        const items = response?.data?.items ?? response?.data ?? [];
+        branches.value = Array.isArray(items) ? items : [];
+        if (import.meta.client) {
+            localStorage.setItem(BRANCHES_CACHE_KEY, JSON.stringify(branches.value))
+        }
     } catch (err) {
         console.error('Failed to fetch branches:', err);
     } finally {
@@ -180,11 +186,23 @@ async function fetchBranches() {
     }
 }
 
-onMounted(async () => {
-    await fetchBranches();
-    if (!loading.value) {
-        nextTick(() => initMap());
+onMounted(() => {
+    if (import.meta.client) {
+        const cached = localStorage.getItem(BRANCHES_CACHE_KEY)
+        if (cached) {
+            try {
+                const parsed = JSON.parse(cached)
+                branches.value = Array.isArray(parsed) ? parsed : []
+                loading.value = false
+                nextTick(() => initMap())
+            } catch {}
+        }
     }
+    fetchBranches().then(() => {
+        if (!loading.value) {
+            nextTick(() => initMap())
+        }
+    })
 });
 
 onUnmounted(() => {

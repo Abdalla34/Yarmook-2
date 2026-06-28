@@ -19,5 +19,11 @@ export const useHelp = () => {
             body: form,
         });
     };
-    return { getFaqs,FormUserContact }
+    const Settings = async () => {
+        return await $fetch(`${config.public.apiBase}/settings`, {
+            method: "GET",
+            headers,
+        });
+    };
+    return { getFaqs, FormUserContact, Settings }
 }

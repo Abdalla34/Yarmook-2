@@ -30,7 +30,9 @@
           </div>
 
           <div>
-            <!-- Arrow Icon -->
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
           </div>
         </div>
       </div>
@@ -50,15 +52,16 @@
           </div>
 
           <div>
-            <!-- Arrow Icon -->
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
           </div>
         </div>
       </div>
 
       <!-- Call Us -->
-      <div
-        class="mb-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition"
-      >
+      <a :href="`tel:${mobile}`"
+        class="mb-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition block">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div>
@@ -71,19 +74,21 @@
               </h2>
 
               <p class="text-sm text-gray-500">
-                +20 100 000 0000
+                {{ mobile || '+20 100 000 0000' }}
               </p>
             </div>
           </div>
 
           <div>
-            <!-- Arrow Icon -->
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
           </div>
         </div>
-      </div>
+      </a>
 
       <!-- Visit Branch -->
-      <div
+      <div @click="$router.push('/branches-location')"
         class="mb-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm cursor-pointer hover:shadow-md transition"
       >
         <div class="flex items-center justify-between">
@@ -98,7 +103,9 @@
           </div>
 
           <div>
-            <!-- Arrow Icon -->
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
           </div>
         </div>
       </div>
@@ -108,5 +115,34 @@
     </div>
 </template>
 <script setup>
-const isLoggedIn = ref(true)
+const token = useCookie("token")
+const isLoggedIn = computed(() => !!token.value)
+
+const { Settings } = useHelp()
+
+const SETTINGS_CACHE_KEY = "settings_cache"
+const mobile = ref('')
+
+onMounted(() => {
+  if (import.meta.client) {
+    const cached = localStorage.getItem(SETTINGS_CACHE_KEY)
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached)
+        mobile.value = parsed.mobile || ''
+      } catch {}
+    }
+  }
+  ;(async () => {
+    try {
+      const res = await Settings()
+      if (res?.data) {
+        mobile.value = res.data.mobile || ''
+        if (import.meta.client) {
+          localStorage.setItem(SETTINGS_CACHE_KEY, JSON.stringify(res.data))
+        }
+      }
+    } catch {}
+  })()
+})
 </script>
