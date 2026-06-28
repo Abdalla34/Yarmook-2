@@ -34,36 +34,38 @@
                 <h2 class="mb-4 text-xl font-semibold text-gray-800">Available Memberships</h2>
                 <div class="space-y-4">
                     <div v-for="m in memberships" :key="m.id"
-                        class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition cursor-pointer">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex items-center gap-4">
-                                <img v-if="selectedCar?.brand?.image" :src="selectedCar.brand.image"
-                                    class="h-14 w-14 rounded-xl object-contain bg-gray-50 p-2 shrink-0" alt="">
+                        class="relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer min-h-[220px]"
+                        :style="m.image ? { backgroundImage: `url(${m.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}">
+                        <!-- Overlay for text readability -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/30"></div>
+                        <!-- Content -->
+                        <div class="relative z-10 p-6 flex flex-col justify-end min-h-[220px]">
+                            <div class="flex items-start justify-between gap-4">
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-900">{{ m.title || m.name }}</h3>
-                                    <p class="mt-1 text-sm text-gray-500">{{ selectedCar?.brand?.title }} - {{ selectedCar?.car_type?.title }}</p>
+                                    <h3 class="text-lg font-bold text-white">{{ m.title || m.name }}</h3>
+                                    <p class="mt-1 text-sm text-gray-300">{{ selectedCar?.brand?.title }} - {{ selectedCar?.car_type?.title }}</p>
+                                </div>
+                                <div class="shrink-0">
+                                    <span class="inline-flex items-center rounded-full bg-yellow-400 px-4 py-1.5 text-sm font-semibold text-black">
+                                        {{ m.price }} SAR
+                                    </span>
                                 </div>
                             </div>
-                            <div class="shrink-0">
-                                <span class="inline-flex items-center rounded-full bg-yellow-400 px-4 py-1.5 text-sm font-semibold text-black">
+                            <p class="mt-3 text-sm text-gray-200 leading-relaxed">{{ m.description }}</p>
+                            <div class="mt-4 flex items-center gap-4 text-sm">
+                                <span class="flex items-center gap-1 text-gray-300">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    {{ m.duration || m.period }}
+                                </span>
+                                <span class="flex items-center gap-1 text-gray-300">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
                                     {{ m.price }} SAR
                                 </span>
                             </div>
-                        </div>
-                        <p class="mt-3 text-sm text-gray-600 leading-relaxed">{{ m.description }}</p>
-                        <div class="mt-4 flex items-center gap-4 text-sm">
-                            <span class="flex items-center gap-1 text-gray-500">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                {{ m.duration || m.period }}
-                            </span>
-                            <span class="flex items-center gap-1 text-gray-500">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                                {{ m.price }} SAR
-                            </span>
                         </div>
                     </div>
                 </div>
