@@ -135,11 +135,11 @@
 
                 <div class="text-center mt-10">
                     <p class="font-bold text-lg">You can pay with</p>
-                    <div class="flex justify-center gap-4 mt-5">
-                        <img src="/visa.png" class="h-10 object-contain" alt="Visa" @error="handleImgError" />
-                        <img src="/masterCard.png" class="h-10 object-contain" alt="MasterCard" @error="handleImgError" />
-                        <img src="/tabby.png" class="h-10 object-contain" alt="Tabby" @error="handleImgError" />
-                        <img src="/tamara.png" class="h-10 object-contain" alt="Tamara" @error="handleImgError" />
+                    <div class="flex flex-wrap justify-center gap-3 sm:gap-4 mt-5">
+                        <img src="/visa.png" class="h-8 sm:h-10 object-contain" alt="Visa" @error="handleImgError" />
+                        <img src="/masterCard.png" class="h-8 sm:h-10 object-contain" alt="MasterCard" @error="handleImgError" />
+                        <img src="/tabby.png" class="h-8 sm:h-10 object-contain" alt="Tabby" @error="handleImgError" />
+                        <img src="/tamara.png" class="h-8 sm:h-10 object-contain" alt="Tamara" @error="handleImgError" />
                     </div>
                 </div>
 
@@ -152,12 +152,12 @@
 
                 <hr class="my-8">
 
-                <div class="flex justify-between items-center">
-                    <div>
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="text-center sm:text-left">
                         <span class="text-2xl font-bold text-red-600">{{ price }} SAR</span>
                         <span v-if="memberDetails?.price_before_discount" class="text-gray-400 line-through ml-2">{{ memberDetails.price_before_discount }} SAR</span>
                     </div>
-                    <button @click="navigateTo('/payment')" class="bg-red-600 hover:bg-red-700 transition text-white px-8 py-3 rounded-full font-semibold">Buy It Now</button>
+                    <button @click="navigateTo('/payment')" class="bg-red-600 hover:bg-red-700 transition text-white px-8 py-3 rounded-full font-semibold w-full sm:w-auto">Buy It Now</button>
                 </div>
             </template>
         </div>
