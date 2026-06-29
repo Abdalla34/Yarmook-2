@@ -60,80 +60,67 @@ onMounted(async () => {
             </Swiper>
             <!-- end silders -->
         </div>
-        <!-- yarmook center  -->
         <div class="section-yarmook mb-5">
             <div class="container mx-auto">
-                <!-- center services yarmook -->
                 <section class="mt-4 md:mt-10 px-4">
                     <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
-                        <h2 class="text-2xl font-bold text-start mb-6">Center Yarmook</h2>
+                        <h2 class="text-2xl font-bold mb-6">Center Yarmook</h2>
 
-                        <div class="grid grid-cols-2 md:grid-cols-2 gap-3 available-services">
+                        <div class="grid grid-cols-2 gap-3">
                             <div @click="navigateTo('/services')"
                                 class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
-                                <div class="h-28 md:h-auto flex items-center justify-center">
-                                    <img src="/car-fix.png" alt="handmade services"
-                                        class="object-cover w-[50%] md:w-[40%]" />
+                                <div class="h-28 md:h-36 flex items-center justify-center p-4">
+                                    <img src="/car-fix.png" alt="Handmade Services" class="object-contain w-full h-full" />
                                 </div>
-                                <span
-                                    class="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-scale">Rest
-                                    more</span>
+                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">More</span>
                                 <div class="p-2 text-center">
-                                    <h3 class="text-sm font-bold uppercase">handmade services</h3>
+                                    <h3 class="text-sm font-bold">Handmade Services</h3>
                                 </div>
                             </div>
 
                             <div @click="navigateTo('/comfortable-services')"
                                 class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
-                                <div class="h-28 md:h-auto flex items-center justify-center">
-                                    <img src="/Carcomfortable.png" alt="comfortable service"
-                                        class="object-cover w-[50%] md:w-[40%]" />
+                                <div class="h-28 md:h-36 flex items-center justify-center p-4">
+                                    <img src="/Carcomfortable.png" alt="Comfortable Service" class="object-contain w-full h-full" />
                                 </div>
-                                <span
-                                    class="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-scale">Rest
-                                    more</span>
+                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">More</span>
                                 <div class="p-2 text-center">
-                                    <h3 class="text-sm font-bold uppercase">comfortable service</h3>
+                                    <h3 class="text-sm font-bold">Comfortable Service</h3>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4 other-features">
-
-                            <div
-                                class="bg-white rounded-lg border border-gray-300 shadow-md overflow-hidden relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                                <div class="h-28 flex items-center justify-center text-gray-400">
-                                    <img src="/maintenance.png" alt="">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+                            <div @click="navigateTo('/services')"
+                                class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
+                                <div class="h-28 flex items-center justify-center p-4">
+                                    <img src="/maintenance.png" alt="Maintenance" class="object-contain w-full h-full" />
                                 </div>
-                                <span
-                                    class="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full uppercase">soon</span>
+                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Soon</span>
                                 <div class="p-2 text-center">
-                                    <h3 class="text-xs font-bold uppercase">maitenance</h3>
+                                    <h3 class="text-xs font-bold">Maintenance</h3>
                                 </div>
                             </div>
 
-                            <div
-                                class="bg-white rounded-lg border border-gray-300 shadow-md overflow-hidden relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                                <div class="h-28 flex items-center justify-center text-gray-400">
-                                    <img src="/Car Brake.png" alt="">
+                            <div @click="navigateTo('/services')"
+                                class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
+                                <div class="h-28 flex items-center justify-center p-4">
+                                    <img src="/Car Brake.png" alt="Spare Parts" class="object-contain w-full h-full" />
                                 </div>
-                                <span
-                                    class="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full uppercase">soon</span>
+                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Soon</span>
                                 <div class="p-2 text-center">
-                                    <h3 class="text-xs font-bold uppercase">spare parts</h3>
+                                    <h3 class="text-xs font-bold">Spare Parts</h3>
                                 </div>
                             </div>
 
-                            <div
-                                class="bg-white rounded-lg border border-gray-300 shadow-md overflow-hidden relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                                <div
-                                    class="h-28 text-red-500 uppercase flex items-center justify-center font-bold text-4xl">
-                                    pro
+                            <div @click="navigateTo('/memberships')"
+                                class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
+                                <div class="h-28 flex items-center justify-center">
+                                    <span class="text-red-500 font-bold text-4xl uppercase">Pro</span>
                                 </div>
-                                <span
-                                    class="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full uppercase">pro</span>
+                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Pro</span>
                                 <div class="p-2 text-center">
-                                    <h3 class="text-xs font-bold uppercase">memberships</h3>
+                                    <h3 class="text-xs font-bold">Memberships</h3>
                                 </div>
                             </div>
                         </div>
@@ -141,7 +128,6 @@ onMounted(async () => {
                 </section>
             </div>
         </div>
-        <!-- end center -->
         <!-- offers yarmook -->
         <section v-if="offers.length" class="offers mb-8 mt-4 md:mt-10">
             <div class="container mx-auto px-4">
