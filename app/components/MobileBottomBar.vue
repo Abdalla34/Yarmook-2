@@ -32,11 +32,12 @@
 
 <script setup>
 const route = useRoute();
+const localePath = useLocalePath();
 const visible = ref(true);
 const lastScrollY = ref(0);
 
 function isActive(to) {
-    return route.path === to;
+    return route.path === localePath(to) || route.path === to;
 }
 
 function onScroll() {

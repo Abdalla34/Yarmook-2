@@ -14,10 +14,12 @@
 const { locale } = useI18n()
 
 const dirMap = { ar: 'rtl', en: 'ltr' }
+const htmlDir = computed(() => dirMap[locale.value] || 'ltr')
 
 useHead({
   htmlAttrs: {
-    dir: computed(() => dirMap[locale.value] || 'ltr'),
+    dir: htmlDir,
+    lang: locale,
   },
 })
 </script>

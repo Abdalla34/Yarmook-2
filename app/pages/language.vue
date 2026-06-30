@@ -85,7 +85,8 @@
 </template>
 
 <script setup>
-const { locale, setLocale } = useI18n()
+const { locale } = useI18n()
+const switchLocalePath = useSwitchLocalePath()
 const { token } = useGlobalApi()
 
 const isLoggedIn = computed(() => !!token.value)
@@ -112,7 +113,7 @@ function cancelLang() {
 
 function confirmLang() {
   if (selectedLang.value) {
-    setLocale(selectedLang.value)
+    navigateTo(switchLocalePath(selectedLang.value))
   }
   showModal.value = false
   selectedLang.value = null
