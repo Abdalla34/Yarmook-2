@@ -1,5 +1,5 @@
 <template>
-  <div class="services-page mt-0 lg:mt-3 min-h-screen  py-8">
+  <div ref="pageRef" class="services-page mt-0 lg:mt-3 min-h-screen py-8">
     <div class="container mx-auto px-4">
       <template v-if="loading">
         <div class="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -29,7 +29,7 @@
       </template>
 
       <template v-else>
-        <div class="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div ref="desktopGrid" class="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <ProductCard
             v-for="service in carServices"
             :key="service.id"
@@ -38,7 +38,7 @@
             @add-to-cart="addServiceToCart"
           />
         </div>
-        <div class="flex lg:hidden flex-col gap-4">
+        <div ref="mobileList" class="flex lg:hidden flex-col gap-4">
           <ProductListItem
             v-for="service in carServices"
             :key="service.id"
@@ -62,6 +62,11 @@
 </template>
 
 <script setup>
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
 const { getServices } = useCarServices();
 const { addCart } = useAddToCart();
 const { token } = useGlobalApi();
@@ -74,7 +79,15 @@ const showAuthModal = ref(false);
 const pendingItem = ref(null);
 const loadingServiceId = ref(null);
 
+const pageRef = ref(null);
+const desktopGrid = ref(null);
+const mobileList = ref(null);
+
 onMounted(async () => {
+  if (import.meta.client && pageRef.value) {
+    gsap.fromTo(pageRef.value, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" });
+  }
+
   if (import.meta.client) {
     const cached = localStorage.getItem(SERVICES_CACHE_KEY);
     if (cached) {
@@ -100,6 +113,36 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+watch(loading, (isLoading) => {
+  if (!isLoading && carServices.value.length) {
+    nextTick(() => {
+      animateCards();
+    });
+  }
+});
+
+function animateCards() {
+  if (!import.meta.client) return;
+
+  const targets = [];
+  if (desktopGrid.value) targets.push(...desktopGrid.value.children);
+  if (mobileList.value) targets.push(...mobileList.value.children);
+
+  if (!targets.length) return;
+
+  gsap.set(targets, { opacity: 0, y: 30 });
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: pageRef.value,
+      start: "top 80%",
+      once: true,
+    },
+  });
+
+  tl.to(targets, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power2.out" });
+}
 
 async function addServiceToCart(service) {
   if (service.in_cart || loadingServiceId.value === service.id) return;

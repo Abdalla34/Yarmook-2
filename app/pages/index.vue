@@ -3,6 +3,10 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const { getHome, getOffers } = useGlobalApi();
 
@@ -14,6 +18,14 @@ const offersData = ref(null);
 
 const sliders = computed(() => homeData.value?.data?.sliders ?? []);
 const offers = computed(() => offersData.value?.data?.items ?? offersData.value?.data ?? []);
+
+const sectionYarmook = ref(null);
+const sectionTitle = ref(null);
+const mainGrid = ref(null);
+const secondaryGrid = ref(null);
+const offersSection = ref(null);
+const offersHeading = ref(null);
+const offersGrid = ref(null);
 
 onMounted(async () => {
     if (import.meta.client) {
@@ -42,7 +54,81 @@ onMounted(async () => {
     } catch (err) {
         console.error(err);
     }
+
+    animateYarmookSection();
 });
+
+watch(offers, (val) => {
+    if (val.length) {
+        nextTick(() => animateOffersSection());
+    }
+}, { once: true });
+
+onUnmounted(() => {
+    ScrollTrigger.getAll().forEach((st) => st.kill());
+});
+
+function animateOffersSection() {
+    if (!import.meta.client || !offersSection.value) return;
+
+    const heading = offersHeading.value;
+    const cards = offersGrid.value?.children;
+
+    if (heading) gsap.set(heading, { opacity: 0, x: 30 });
+    if (cards?.length) gsap.set(cards, { opacity: 0, y: 30, scale: 0.95 });
+
+    const tl = gsap.timeline({
+        scrollTrigger: {
+            trigger: offersSection.value,
+            start: "top 85%",
+            once: true,
+        },
+    });
+
+    if (heading) {
+        tl.to(heading, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" });
+    }
+
+    if (cards?.length) {
+        tl.to(cards, { opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.1, ease: "power2.out" }, "-=0.2");
+    }
+
+    ScrollTrigger.refresh();
+}
+
+function animateYarmookSection() {
+    if (!import.meta.client || !sectionYarmook.value) return;
+
+    const title = sectionTitle.value;
+    const mainCards = mainGrid.value?.children;
+    const secondaryCards = secondaryGrid.value?.children;
+
+    if (title) gsap.set(title, { opacity: 0, x: -30 });
+    if (mainCards?.length) gsap.set(mainCards, { opacity: 0, y: 30 });
+    if (secondaryCards?.length) gsap.set(secondaryCards, { opacity: 0, y: 30 });
+
+    const tl = gsap.timeline({
+        scrollTrigger: {
+            trigger: sectionYarmook.value,
+            start: "top 85%",
+            once: true,
+        },
+    });
+
+    if (title) {
+        tl.to(title, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" });
+    }
+
+    if (mainCards?.length) {
+        tl.to(mainCards, { opacity: 1, y: 0, duration: 0.4, stagger: 0.15, ease: "power2.out" }, "-=0.2");
+    }
+
+    if (secondaryCards?.length) {
+        tl.to(secondaryCards, { opacity: 1, y: 0, duration: 0.4, stagger: 0.12, ease: "power2.out" }, "-=0.1");
+    }
+
+    ScrollTrigger.refresh();
+}
 </script>
 
 <template>
@@ -60,13 +146,13 @@ onMounted(async () => {
             </Swiper>
             <!-- end silders -->
         </div>
-        <div class="section-yarmook mb-5">
+        <div ref="sectionYarmook" class="section-yarmook mb-5">
             <div class="container mx-auto">
                 <section class="mt-4 md:mt-10 px-4">
                     <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
-                        <h2 class="text-2xl font-bold mb-6">Center Yarmook</h2>
+                        <h2 ref="sectionTitle" class="text-2xl font-bold mb-6">Center Yarmook</h2>
 
-                        <div class="grid grid-cols-2 gap-3">
+                        <div ref="mainGrid" class="grid grid-cols-2 gap-3">
                             <div @click="navigateTo('/services')"
                                 class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                                 <div class="h-28 md:h-36 flex items-center justify-center p-4">
@@ -90,7 +176,7 @@ onMounted(async () => {
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+                        <div ref="secondaryGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
                             <div @click="navigateTo('/services')"
                                 class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                                 <div class="h-28 flex items-center justify-center p-4">
@@ -129,16 +215,16 @@ onMounted(async () => {
             </div>
         </div>
         <!-- offers yarmook -->
-        <section v-if="offers.length" class="offers mb-8 mt-4 md:mt-10">
+        <section ref="offersSection" v-if="offers.length" class="offers mb-8 mt-4 md:mt-10">
             <div class="container mx-auto px-4">
                 <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
-                    <div class="flex align-middle justify-between">
+                    <div ref="offersHeading" class="flex align-middle justify-between">
                         <h2 class="text-2xl font-bold text-start mb-6">Offers</h2>
                         <h2 class="text-red-500 font-bold capitalize cursor-pointer" @click="navigateTo('/offers')">View
                             all
                         </h2>
                     </div>
-                    <div
+                    <div ref="offersGrid"
                         class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:snap-none">
                         <NuxtLink v-for="offer in offers" :key="offer.id" :to="`/offers/${offer.id}`"
                             class="min-w-[calc(50%-0.5rem)] w-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] flex-shrink-0 snap-start md:min-w-0 md:w-auto md:max-w-none bg-white rounded-2xl border border-gray-300 shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
