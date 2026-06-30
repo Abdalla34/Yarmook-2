@@ -158,6 +158,8 @@ const token = useCookie("token");
 const isLoggedIn = computed(() => !!token.value);
 const { getMyCart, deleteItemsFromCart, updateQtyCart, cartCount } = useAddToCart();
 
+const CART_CACHE_KEY = "cart_cache";
+
 const cartItems = ref([]);
 const cartTotal = ref("0");
 const cartId = ref(null);
@@ -178,25 +180,40 @@ function handleContinue() {
   router.push({ path: '/order-update-details', query: { order_id: order_id.value } });
 }
 
+function applyCartData(data) {
+  order_id.value = data.id;
+  const services = (data.services ?? []).map((item) => ({ ...item, type: "service" }));
+  const offers = (data.offers ?? []).map((item) => ({ ...item, type: "offer" }));
+  const spareParts = (data.spare_parts ?? []).map((item) => ({ ...item, type: "spare_part" }));
+  cartItems.value = [...services, ...offers, ...spareParts];
+  cartTotal.value = data.total_amount ?? "0";
+  vatAmount.value = data.vat_amount ?? "0";
+  amountToPay.value = data.amount_to_pay ?? "0";
+  reservationDate.value = data.reservation_date ?? data.created_at ?? "";
+  reservationTime.value = data.reservation_time ?? "";
+  branch.value = data.branch ?? "";
+}
+
 async function fetchCart() {
-  loading.value = true;
   error.value = "";
+  if (import.meta.client) {
+    const cached = localStorage.getItem(CART_CACHE_KEY);
+    if (cached) {
+      try {
+        applyCartData(JSON.parse(cached));
+        loading.value = false;
+      } catch (e) {
+        // ignore invalid cache
+      }
+    }
+  }
   try {
     const res = await getMyCart();
     const data = res?.data ?? {};
-    order_id.value = data.id;
-
-    const services = (data.services ?? []).map((item) => ({ ...item, type: "service" }));
-    const offers = (data.offers ?? []).map((item) => ({ ...item, type: "offer" }));
-    const spareParts = (data.spare_parts ?? []).map((item) => ({ ...item, type: "spare_part" }));
-
-    cartItems.value = [...services, ...offers, ...spareParts];
-    cartTotal.value = data.total_amount ?? "0";
-    vatAmount.value = data.vat_amount ?? "0";
-    amountToPay.value = data.amount_to_pay ?? "0";
-    reservationDate.value = data.reservation_date ?? data.created_at ?? "";
-    reservationTime.value = data.reservation_time ?? "";
-    branch.value = data.branch ?? "";
+    applyCartData(data);
+    if (import.meta.client) {
+      localStorage.setItem(CART_CACHE_KEY, JSON.stringify(data));
+    }
   } catch (err) {
     error.value = "Failed to load cart";
     console.error(err);
@@ -209,17 +226,10 @@ async function syncCart() {
   try {
     const res = await getMyCart();
     const data = res?.data ?? {};
-    order_id.value = data.id;
-    const services = (data.services ?? []).map((item) => ({ ...item, type: "service" }));
-    const offers = (data.offers ?? []).map((item) => ({ ...item, type: "offer" }));
-    const spareParts = (data.spare_parts ?? []).map((item) => ({ ...item, type: "spare_part" }));
-    cartItems.value = [...services, ...offers, ...spareParts];
-    cartTotal.value = data.total_amount ?? "0";
-    vatAmount.value = data.vat_amount ?? "0";
-    amountToPay.value = data.amount_to_pay ?? "0";
-    reservationDate.value = data.reservation_date ?? data.created_at ?? "";
-    reservationTime.value = data.reservation_time ?? "";
-    branch.value = data.branch ?? "";
+    applyCartData(data);
+    if (import.meta.client) {
+      localStorage.setItem(CART_CACHE_KEY, JSON.stringify(data));
+    }
   } catch (err) {
     console.error("Failed to sync cart", err);
   }
