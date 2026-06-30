@@ -18,14 +18,16 @@ const props = defineProps({
   },
 })
 
+const { t } = useI18n()
+
 const allLinks = [
-  { to: '/my-cars', label: 'My Cars' },
-  { to: '/wallet', label: 'Wallet' },
-  { to: '/language', label: 'Language' },
-  { to: '/points', label: 'Points' },
-  { to: '/vouchers', label: 'Vouchers' },
-  { to: '/memberships', label: 'Memberships' },
-  { to: '/help', label: 'Help' },
+  { to: '/my-cars', label: computed(() => t('my_cars')) },
+  { to: '/wallet', label: computed(() => t('wallet')) },
+  { to: '/language', label: computed(() => t('language')) },
+  { to: '/points', label: computed(() => t('points')) },
+  { to: '/vouchers', label: computed(() => t('vouchers')) },
+  { to: '/memberships', label: computed(() => t('memberships')) },
+  { to: '/help', label: computed(() => t('help')) },
 ]
 
 const guestOnly = ['/language', '/help']
