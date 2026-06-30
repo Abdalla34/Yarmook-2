@@ -18,10 +18,14 @@ export const PayMents = () => {
             headers,
         });
     };
-    const usePaymentMembership = async (membershipId: any, brand: any) => {
+    const usePaymentMembership = async (membershipId: any, brand: any, car_id?: any) => {
+        const body: Record<string, any> = { membership_id: membershipId, brand: brand };
+        if (car_id !== undefined) {
+            body.car_id = car_id;
+        }
         return await $fetch(`${config.public.apiBase}/payment/hyper-pay/prepare-checkout`, {
             method: "POST",
-            body: { membership_id: membershipId, brand: brand },
+            body,
             headers,
         });
     };

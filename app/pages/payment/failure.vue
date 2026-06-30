@@ -7,7 +7,7 @@
                 </div>
                 <h1 class="text-2xl font-bold text-gray-800 mb-2">Payment Failed</h1>
                 <p class="text-gray-500 mb-2">Your payment could not be processed. Please try again.</p>
-                <NuxtLink :to="`/payment?order_id=${orderId}`"
+                <NuxtLink :to="payLink"
                     class="inline-block mt-4 px-6 py-3 bg-yellow-400 rounded-full font-semibold hover:bg-yellow-500 transition">
                     Try Again
                 </NuxtLink>
@@ -19,4 +19,18 @@
 <script setup>
 const route = useRoute();
 const orderId = route.query.order_id;
+const membershipId = route.query.membership_id;
+const walletAmount = route.query.amount;
+const carId = route.query.car_id;
+
+const payLink = computed(() => {
+    if (orderId) return `/payment?order_id=${orderId}`;
+    if (membershipId) {
+        let link = `/payment?membership_id=${membershipId}`;
+        if (carId) link += `&car_id=${carId}`;
+        return link;
+    }
+    if (walletAmount) return `/payment?amount=${walletAmount}`;
+    return "/payment";
+});
 </script>

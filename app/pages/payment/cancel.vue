@@ -12,7 +12,7 @@
                 </div>
                 <h1 class="text-2xl font-bold text-gray-800 mb-2">Payment Cancelled</h1>
                 <p class="text-gray-500 mb-6">You have cancelled the payment.</p>
-                <NuxtLink :to="`/payment?order_id=${orderId}`"
+                <NuxtLink :to="payLink"
                     class="inline-block px-6 py-3 bg-yellow-400 rounded-full font-semibold hover:bg-yellow-500 transition">
                     Choose Another Method
                 </NuxtLink>
@@ -29,7 +29,21 @@ const loading = ref(true);
 
 const gateway = route.query.gateway;
 const orderId = route.query.order_id;
+const membershipId = route.query.membership_id;
+const walletAmount = route.query.amount;
+const carId = route.query.car_id;
 const paymentId = route.query.payment_id ?? route.query.id;
+
+const payLink = computed(() => {
+    if (orderId) return `/payment?order_id=${orderId}`;
+    if (membershipId) {
+        let link = `/payment?membership_id=${membershipId}`;
+        if (carId) link += `&car_id=${carId}`;
+        return link;
+    }
+    if (walletAmount) return `/payment?amount=${walletAmount}`;
+    return "/payment";
+});
 
 onMounted(async () => {
     try {

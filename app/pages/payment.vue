@@ -87,9 +87,19 @@ useHead({
 
 const route = useRoute();
 const { getsingleOrder } = useGlobalApi();
-const { usePayment, tamaraPayment, tabyPayment, checkOnDelivery } = PayMents();
+const { usePayment, usePaymentMembership, usePaymentToChargeWallet, tamaraPayment, tabyPayment, checkOnDelivery } = PayMents();
 
 const orderId = computed(() => route.query.order_id);
+const membershipId = computed(() => route.query.membership_id);
+const walletAmount = computed(() => route.query.amount);
+const carId = computed(() => route.query.car_id);
+
+const paymentContext = computed(() => {
+    if (orderId.value) return "order";
+    if (membershipId.value) return "membership";
+    if (walletAmount.value) return "wallet";
+    return null;
+});
 
 const showCashOnDelivery = ref(false);
 const showCodPopup = ref(false);
@@ -109,20 +119,20 @@ onUnmounted(() => {
 });
 
 onMounted(async () => {
-    if (!orderId.value) {
-        loadingOrder.value = false;
-        return;
-    }
-    try {
-        const res = await getsingleOrder(orderId.value);
-        const data = res?.data ?? res;
-        totalAmount.value = data?.total_amount ?? 0;
-        if (data?.open_cache === true || data?.open_cache === 1 || data?.open_cache === "1") {
-            showCashOnDelivery.value = true;
+    if (paymentContext.value === "order") {
+        try {
+            const res = await getsingleOrder(orderId.value);
+            const data = res?.data ?? res;
+            totalAmount.value = data?.total_amount ?? 0;
+            if (data?.open_cache === true || data?.open_cache === 1 || data?.open_cache === "1") {
+                showCashOnDelivery.value = true;
+            }
+        } catch (err) {
+            console.error("Failed to fetch order:", err);
+        } finally {
+            loadingOrder.value = false;
         }
-    } catch (err) {
-        console.error("Failed to fetch order:", err);
-    } finally {
+    } else {
         loadingOrder.value = false;
     }
 });
@@ -137,8 +147,19 @@ const paymentMethods = computed(() => {
 
 const origin = import.meta.client ? window.location.origin : "";
 
+const callbackParams = computed(() => {
+    if (paymentContext.value === "order") return `order_id=${orderId.value}`;
+    if (paymentContext.value === "membership") {
+        let params = `membership_id=${membershipId.value}`;
+        if (carId.value) params += `&car_id=${carId.value}`;
+        return params;
+    }
+    if (paymentContext.value === "wallet") return `amount=${walletAmount.value}`;
+    return "";
+});
+
 const hyperpayRedirectUrl = computed(() => {
-    return `${origin}/payment/status?gateway=hyperpay&order_id=${orderId.value}`;
+    return `${origin}/payment/status?gateway=hyperpay&${callbackParams.value}`;
 });
 
 const brandMap = {
@@ -184,8 +205,21 @@ async function handleHyperpayPayment() {
         const apiBrand = brandMap[selectedMethod.value];
         const widgetBrands = hyperpayWidgetBrands[selectedMethod.value] || "VISA MASTER MADA";
 
-        const res = await usePayment(Number(orderId.value), apiBrand, 0, Number(totalAmount.value));
+        let res;
+        if (paymentContext.value === "order") {
+            res = await usePayment(Number(orderId.value), apiBrand, 0, Number(totalAmount.value));
+        } else if (paymentContext.value === "membership") {
+            res = await usePaymentMembership(Number(membershipId.value), apiBrand, carId.value ? Number(carId.value) : undefined);
+        } else if (paymentContext.value === "wallet") {
+            res = await usePaymentToChargeWallet(Number(walletAmount.value), apiBrand);
+        }
+
         const data = res?.data ?? res;
+
+        if (data?.status === false) {
+            throw new Error(data?.message || "Payment preparation failed");
+        }
+
         const id = data?.id ?? data?.checkout_id ?? data?.checkoutId;
 
         if (!id) {
@@ -208,9 +242,9 @@ function loadHyperpayWidget(id) {
         existing.remove();
     }
 
-    const successUrl = `${origin}/payment/status?gateway=hyperpay&order_id=${orderId.value}`;
-    const failureUrl = `${origin}/payment/failure?gateway=hyperpay&order_id=${orderId.value}`;
-    const cancelUrl = `${origin}/payment/cancel?gateway=hyperpay&order_id=${orderId.value}`;
+    const successUrl = `${origin}/payment/status?gateway=hyperpay&${callbackParams.value}`;
+    const failureUrl = `${origin}/payment/failure?gateway=hyperpay&${callbackParams.value}`;
+    const cancelUrl = `${origin}/payment/cancel?gateway=hyperpay&${callbackParams.value}`;
 
     window.wpwlOptions = {
         onCheckoutSuccess: function () {
@@ -231,16 +265,20 @@ function loadHyperpayWidget(id) {
 }
 
 async function handleTamaraPayment() {
-    const successUrl = `${origin}/payment/status?gateway=tamara&order_id=${orderId.value}`;
-    const failureUrl = `${origin}/payment/failure?gateway=tamara&order_id=${orderId.value}`;
-    const cancelUrl = `${origin}/payment/cancel?gateway=tamara&order_id=${orderId.value}`;
+    const successUrl = `${origin}/payment/status?gateway=tamara&${callbackParams.value}`;
+    const failureUrl = `${origin}/payment/failure?gateway=tamara&${callbackParams.value}`;
+    const cancelUrl = `${origin}/payment/cancel?gateway=tamara&${callbackParams.value}`;
 
-    const res = await tamaraPayment({
-        order_id: Number(orderId.value),
-        success_url: successUrl,
-        failure_url: failureUrl,
-        cancel_url: cancelUrl,
-    });
+    const payload = { success_url: successUrl, failure_url: failureUrl, cancel_url: cancelUrl };
+    if (paymentContext.value === "order") {
+        payload.order_id = Number(orderId.value);
+    } else if (paymentContext.value === "membership") {
+        payload.membership_id = Number(membershipId.value);
+    } else if (paymentContext.value === "wallet") {
+        payload.wallet_amount = Number(walletAmount.value);
+    }
+
+    const res = await tamaraPayment(payload);
 
     const data = res?.data ?? res;
     const checkoutUrl = data?.checkout_url;
@@ -263,18 +301,20 @@ async function handleCashOnDelivery() {
 }
 
 async function handleTabbyPayment() {
-    const successUrl = `${origin}/payment/status?gateway=tabby&order_id=${orderId.value}`;
-    const failureUrl = `${origin}/payment/failure?gateway=tabby&order_id=${orderId.value}`;
-    const cancelUrl = `${origin}/payment/cancel?gateway=tabby&order_id=${orderId.value}`;
+    const successUrl = `${origin}/payment/status?gateway=tabby&${callbackParams.value}`;
+    const failureUrl = `${origin}/payment/failure?gateway=tabby&${callbackParams.value}`;
+    const cancelUrl = `${origin}/payment/cancel?gateway=tabby&${callbackParams.value}`;
 
-    const res = await tabyPayment({
-        order_id: Number(orderId.value),
-        success_url: successUrl,
-        failure_url: failureUrl,
-        cancel_url: cancelUrl,
-    });
+    const payload = { success_url: successUrl, failure_url: failureUrl, cancel_url: cancelUrl };
+    if (paymentContext.value === "order") {
+        payload.order_id = Number(orderId.value);
+    } else if (paymentContext.value === "membership") {
+        payload.membership_id = Number(membershipId.value);
+    } else if (paymentContext.value === "wallet") {
+        payload.wallet_amount = Number(walletAmount.value);
+    }
 
-    console.log("Tabby response:", JSON.stringify(res, null, 2));
+    const res = await tabyPayment(payload);
 
     const data = res?.data ?? res;
     const checkoutUrl = data?.checkout_url || data?.url || data?.redirect_url || data?.payment_url;

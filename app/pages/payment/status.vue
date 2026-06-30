@@ -18,8 +18,22 @@ const { cartCount } = useAddToCart();
 
 const gateway = route.query.gateway;
 const orderId = route.query.order_id;
+const membershipId = route.query.membership_id;
+const walletAmount = route.query.amount;
+const carId = route.query.car_id;
 const id = route.query.id ?? route.query.resourcePath;
 const paymentId = route.query.payment_id;
+
+const callbackParams = computed(() => {
+    if (orderId) return `order_id=${orderId}`;
+    if (membershipId) {
+        let params = `membership_id=${membershipId}`;
+        if (carId) params += `&car_id=${carId}`;
+        return params;
+    }
+    if (walletAmount) return `amount=${walletAmount}`;
+    return "";
+});
 
 function redirect(url) {
     if (import.meta.client) {
@@ -40,9 +54,9 @@ onMounted(async () => {
 
             if (isSuccess) {
                 cartCount.value = 0;
-                redirect(`/payment/success?gateway=hyperpay&order_id=${orderId}`);
+                redirect(`/payment/success?gateway=hyperpay&${callbackParams.value}`);
             } else {
-                redirect(`/payment/failure?gateway=hyperpay&order_id=${orderId}`);
+                redirect(`/payment/failure?gateway=hyperpay&${callbackParams.value}`);
             }
             return;
         }
@@ -61,19 +75,19 @@ onMounted(async () => {
 
                 if (isSuccess) {
                     cartCount.value = 0;
-                    redirect(`/payment/success?gateway=tabby&order_id=${orderId}`);
+                    redirect(`/payment/success?gateway=tabby&${callbackParams.value}`);
                 } else {
-                    redirect(`/payment/failure?gateway=tabby&order_id=${orderId}`);
+                    redirect(`/payment/failure?gateway=tabby&${callbackParams.value}`);
                 }
                 return;
             }
         }
 
         cartCount.value = 0;
-        redirect(`/payment/success?gateway=${gateway || 'unknown'}&order_id=${orderId}`);
+        redirect(`/payment/success?gateway=${gateway || 'unknown'}&${callbackParams.value}`);
     } catch (err) {
         console.error("Payment verification error:", err);
-        redirect(`/payment/failure?gateway=${gateway || 'unknown'}&order_id=${orderId}`);
+        redirect(`/payment/failure?gateway=${gateway || 'unknown'}&${callbackParams.value}`);
     }
 });
 </script>

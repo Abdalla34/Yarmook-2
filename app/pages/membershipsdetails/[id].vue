@@ -158,7 +158,7 @@
                         <span class="text-2xl font-bold text-red-600">{{ price }} SAR</span>
                         <span v-if="memberDetails?.price_before_discount" class="text-gray-400 line-through ml-2">{{ memberDetails.price_before_discount }} SAR</span>
                     </div>
-                    <button @click="navigateTo('/payment?membership_id=' + idMember)" class="bg-red-600 hover:bg-red-700 transition text-white px-8 py-3 rounded-full font-semibold w-full sm:w-auto">Buy It Now</button>
+                    <button @click="navigateTo('/payment?membership_id=' + idMember + (defaultCar?.id ? '&car_id=' + defaultCar.id : ''))" class="bg-red-600 hover:bg-red-700 transition text-white px-8 py-3 rounded-full font-semibold w-full sm:w-auto">Buy It Now</button>
                 </div>
             </template>
         </div>
