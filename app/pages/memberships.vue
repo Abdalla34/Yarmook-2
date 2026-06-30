@@ -5,7 +5,7 @@
 
             <!-- Title -->
             <h1 class="mb-6 text-3xl font-bold capitalize text-gray-900">
-                Memberships
+                {{ $t('memberships_title') }}
             </h1>
 
             <!-- Loading -->
@@ -19,7 +19,7 @@
 
             <!-- Car Selector -->
             <div v-if="cars.length > 1 && !loading" class="mb-6">
-                <label class="text-sm font-medium text-gray-700 mb-2 block">Select Car</label>
+                <label class="text-sm font-medium text-gray-700 mb-2 block">{{ $t('select_car') }}</label>
                 <select v-model="selectedCarId" @change="fetchMemberships"
                     class="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-yellow-500 bg-white">
                     <option v-for="car in cars" :key="car.id" :value="car.id">
@@ -30,7 +30,7 @@
 
             <!-- Available Memberships -->
             <div v-if="memberships.length && !loading">
-                <h2 class="mb-4 text-xl font-semibold text-gray-800">Available Memberships</h2>
+                <h2 class="mb-4 text-xl font-semibold text-gray-800">{{ $t('available_memberships') }}</h2>
                 <div class="space-y-4">
                     <div v-for="m in memberships" :key="m.id" @click="navigateTo('/membershipsdetails/' + m.id)"
                         class="relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer min-h-[220px]"
@@ -77,8 +77,8 @@
                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">No memberships available</h3>
-                <p class="text-gray-500 text-sm text-center max-w-xs">There are no memberships available at the moment.
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ $t('no_memberships_available') }}</h3>
+                <p class="text-gray-500 text-sm text-center max-w-xs">{{ $t('no_memberships_hint') }}
                 </p>
             </div>
 
@@ -135,4 +135,3 @@ onMounted(async () => {
     await Promise.all([fetchMemberships(), fetchSubscriptions()])
 })
 </script>
-e>

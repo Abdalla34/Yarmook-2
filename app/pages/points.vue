@@ -151,11 +151,11 @@ onMounted(() => {
                     <div class="flex items-center justify-between rounded-2xl bg-white p-6 shadow-sm mb-6">
                         <div class="text-center">
                             <h4 class="text-3xl font-bold text-gray-900">{{ pointsBalance }}</h4>
-                            <p class="text-sm text-gray-500 capitalize mt-1">Current Point</p>
+                            <p class="text-sm text-gray-500 capitalize mt-1">{{ $t('current_point') }}</p>
                         </div>
                         <button @click="showActionSheet = true"
                             class="cursor-pointer rounded-full border border-gray-200 px-6 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
-                            Redeem
+                            {{ $t('redeem') }}
                         </button>
                     </div>
 
@@ -164,15 +164,15 @@ onMounted(() => {
                         <ul class="flex items-center justify-center gap-8 border-b border-gray-200 pb-3 capitalize">
                             <li @click="activeTab = 'earned'"
                                 :class="['cursor-pointer pb-2 font-semibold transition', activeTab === 'earned' ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-black']">
-                                Earned
+                                {{ $t('earned') }}
                             </li>
                             <li @click="activeTab = 'redeem'"
                                 :class="['cursor-pointer pb-2 font-semibold transition', activeTab === 'redeem' ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-black']">
-                                Redeem
+                                {{ $t('redeem') }}
                             </li>
                             <li @click="activeTab = 'expired'"
                                 :class="['cursor-pointer pb-2 font-semibold transition', activeTab === 'expired' ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-black']">
-                                Expired
+                                {{ $t('expired') }}
                             </li>
                         </ul>
                     </div>
@@ -194,7 +194,7 @@ onMounted(() => {
                     <!-- Transactions -->
                     <template v-else>
                         <div v-if="filteredTransactions.length === 0" class="text-center py-12">
-                            <p class="text-gray-500">There are no points yet</p>
+                            <p class="text-gray-500">{{ $t('no_points_yet') }}</p>
                         </div>
                         <div v-for="item in filteredTransactions" :key="item.id"
                             class="mb-4 flex items-center justify-between rounded-2xl bg-white p-5 shadow-sm">
@@ -216,7 +216,7 @@ onMounted(() => {
                                 </div>
                                 <div>
                                     <h4 class="font-semibold text-gray-900">{{ item.type_value ?? (item.type ===
-                                        'credit' ? 'Earned Points' : 'Points Used') }}</h4>
+                                        'credit' ? $t('earned_points') : $t('points_used')) }}</h4>
                                     <p class="text-sm text-gray-500">{{ formatDate(item.created_at ?? item.date) }}</p>
                                 </div>
                             </div>
@@ -224,7 +224,7 @@ onMounted(() => {
                                 <span
                                     :class="['text-xl font-bold', item.type === 'credit' ? 'text-green-600' : 'text-gray-900']">{{
                                         pointsSign(item) }}{{ item.points?.replace(/[+\-]/g, '') ?? item.points }}</span>
-                                <span class="text-sm text-gray-500">Points</span>
+                                <span class="text-sm text-gray-500">{{ $t('points') }}</span>
                             </div>
                         </div>
                     </template>
@@ -240,7 +240,7 @@ onMounted(() => {
                     class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm">
                     <div class="w-full max-w-md rounded-t-3xl bg-white p-6 shadow-2xl">
                         <div class="mb-5 flex items-center justify-between">
-                            <h2 class="text-lg font-semibold">Send Points</h2>
+                            <h2 class="text-lg font-semibold">{{ $t('send_points') }}</h2>
                             <button @click="showActionSheet = false"
                                 class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -252,7 +252,7 @@ onMounted(() => {
                         <div class="space-y-3">
                             <button @click="showActionSheet = false; showRedeemModal = true"
                                 class="w-full rounded-2xl bg-black py-4 font-medium text-white transition hover:opacity-80">
-                                Redeem Points
+                                {{ $t('redeem_points') }}
                             </button>
                             <button @click="showActionSheet = false; showTransferModal = true"
                                 class="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 py-4 font-medium text-gray-700 transition hover:bg-gray-100">
@@ -260,7 +260,7 @@ onMounted(() => {
                                     stroke-width="2">
                                     <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                                 </svg>
-                                Send Points
+                                {{ $t('send_points') }}
                             </button>
                         </div>
                     </div>
@@ -273,7 +273,7 @@ onMounted(() => {
                     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
                     <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
                         <div class="mb-5 flex items-center justify-between">
-                            <h2 class="text-xl font-semibold text-gray-900">Redeem Points</h2>
+                            <h2 class="text-xl font-semibold text-gray-900">{{ $t('redeem_points') }}</h2>
                             <button @click="showRedeemModal = false"
                                 class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200">
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -285,17 +285,16 @@ onMounted(() => {
                         <div>
                             <input v-model="redeemAmount" type="number" :placeholder="String(exampleRate.points)"
                                 class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-black" />
-                            <p class="mt-2 text-sm text-gray-500">Notes: Minimum points = {{ exampleRate.points }}
-                                points</p>
+                            <p class="mt-2 text-sm text-gray-500">{{ $t('notes_min_points', { points: exampleRate.points }) }}</p>
                         </div>
                         <div class="mt-5 flex items-center justify-between rounded-2xl bg-gray-50 p-4">
                             <div class="text-center">
                                 <h6 class="text-xl font-bold text-gray-900">{{ redeemAmount || 0 }}</h6>
-                                <p class="text-sm text-gray-500">Point</p>
+                                <p class="text-sm text-gray-500">{{ $t('point') }}</p>
                             </div>
                             <div class="text-center">
                                 <div class="mb-1 text-2xl text-gray-400">&#8652;</div>
-                                <p class="text-sm text-gray-500">Redeem To</p>
+                                <p class="text-sm text-gray-500">{{ $t('redeem_to') }}</p>
                             </div>
                             <div class="text-center">
                                 <h6 class="text-xl font-bold text-gray-900">{{ Math.floor(Number(redeemAmount || 0) /
@@ -311,7 +310,7 @@ onMounted(() => {
                             class="mt-6 w-full rounded-2xl bg-black py-4 font-medium text-white transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                             <span v-if="loadingRedeem"
                                 class="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                            {{ loadingRedeem ? 'Redeeming...' : 'Redeem Points' }}
+                            {{ loadingRedeem ? $t('redeeming') : $t('redeem_points') }}
                         </button>
                     </div>
                 </div>
@@ -323,7 +322,7 @@ onMounted(() => {
                     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
                     <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
                         <div class="mb-5 flex items-center justify-between">
-                            <h2 class="text-xl font-semibold text-gray-900">Send Points</h2>
+                            <h2 class="text-xl font-semibold text-gray-900">{{ $t('send_points') }}</h2>
                             <button @click="showTransferModal = false"
                                 class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition">
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -334,20 +333,18 @@ onMounted(() => {
                         </div>
                         <div class="space-y-4">
                             <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700">Phone Number</label>
-                                <input v-model="transferPhone" type="text" placeholder="Number with dial code like +966"
+                                <label class="mb-2 block text-sm font-medium text-gray-700">{{ $t('phone_number') }}</label>
+                                <input v-model="transferPhone" type="text" :placeholder="$t('phone_placeholder')"
                                     class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-black" />
                             </div>
                             <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700">Points</label>
+                                <label class="mb-2 block text-sm font-medium text-gray-700">{{ $t('points') }}</label>
                                 <input v-model="transferPoints" type="number"
                                     :placeholder="transferInfo?.min_transfer_points ?? '100'"
                                     class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-black" />
                             </div>
                             <div class="rounded-xl bg-amber-50 p-3">
-                                <p class="text-sm text-amber-700">Note: Please make sure this phone number is registered
-                                    in the
-                                    Yarmook app.</p>
+                                <p class="text-sm text-amber-700">{{ $t('transfer_note') }}</p>
                             </div>
                         </div>
                         <p v-if="transferMsg" :class="['mt-3 text-sm text-center', transferMsgType === 'success' ? 'text-green-600' : 'text-red-600']">
@@ -357,7 +354,7 @@ onMounted(() => {
                             class="mt-6 w-full rounded-2xl bg-black py-4 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                             <span v-if="loadingTransfer"
                                 class="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                            {{ loadingTransfer ? 'Sending...' : 'Send Points' }}
+                            {{ loadingTransfer ? $t('sending') : $t('send_points') }}
                         </button>
                     </div>
                 </div>

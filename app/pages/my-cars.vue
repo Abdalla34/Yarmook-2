@@ -4,7 +4,7 @@
     <div class="container mx-auto max-w-5xl px-4">
 
       <h1 class="mb-8 text-3xl font-bold text-gray-800">
-        My Cars
+        {{ $t('my_cars') }}
       </h1>
 
       <div v-if="loading" class="space-y-4">
@@ -55,7 +55,7 @@
                     v-if="car.is_default"
                     class="shrink-0 rounded-full bg-yellow-400 px-3 py-1 text-xs font-medium text-black"
                   >
-                    Default
+                    {{ $t('default') }}
                   </span>
                 </div>
                 <p class="mt-1 text-sm text-gray-500 truncate">
@@ -71,7 +71,7 @@
                 :class="loadingDetailsId === car.id ? 'text-gray-400' : 'text-black-500'"
               >
                 <span v-if="loadingDetailsId === car.id" class="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
-                {{ loadingDetailsId === car.id ? 'Loading...' : 'Car Details' }}
+                {{ loadingDetailsId === car.id ? $t('loading') : $t('car_details') }}
               </button>
               <button
                 v-if="!car.is_default"
@@ -80,7 +80,7 @@
                 class="w-full sm:w-auto rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <span v-if="settingDefaultId === car.id" class="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
-                {{ settingDefaultId === car.id ? 'Setting...' : 'Set as Default' }}
+                {{ settingDefaultId === car.id ? $t('setting') : $t('set_as_default') }}
               </button>
               <button
                 @click="handleDelete(car)"
@@ -106,10 +106,10 @@
         class="mt-8 rounded-3xl border border-dashed border-gray-300 bg-white p-8 text-center"
       >
         <h3 class="mb-2 text-lg font-semibold text-gray-700">
-          No Cars Added
+          {{ $t('no_cars_added') }}
         </h3>
         <p class="text-gray-500">
-          Add your car to display here
+          {{ $t('add_car_hint') }}
         </p>
       </div>
 
@@ -117,7 +117,7 @@
         <button @click="navigateTo('/carbrands')"
           class="w-full sm:w-auto rounded-full bg-yellow-400 px-8 py-4 font-semibold text-black transition hover:bg-yellow-500"
         >
-          Add New Car
+          {{ $t('add_new_car') }}
         </button>
       </div>
 
@@ -134,23 +134,23 @@
       @click.stop
     >
       <h3 class="text-lg font-semibold text-gray-800 text-center">
-        Delete {{ carToDelete?.name || carToDelete?.brand?.title || 'Car' }}
+        {{ $t('delete_car_title', { name: carToDelete?.name || carToDelete?.brand?.title || $t('car_details') }) }}
       </h3>
       <p class="mt-2 text-sm text-gray-500 text-center">
-        Are you sure you want to delete this car?
+        {{ $t('delete_car_confirm') }}
       </p>
       <div class="mt-6 flex items-center gap-3">
         <button
           @click="confirmDelete"
           class="flex-1 rounded-xl bg-red-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-600"
         >
-          Yes
+          {{ $t('yes') }}
         </button>
         <button
           @click="cancelDelete"
           class="flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
         >
-          Cancel
+          {{ $t('cancel') }}
         </button>
       </div>
     </div>

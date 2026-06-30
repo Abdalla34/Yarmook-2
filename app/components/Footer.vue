@@ -11,14 +11,14 @@
             class="h-10 mb-4 object-contain hover:opacity-80 transition-opacity"
           />
 
-          <p class="text-sm mb-4">Download our app</p>
+          <p class="text-sm mb-4">{{ $t('download_app') }}</p>
 
           <div class="flex flex-wrap gap-2 mb-6">
             <button
               class="flex items-center gap-1.5 border border-white rounded-full px-4 py-2 text-sm hover:bg-white hover:text-black transition-all duration-300 hover:scale-105"
             >
               <img src="/Google-logo.png" alt="Google Play" class="w-4 h-4 object-contain" />
-              <span>Google Play</span>
+              <span>{{ $t('google_play') }}</span>
             </button>
 
             <button
@@ -27,35 +27,35 @@
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.62-.71 1.64-1.23 2.6-1.13.1 1.03-.29 2.04-.9 2.74-.62.71-1.62 1.14-2.59 1-.1-1.01.28-2.02.89-2.61z"/>
               </svg>
-              <span>App Store</span>
+              <span>{{ $t('app_store') }}</span>
             </button>
           </div>
 
-          <h3 class="text-xl font-semibold mb-3">Contact Us:</h3>
+          <h3 class="text-xl font-semibold mb-3">{{ $t('contact_us_footer') }}</h3>
 
           <a href="tel:0558696444" class="text-base mb-1 block hover:text-yellow-400 transition-colors">0558696444</a>
-          <p class="text-sm text-gray-300">Everyday 8 am - 12 am</p>
+          <p class="text-sm text-gray-300">{{ $t('working_hours') }}</p>
         </div>
 
         <!-- Links -->
         <div>
-          <h3 class="text-xl font-semibold mb-4">Links</h3>
+          <h3 class="text-xl font-semibold mb-4">{{ $t('links') }}</h3>
 
           <ul class="space-y-3 text-base">
-            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">Home</a></li>
-            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">services</a></li>
-            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">spareParts</a></li>
-            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">offers</a></li>
-            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">membership</a></li>
+            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">{{ $t('home') }}</a></li>
+            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">{{ $t('services') }}</a></li>
+            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">{{ $t('spare_parts') }}</a></li>
+            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">{{ $t('offers') }}</a></li>
+            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">{{ $t('membership') }}</a></li>
           </ul>
         </div>
 
         <!-- About -->
         <div>
-          <h3 class="text-xl font-semibold mb-4">About Us</h3>
+          <h3 class="text-xl font-semibold mb-4">{{ $t('about_us') }}</h3>
 
           <p class="text-sm leading-6 text-gray-100">
-            About Us Description Visit Our Information Website
+            {{ $t('about_us_desc') }}
           </p>
 
           <a
@@ -68,18 +68,18 @@
 
         <!-- Help -->
         <div>
-          <h3 class="text-xl font-semibold mb-4">Help</h3>
+          <h3 class="text-xl font-semibold mb-4">{{ $t('help') }}</h3>
 
           <ul class="space-y-3 text-base">
-            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">FAQ</a></li>
-            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">Contact Us</a></li>
-            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">WhatsApp</a></li>
+            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">{{ $t('faq') }}</a></li>
+            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">{{ $t('contact') }}</a></li>
+            <li><a href="#" class="hover:text-yellow-400 transition-colors duration-300 inline-block hover:translate-x-1">{{ $t('whatsapp') }}</a></li>
           </ul>
         </div>
 
         <!-- Social -->
         <div>
-          <h3 class="text-xl font-semibold mb-4">Social Media</h3>
+          <h3 class="text-xl font-semibold mb-4">{{ $t('social_media') }}</h3>
 
           <div class="flex gap-3 mb-6">
             <a
@@ -110,7 +110,7 @@
             </a>
           </div>
 
-          <h4 class="text-xl font-semibold mb-4">We Accept</h4>
+          <h4 class="text-xl font-semibold mb-4">{{ $t('we_accept') }}</h4>
 
           <div class="flex flex-wrap gap-2">
             <div class="bg-white rounded-lg p-1.5 w-14 h-8 flex items-center justify-center hover:scale-110 hover:shadow-lg transition-all duration-300">
