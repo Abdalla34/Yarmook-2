@@ -1,5 +1,5 @@
 <template>
-  <div class="spare-parts-page mt-0 lg:mt-3 min-h-screen py-8">
+  <div ref="pageRef" class="spare-parts-page mt-0 lg:mt-3 min-h-screen py-8">
     <div class="container mx-auto px-4">
       <template v-if="loading">
         <div class="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -29,7 +29,7 @@
       </template>
 
       <template v-else>
-        <div class="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div ref="desktopGrid" class="hidden lg:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <ProductCard
             v-for="item in spareParts"
             :key="item.id"
@@ -38,7 +38,7 @@
             @add-to-cart="addToCart"
           />
         </div>
-        <div class="flex lg:hidden flex-col gap-4">
+        <div ref="mobileList" class="flex lg:hidden flex-col gap-4">
           <ProductListItem
             v-for="item in spareParts"
             :key="item.id"
@@ -62,6 +62,11 @@
 </template>
 
 <script setup>
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
 const { getSpareParts, token } = useGlobalApi();
 const { addCart } = useAddToCart();
 
@@ -72,6 +77,10 @@ const loading = ref(true);
 const showAuthModal = ref(false);
 const pendingItem = ref(null);
 const loadingId = ref(null);
+
+const pageRef = ref(null);
+const desktopGrid = ref(null);
+const mobileList = ref(null);
 
 async function addToCart(item) {
   if (item.in_cart || loadingId.value === item.id) return;
@@ -126,4 +135,34 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+watch(loading, (isLoading) => {
+  if (!isLoading && spareParts.value.length) {
+    nextTick(() => {
+      animateCards();
+    });
+  }
+});
+
+function animateCards() {
+  if (!import.meta.client) return;
+
+  const targets = [];
+  if (desktopGrid.value) targets.push(...desktopGrid.value.children);
+  if (mobileList.value) targets.push(...mobileList.value.children);
+
+  if (!targets.length) return;
+
+  gsap.set(targets, { opacity: 0, y: 30 });
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: pageRef.value,
+      start: "top 80%",
+      once: true,
+    },
+  });
+
+  tl.to(targets, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power2.out" });
+}
 </script>
