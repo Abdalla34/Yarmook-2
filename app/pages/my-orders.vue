@@ -2,29 +2,29 @@
     <div class="min-h-screen bg-gray-50 py-10 mt-2">
         <div v-if="isLoggedIn" class="container mx-auto px-4">
             <h1 class="mb-8 text-2xl font-bold text-gray-800 text-center">
-                My Orders
+                {{ $t('my_orders') }}
             </h1>
 
             <div v-if="loading" class="text-center py-12">
                 <div
                     class="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto">
                 </div>
-                <p class="mt-4 text-gray-600">Loading orders...</p>
+                <p class="mt-4 text-gray-600">{{ $t('loading_orders') }}</p>
             </div>
 
             <div v-else-if="error" class="text-center py-12">
                 <p class="text-red-500">{{ error }}</p>
                 <button @click="fetchOrders"
                     class="mt-4 px-6 py-2 bg-main-color rounded-lg font-medium hover:opacity-90 transition">
-                    Retry
+                    {{ $t('retry') }}
                 </button>
             </div>
 
             <div v-else-if="!orders.length" class="text-center py-12">
-                <p class="text-gray-500 text-lg">No orders found.</p>
+                <p class="text-gray-500 text-lg">{{ $t('no_orders_found') }}</p>
                 <NuxtLink to="/services"
                     class="inline-block mt-4 px-6 py-2 bg-yellow-400 rounded-full font-semibold hover:bg-yellow-500 transition">
-                    Browse Services
+                    {{ $t('browse_services') }}
                 </NuxtLink>
             </div>
 
@@ -38,8 +38,8 @@
                 </div>
 
                 <div v-if="latestOrder" class="mb-4 bg-yellow-50 border border-yellow-200 rounded-2xl p-4">
-                    <p class="text-xs font-semibold text-yellow-700 uppercase mb-1">Latest Order</p>
-                    <p class="font-semibold text-gray-800">Order #{{ latestOrder.id }} — {{ latestOrder.status }}</p>
+                    <p class="text-xs font-semibold text-yellow-700 uppercase mb-1">{{ $t('latest_order') }}</p>
+                    <p class="font-semibold text-gray-800">{{ $t('order_number', { id: latestOrder.id }) }} — {{ statusLabel(latestOrder.status) }}</p>
                     <p v-if="latestOrder.created_at" class="text-xs text-gray-500 mt-1">{{ latestOrder.created_at }}</p>
                 </div>
 
@@ -47,7 +47,7 @@
                     <button @click="activeFilter = 'all'"
                         class="shrink-0 snap-start px-5 py-2 rounded-full text-sm font-medium transition-all duration-300"
                         :class="activeFilter === 'all' ? 'bg-yellow-400 text-black' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'">
-                        All
+                        {{ $t('all') }}
                     </button>
                     <button v-for="type in orderTypes" :key="type" @click="activeFilter = type"
                         class="shrink-0 snap-start px-5 py-2 rounded-full text-sm font-medium capitalize transition-all duration-300"
@@ -57,7 +57,7 @@
                 </div>
 
                 <div v-if="!filteredOrders.length" class="text-center py-12">
-                    <p class="text-gray-500 text-lg">No {{ activeFilter === 'all' ? '' : activeFilter }} orders found.
+                    <p class="text-gray-500 text-lg">{{ $t('no_filter_orders', { filter: activeFilter === 'all' ? '' : activeFilter }) }}
                     </p>
                 </div>
 
@@ -67,7 +67,7 @@
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-sm text-gray-500 flex items-center gap-2">
                                 <StatusIconOrder :status="order.status" />
-                                Order #{{ order.id }}
+                                {{ $t('order_number', { id: order.id }) }}
                                 <span v-if="order.type"
                                     class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 capitalize">
                                     {{ order.type }}
@@ -75,12 +75,12 @@
                             </span>
                             <span class="text-xs font-medium px-3 py-1 rounded-full capitalize"
                                 :class="statusClass(order.status)">
-                                {{ order.status }}
+                                {{ statusLabel(order.status) }}
                             </span>
                         </div>
                         <div class="text-sm text-gray-600 space-y-1">
-                            <p v-if="order.created_at" class="text-gray-400">Date: {{ order.created_at }}</p>
-                            <p v-if="order.total_amount">Total: {{ order.total_amount }} SAR</p>
+                            <p v-if="order.created_at" class="text-gray-400">{{ $t('date_label') }} {{ order.created_at }}</p>
+                            <p v-if="order.total_amount">{{ $t('total_label') }} {{ order.total_amount }} SAR</p>
                         </div>
                         <div v-if="order.items?.length" class="mt-3 space-y-2">
                             <div v-for="item in order.items" :key="item.id"
@@ -96,10 +96,10 @@
             </div>
         </div>
         <div v-else class="container mx-auto px-4 text-center py-12">
-            <p class="text-gray-600 mb-4">Please create an account to view your orders.</p>
+            <p class="text-gray-600 mb-4">{{ $t('please_create_account') }}</p>
             <button @click="navigateTo('/create-account')"
                 class="bg-main-color text-black px-8 py-3 rounded-full font-medium hover:opacity-90 transition">
-                Create Account
+                {{ $t('create_account') }}
             </button>
         </div>
     </div>
@@ -141,6 +141,22 @@ function statusClass(status) {
   if (s === 'confirmed') return 'bg-indigo-100 text-indigo-700';
   if (s === 'processing' || s === 'in_progress') return 'bg-cyan-100 text-cyan-700';
   return 'bg-gray-100 text-gray-600';
+}
+
+function statusLabel(status) {
+  if (!status) return '';
+  const s = status.toLowerCase();
+  if (s === 'completed' || s === 'paid' || s === 'booking_done') return 'Booking Done';
+  if (s === 'cancelled' || s === 'canceled') return 'Cancelled';
+  if (s === 'failed') return 'Failed';
+  if (s === 'refunded') return 'Refunded';
+  if (s === 'our_date') return 'Our Date';
+  if (s === 'booking_now') return 'Booking Now';
+  if (s === 'urgent') return 'Urgent';
+  if (s === 'pending') return 'Pending';
+  if (s === 'confirmed') return 'Confirmed';
+  if (s === 'processing' || s === 'in_progress') return 'In Progress';
+  return status;
 }
 
 const latestOrder = ref(null);

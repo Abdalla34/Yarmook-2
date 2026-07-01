@@ -473,12 +473,10 @@ async function confirmCancel() {
   if (!selectedCancelReason.value) return;
   cancelling.value = true;
   try {
-    const res = await changeOrderToCancelled(orderId, selectedCancelReason.value);
-    if (res?.status || res?.message) {
-      order.value.can_cancel = false;
-      order.value.status = "canceled";
-      closeCancelPopup();
-    }
+    await changeOrderToCancelled(orderId, selectedCancelReason.value);
+    order.value.can_cancel = false;
+    order.value.status = "canceled";
+    closeCancelPopup();
   } catch (err) {
     console.error("Failed to cancel order:", err);
   } finally {
