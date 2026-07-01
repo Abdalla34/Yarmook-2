@@ -114,7 +114,7 @@
       </div>
 
       <div class="mt-8 flex justify-center">
-        <button @click="navigateTo('/carbrands')"
+        <button @click="navigateTo('/add-car')"
           class="w-full sm:w-auto rounded-full bg-yellow-400 px-8 py-4 font-semibold text-black transition hover:bg-yellow-500"
         >
           {{ $t('add_new_car') }}

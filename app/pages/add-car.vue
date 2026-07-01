@@ -7,31 +7,31 @@
                 <div class="flex items-center gap-2">
                     <div :class="step >= 1 ? 'bg-main-color text-black' : 'bg-gray-200 text-gray-500'"
                         class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition">1</div>
-                    <span :class="step >= 1 ? 'text-gray-800' : 'text-gray-400'" class="text-sm font-medium">Brand</span>
+                    <span :class="step >= 1 ? 'text-gray-800' : 'text-gray-400'" class="text-sm font-medium">{{ $t('brand') }}</span>
                 </div>
                 <div :class="step >= 2 ? 'bg-main-color' : 'bg-gray-300'" class="w-12 h-0.5 transition"></div>
                 <div class="flex items-center gap-2">
                     <div :class="step >= 2 ? 'bg-main-color text-black' : 'bg-gray-200 text-gray-500'"
                         class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition">2</div>
-                    <span :class="step >= 2 ? 'text-gray-800' : 'text-gray-400'" class="text-sm font-medium">Type</span>
+                    <span :class="step >= 2 ? 'text-gray-800' : 'text-gray-400'" class="text-sm font-medium">{{ $t('type_label') }}</span>
                 </div>
                 <div :class="step >= 3 ? 'bg-main-color' : 'bg-gray-300'" class="w-12 h-0.5 transition"></div>
                 <div class="flex items-center gap-2">
                     <div :class="step >= 3 ? 'bg-main-color text-black' : 'bg-gray-200 text-gray-500'"
                         class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition">3</div>
-                    <span :class="step >= 3 ? 'text-gray-800' : 'text-gray-400'" class="text-sm font-medium">Details</span>
+                    <span :class="step >= 3 ? 'text-gray-800' : 'text-gray-400'" class="text-sm font-medium">{{ $t('details') }}</span>
                 </div>
             </div>
 
             <!-- Step 1: Car Brands -->
             <div v-if="step === 1">
                 <div class="text-center mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Select Car Brand</h1>
-                    <p class="text-gray-400 mt-2">Choose your car brand to get started</p>
+                    <h1 class="text-3xl font-bold text-gray-800">{{ $t('select_car_brand') }}</h1>
+                    <p class="text-gray-400 mt-2">{{ $t('select_car_brand_hint') }}</p>
                 </div>
 
                 <div class="relative mb-6 max-w-md mx-auto">
-                    <input v-model="searchQuery" type="text" placeholder="Search brands..."
+                    <input v-model="searchQuery" type="text" :placeholder="$t('search_brands')"
                         class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 pl-10 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition text-sm" />
                     <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">&#x1F50D;</span>
                 </div>
@@ -61,22 +61,22 @@
             <div v-if="step === 2">
                 <button @click="step = 1"
                     class="mb-6 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 transition font-medium">
-                    <span>&larr;</span> Back to brands
+                    <span>&larr;</span> {{ $t('back_to_brands') }}
                 </button>
 
                 <div class="text-center mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">{{ selectedBrand.title }} Types</h1>
-                    <p class="text-gray-400 mt-2">Select the model of your {{ selectedBrand.title }}</p>
+                    <h1 class="text-3xl font-bold text-gray-800">{{ $t('brand_types', { brand: selectedBrand.title }) }}</h1>
+                    <p class="text-gray-400 mt-2">{{ $t('select_model_hint', { brand: selectedBrand.title }) }}</p>
                 </div>
 
                 <div class="flex items-center justify-between gap-4 mb-6">
                     <div class="relative flex-1 max-w-md">
-                        <input v-model="typeSearchQuery" type="text" placeholder="Search types..."
+                        <input v-model="typeSearchQuery" type="text" :placeholder="$t('search_types')"
                             class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 pl-10 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition text-sm" />
                         <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">&#x1F50D;</span>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
-                        <span class="text-sm font-medium text-gray-600">Default</span>
+                        <span class="text-sm font-medium text-gray-600">{{ $t('default') }}</span>
                         <div @click="isDefault = !isDefault"
                             class="relative w-10 h-6 rounded-full border transition cursor-pointer"
                             :class="isDefault ? 'bg-main-color border-main-color' : 'bg-gray-100 border-gray-300'">
@@ -113,11 +113,11 @@
             <div v-if="step === 3">
                 <button @click="step = 2"
                     class="mb-6 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800 transition font-medium">
-                    <span>&larr;</span> Back to types
+                    <span>&larr;</span> {{ $t('back_to_types') }}
                 </button>
 
                 <div class="text-center mb-8">
-                    <h1 class="text-3xl font-bold text-gray-800">Car Details</h1>
+                    <h1 class="text-3xl font-bold text-gray-800">{{ $t('car_details') }}</h1>
                     <p class="text-gray-400 mt-2">{{ selectedBrand.title }} - {{ selectedType.title }}</p>
                 </div>
 
@@ -128,31 +128,31 @@
                             <div>
                                 <label class="mb-2 block text-sm font-medium text-gray-700">{{ $t('car_plate') }} <span class="text-red-400">*</span></label>
                                 <div class="flex gap-2">
-                                    <input v-model="formData.car_plate_letters" type="text" placeholder="ABC"
+                                    <input v-model="formData.car_plate_letters" type="text" :placeholder="$t('car_plate_letters_placeholder')"
                                         maxlength="4"
                                         class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition uppercase text-center" />
-                                    <input v-model="formData.car_plate_numbers" type="text" placeholder="123"
+                                    <input v-model="formData.car_plate_numbers" type="text" :placeholder="$t('car_plate_numbers_placeholder')"
                                         maxlength="4"
                                         class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition text-center" />
                                 </div>
                             </div>
 
                             <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700">Car Mileage <span class="text-red-400">*</span></label>
-                                <input v-model="formData.car_mileage" type="text" placeholder="Enter car mileage"
+                                <label class="mb-2 block text-sm font-medium text-gray-700">{{ $t('car_mileage') }} <span class="text-red-400">*</span></label>
+                                <input v-model="formData.car_mileage" type="text" :placeholder="$t('enter_car_mileage')"
                                     class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition" />
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700">Last Maintenance</label>
+                                <label class="mb-2 block text-sm font-medium text-gray-700">{{ $t('last_maintenance') }}</label>
                                 <input v-model="formData.last_maintenance" type="date"
                                     class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition" />
                             </div>
 
                             <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700">Last Oil Change</label>
+                                <label class="mb-2 block text-sm font-medium text-gray-700">{{ $t('last_oil_change') }}</label>
                                 <input v-model="formData.last_oil_change" type="date"
                                     class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition" />
                             </div>
@@ -164,7 +164,7 @@
                                 <div @click="showYearPopup = true"
                                     class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition cursor-pointer flex items-center justify-between">
                                     <span :class="formData.manufacture_year ? 'text-gray-900' : 'text-gray-400'">
-                                        {{ formData.manufacture_year || 'Select year' }}
+                                        {{ formData.manufacture_year || $t('select_year') }}
                                     </span>
                                     <span class="text-gray-400 text-lg">⌄</span>
                                 </div>
@@ -173,7 +173,7 @@
                                     class="fixed inset-0 z-50 flex items-center justify-center">
                                     <div class="fixed inset-0 bg-black/40 backdrop-blur-sm" @click="showYearPopup = false"></div>
                                     <div class="relative z-10 w-full max-w-sm mx-4 rounded-3xl bg-white shadow-2xl p-6">
-                                        <h3 class="mb-4 text-lg font-semibold text-gray-800 text-center">Select Manufacture Year</h3>
+                                        <h3 class="mb-4 text-lg font-semibold text-gray-800 text-center">{{ $t('select_manufacture_year') }}</h3>
                                         <div class="max-h-72 overflow-y-auto grid grid-cols-4 gap-3">
                                             <div v-for="year in years" :key="year"
                                                 class="rounded-xl py-3 px-2 text-center text-sm cursor-pointer transition font-medium"
@@ -187,14 +187,14 @@
                             </div>
 
                             <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700">Chassis Number <span class="text-red-400">*</span></label>
-                                <input v-model="formData.chassis_number" type="text" placeholder="Enter chassis number"
+                                <label class="mb-2 block text-sm font-medium text-gray-700">{{ $t('chassis_number') }} <span class="text-red-400">*</span></label>
+                                <input v-model="formData.chassis_number" type="text" :placeholder="$t('enter_chassis_number')"
                                     class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition" />
                             </div>
                         </div>
 
                         <div class="flex items-center gap-2 pt-2">
-                            <span class="text-sm font-medium text-gray-700">Set as default car</span>
+                            <span class="text-sm font-medium text-gray-700">{{ $t('set_as_default_car') }}</span>
                             <div @click="isDefault = !isDefault"
                                 class="relative w-10 h-6 rounded-full border transition cursor-pointer"
                                 :class="isDefault ? 'bg-main-color border-main-color' : 'bg-gray-100 border-gray-300'">
@@ -205,7 +205,7 @@
 
                         <button @click="submitCar"
                             class="mt-6 w-full rounded-full bg-main-color py-4 font-bold text-black transition hover:brightness-95 active:scale-[0.99] shadow-sm">
-                            Submit
+                            {{ $t('submit') }}
                         </button>
 
                     </div>

@@ -31,7 +31,7 @@
 
                                 <!-- No Car -->
                                 <div v-else class="mb-5">
-                                    <button @click="router.push('/carbrands')"
+                                    <button @click="router.push('/add-car')"
                                         class="w-full rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500">
                                         {{ $t('add_car') }}
                                     </button>

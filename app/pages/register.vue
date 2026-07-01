@@ -62,7 +62,7 @@ async function onSubmit(values) {
             token.value = res?.data?.token;
             user.value = JSON.stringify(res.data.user);
         }
-        navigateTo('/carbrands')
+        navigateTo('/add-car')
     } catch {
         console.error("Registration failed");
     } finally {
