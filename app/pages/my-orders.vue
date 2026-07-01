@@ -134,7 +134,7 @@ function statusClass(status) {
   if (!status) return 'bg-gray-100 text-gray-600';
   const s = status.toLowerCase();
   if (s === 'completed' || s === 'paid' || s === 'booking_done') return 'bg-green-100 text-green-700';
-  if (s === 'cancelled' || s === 'failed' || s === 'refunded') return 'bg-red-100 text-red-700';
+  if (s === 'cancelled' || s === 'canceled' || s === 'failed' || s === 'refunded') return 'bg-red-100 text-red-700';
   if (s === 'our_date') return 'bg-blue-100 text-blue-700';
   if (s === 'booking_now' || s === 'urgent') return 'bg-orange-100 text-orange-700';
   if (s === 'pending') return 'bg-yellow-100 text-yellow-700';

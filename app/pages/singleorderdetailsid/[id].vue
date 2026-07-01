@@ -39,8 +39,8 @@
           </div>
 
           <span class="px-5 py-2 rounded-full font-medium capitalize"
-            :class="order.status === 'completed' || order.status === 'paid' ? 'bg-green-100 text-green-600' : order.status === 'cancelled' ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-600'">
-            {{ order.status === 'completed' || order.status === 'paid' ? 'Booking Done' : order.status === 'cancelled' ?
+            :class="order.status === 'completed' || order.status === 'paid' ? 'bg-green-100 text-green-600' : order.status === 'cancelled' || order.status === 'canceled' ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-600'">
+            {{ order.status === 'completed' || order.status === 'paid' ? 'Booking Done' : order.status === 'cancelled' || order.status === 'canceled' ?
               'Cancelled' : 'Pending' }}
           </span>
         </div>
@@ -167,7 +167,7 @@
 
         <!-- Cancel -->
         <div v-if="order.can_cancel" class="mt-8">
-          <button class="w-full bg-red-500 hover:bg-red-600 text-white py-4 rounded-xl font-medium transition">
+          <button @click="openCancelPopup" class="w-full bg-red-500 hover:bg-red-600 text-white py-4 rounded-xl font-medium transition">
             Cancel Order
           </button>
         </div>
@@ -252,6 +252,53 @@
         </div>
       </div>
 
+      <!-- Cancel Popup -->
+      <div v-if="showCancelPopup"
+        class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-4"
+        @click.self="closeCancelPopup">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-lg max-h-[80vh] overflow-y-auto shadow-xl">
+          <div
+            class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between rounded-t-3xl">
+            <h3 class="text-lg font-bold">Cancel Order</h3>
+            <button @click="closeCancelPopup"
+              class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+          <div class="p-6 space-y-6">
+            <div v-if="loadingReasons" class="text-center py-8">
+              <div class="w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <p class="mt-3 text-gray-500 text-sm">Loading reasons...</p>
+            </div>
+            <div v-else-if="cancelReasonsList.length" class="space-y-3">
+              <p class="text-sm text-gray-500">Please select a reason for cancellation:</p>
+              <label v-for="reason in cancelReasonsList" :key="reason.id"
+                class="flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition"
+                :class="selectedCancelReason === reason.id ? 'border-red-500 bg-red-50' : 'border-gray-200'">
+                <input type="radio" :value="reason.id" v-model="selectedCancelReason" class="accent-red-500" />
+                <span class="text-sm text-gray-700">{{ reason.title || reason.name }}</span>
+              </label>
+            </div>
+            <div v-else class="text-center py-8">
+              <p class="text-gray-500 text-sm">No cancel reasons available.</p>
+            </div>
+            <div v-if="selectedCancelReason" class="flex gap-3">
+              <button @click="confirmCancel" :disabled="cancelling"
+                class="flex-1 bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white py-3 rounded-xl font-medium transition flex items-center justify-center gap-2">
+                <span v-if="cancelling" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                {{ cancelling ? 'Cancelling...' : 'Yes, Cancel' }}
+              </button>
+              <button @click="closeCancelPopup" :disabled="cancelling"
+                class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-medium transition">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -259,7 +306,7 @@
 <script setup>
 const route = useRoute();
 const { getsingleOrder } = useGlobalApi();
-const { getAvailableBranchesTime, resevationTime } = useordersDetails();
+const { getAvailableBranchesTime, resevationTime, cancelReasons, changeOrderToCancelled } = useordersDetails();
 
 const order = ref(null);
 const loading = ref(true);
@@ -273,6 +320,11 @@ const rescheduled = ref(false);
 const rescheduling = ref(false);
 const newReservationDate = ref("");
 const newReservationTime = ref("");
+const showCancelPopup = ref(false);
+const cancelReasonsList = ref([]);
+const selectedCancelReason = ref(null);
+const loadingReasons = ref(false);
+const cancelling = ref(false);
 
 const orderId = route.params.id;
 
@@ -394,6 +446,43 @@ async function selectTime(date, slot) {
     console.error("Failed to reschedule:", err);
   } finally {
     rescheduling.value = false;
+  }
+}
+
+async function openCancelPopup() {
+  showCancelPopup.value = true;
+  loadingReasons.value = true;
+  cancelReasonsList.value = [];
+  selectedCancelReason.value = null;
+  try {
+    const res = await cancelReasons();
+    cancelReasonsList.value = res?.data ?? res ?? [];
+  } catch (err) {
+    console.error("Failed to load cancel reasons:", err);
+  } finally {
+    loadingReasons.value = false;
+  }
+}
+
+function closeCancelPopup() {
+  showCancelPopup.value = false;
+  selectedCancelReason.value = null;
+}
+
+async function confirmCancel() {
+  if (!selectedCancelReason.value) return;
+  cancelling.value = true;
+  try {
+    const res = await changeOrderToCancelled(orderId, selectedCancelReason.value);
+    if (res?.status || res?.message) {
+      order.value.can_cancel = false;
+      order.value.status = "canceled";
+      closeCancelPopup();
+    }
+  } catch (err) {
+    console.error("Failed to cancel order:", err);
+  } finally {
+    cancelling.value = false;
   }
 }
 </script>
