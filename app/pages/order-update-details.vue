@@ -6,7 +6,7 @@
 
                     <div>
                         <h1 class="mb-6 text-2xl font-bold text-gray-800">
-                            Order Details
+                            {{ $t('order_details') }}
                         </h1>
 
                         <div class="rounded-3xl bg-white p-6 shadow-sm">
@@ -16,12 +16,12 @@
                                 <!-- My Cars -->
                                 <div v-if="cars.length > 0" class="mb-5">
                                     <label class="mb-2 block text-sm font-medium text-gray-700">
-                                        My Cars
+                                        {{ $t('my_cars') }}
                                     </label>
 
                                     <Field name="car_id" :rules="required" as="select" v-model="selectedCarId"
                                         class="w-full rounded-xl cursor-pointer border border-gray-200 px-4 py-3 outline-none focus:border-yellow-400">
-                                        <option value="" disabled class="text-gray-200">Welcome MR: {{ userName }}</option>
+                                        <option value="" disabled class="text-gray-200">{{ $t('welcome_mr', { name: userName }) }}</option>
                                         <option v-for="car in cars" :key="car.id" :value="car.id">
                                             {{ car.name }} - {{ car.brand?.title }} {{ car.car_type?.title }}
                                         </option>
@@ -33,14 +33,14 @@
                                 <div v-else class="mb-5">
                                     <button @click="router.push('/carbrands')"
                                         class="w-full rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500">
-                                        Add Car
+                                        {{ $t('add_car') }}
                                     </button>
                                 </div>
 
                                 <!-- Branch -->
                                 <div class="mb-5">
                                     <label class="mb-2 block text-sm font-medium text-gray-700">
-                                        Branch
+                                        {{ $t('branch') }}
                                     </label>
 
                                     <Field name="branch_id" :rules="branchRequired" :model-value="selectedBranchId" type="hidden" />
@@ -48,7 +48,7 @@
                                     <div @click="showBranchPopup = true"
                                         class="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3 cursor-pointer">
                                         <span class="text-black placeholder-gray-500">
-                                            {{ selectedBranchName || 'Select Branch' }}
+                                            {{ selectedBranchName || $t('select_branch') }}
                                         </span>
                                         <span class="text-gray-400">⌄</span>
                                     </div>
@@ -58,7 +58,7 @@
                                 <!-- Date -->
                                 <div class="mb-5">
                                     <label class="mb-2 block text-sm font-medium text-gray-700">
-                                        Date & Time
+                                        {{ $t('date_time') }}
                                     </label>
 
                                     <Field name="datetime" :rules="dateTimeRequired" :model-value="selectedDateTime" type="hidden" />
@@ -66,7 +66,7 @@
                                     <div @click="openDateTimePicker"
                                         class="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3 cursor-pointer">
                                         <span :class="selectedDateTime ? 'text-black' : 'text-gray-500'">
-                                            {{ selectedDateTime || 'Select Date & Time' }}
+                                            {{ selectedDateTime || $t('select_date_time') }}
                                         </span>
                                         <span class="text-gray-400">⌄</span>
                                     </div>
@@ -76,28 +76,28 @@
                                 <!-- Details -->
                                 <div class="mb-5">
                                     <label class="mb-2 block text-sm font-medium text-gray-700">
-                                        Details
+                                        {{ $t('details_label') }}
                                     </label>
 
-                                    <Field name="customer_note" as="textarea" v-model="customerNote" rows="5" placeholder="Issues details"
+                                    <Field name="customer_note" as="textarea" v-model="customerNote" rows="5" :placeholder="$t('issues_details_placeholder')"
                                         class="w-full rounded-xl border border-gray-200 p-4 outline-none focus:border-yellow-400" />
                                 </div>
 
                                 <!-- Upload -->
                                 <div class="mb-6">
                                     <label class="mb-2 block text-sm font-medium text-gray-700">
-                                        Problem Photo
+                                        {{ $t('problem_photo') }}
                                     </label>
 
                                     <div class="rounded-2xl border-2 border-dashed border-gray-300 p-8 text-center">
                                         <input ref="fileInput" type="file" class="hidden" id="upload" accept="image/jpeg,image/png" multiple @change="handleFileChange" />
 
                                         <label for="upload" class="cursor-pointer font-medium text-yellow-500">
-                                            {{ selectedFiles.length ? `${selectedFiles.length} file(s) selected` : 'Upload from your gallery' }}
+                                            {{ selectedFiles.length ? $t('files_selected', { count: selectedFiles.length }) : $t('upload_from_gallery') }}
                                         </label>
 
                                         <p class="mt-2 text-sm text-gray-400">
-                                            JPG, PNG up to 10MB
+                                            {{ $t('upload_hint') }}
                                         </p>
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@
                                 <div class="flex flex-col gap-3 sm:flex-row">
                                     <button type="submit" :disabled="submitting"
                                         class="flex-1 rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
-                                        {{ submitting ? 'Loading...' : 'Continue' }}
+                                        {{ submitting ? $t('loading') : $t('continue') }}
                                     </button>
                                 </div>
 
@@ -129,11 +129,11 @@
             <!-- Header -->
             <div class="flex items-center justify-between mb-4">
                 <button v-if="dateTimeStep === 2" @click="dateTimeStep = 1" class="text-gray-500 hover:text-gray-700">
-                    ← Back
+                    {{ $t('back') }}
                 </button>
                 <span class="flex-1"></span>
                 <h3 class="text-lg font-semibold text-gray-800">
-                    {{ dateTimeStep === 1 ? 'Select Date' : 'Select Time' }}
+                    {{ dateTimeStep === 1 ? $t('select_date') : $t('select_time') }}
                 </h3>
                 <span class="flex-1"></span>
             </div>
@@ -148,12 +148,12 @@
                         </p>
 
                         <p class="text-sm text-gray-500">
-                            {{ date.time_slots?.length || 0 }} available times
+                            {{ $t('available_times_count', { count: date.time_slots?.length || 0 }) }}
                         </p>
                     </div>
                 </div>
                 <div v-else class="text-center py-8 text-gray-500">
-                    No available dates
+                    {{ $t('no_available_dates') }}
                 </div>
             </div>
 
@@ -167,7 +167,7 @@
                         </p>
 
                         <p class="text-xs text-gray-500">
-                            Available: {{ time.available_orders }}
+                            {{ $t('available_label', { count: time.available_orders }) }}
                         </p>
                     </div>
                     <!-- <div v-for="time in availableTimes" :key="time.id || time.time" @click="selectTime(time)"
@@ -177,7 +177,7 @@
                     </div> -->
                 </div>
                 <div v-else class="text-center py-8 text-gray-500">
-                    No available times
+                    {{ $t('no_available_times') }}
                 </div>
             </div>
         </div>
@@ -190,7 +190,7 @@
         <div class="w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-white p-6 shadow-xl max-h-[70vh] flex flex-col"
             @click.stop>
             <h3 class="text-lg font-semibold text-gray-800 text-center mb-4">
-                Select Branch
+                {{ $t('select_branch_title') }}
             </h3>
 
             <div v-if="loadingBranches" class="flex justify-center py-8">
@@ -216,7 +216,7 @@
             </div>
 
             <div v-else class="text-center py-8 text-gray-500">
-                No branches available
+                {{ $t('no_branches_available') }}
             </div>
         </div>
     </div>
@@ -225,19 +225,20 @@
 <!-- ////////////////// -->
 <script setup>
 import { Form, Field, ErrorMessage } from "vee-validate";
+const { t } = useI18n();
 
 function required(value) {
-    if (!value) return "This field is required";
+    if (!value) return t('required_field');
     return true;
 }
 
 function branchRequired(value) {
-    if (!value) return "Please select a branch";
+    if (!value) return t('select_branch_required');
     return true;
 }
 
 function dateTimeRequired(value) {
-    if (!value) return "Please select date & time";
+    if (!value) return t('select_date_time_required');
     return true;
 }
 

@@ -4,10 +4,10 @@
       <div class="mx-auto max-w-6xl px-4">
 
         <div v-if="!isLoggedIn" class="text-center py-20">
-          <p class="text-gray-600 text-lg mb-4">You should create an account to view your cart.</p>
+          <p class="text-gray-600 text-lg mb-4">{{ $t('cart_login_required') }}</p>
           <button @click="navigateTo('/create-account')"
             class="bg-yellow-400 text-black px-8 py-3 rounded-full font-semibold hover:bg-yellow-500 transition">
-            Create Account
+            {{ $t('create_account') }}
           </button>
         </div>
 
@@ -19,11 +19,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
               </svg>
             </div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Your cart is empty</h3>
-            <p class="text-gray-500 text-sm mb-6 max-w-xs text-center">Looks like you haven't added any services or products yet.</p>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ $t('cart_empty') }}</h3>
+            <p class="text-gray-500 text-sm mb-6 max-w-xs text-center">{{ $t('cart_empty_desc') }}</p>
             <NuxtLink to="/services"
               class="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-8 py-3 font-semibold text-black transition hover:bg-yellow-500">
-              Browse Services
+              {{ $t('browse_services') }}
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
@@ -35,7 +35,7 @@
           <!-- Left Side -->
           <div class="lg:col-span-2 min-w-0">
             <h2 class="mb-6 text-xl font-semibold text-gray-800">
-              Order Details
+              {{ $t('order_details') }}
             </h2>
 
             <div v-if="loading" class="space-y-4">
@@ -54,7 +54,7 @@
               <p class="text-red-500">{{ error }}</p>
               <button @click="fetchCart"
                 class="mt-4 px-6 py-2 bg-main-color rounded-lg font-medium hover:opacity-90 transition">
-                Retry
+                {{ $t('retry') }}
               </button>
             </div>
 
@@ -102,21 +102,21 @@
             <div class="rounded-3xl bg-white p-6 shadow-md box-design">
 
               <h2 class="mb-4 text-lg font-semibold">
-                Cost Details
+                {{ $t('cost_details') }}
               </h2>
               <div class="space-y-3 text-sm ">
                 <div class="flex justify-between">
-                  <span class="text-gray-500">Total Order</span>
+                  <span class="text-gray-500">{{ $t('total_order') }}</span>
                   <span>{{ cartTotal }} SAR</span>
                 </div>
 
                 <div class="flex justify-between">
-                  <span class="text-gray-500">VAT</span>
+                  <span class="text-gray-500">{{ $t('vat') }}</span>
                   <span>{{ vatAmount }} SAR</span>
                 </div>
 
                 <div class="flex justify-between">
-                  <span class="text-gray-500">Final Amount</span>
+                  <span class="text-gray-500">{{ $t('final_amount') }}</span>
                   <span>{{ amountToPay }} SAR</span>
                 </div>
               </div>
@@ -125,7 +125,7 @@
 
               <div class="mt-4 flex items-center justify-between rounded-xl bg-green-50 px-4 py-3">
                 <span class="font-semibold text-gray-700">
-                  Total Amount
+                  {{ $t('total_amount_label') }}
                 </span>
 
                 <div>
@@ -136,12 +136,12 @@
               <div class="mt-6 flex flex-col sm:flex-row gap-3">
                 <button @click="router.push('/services')"
                   class="flex-1 rounded-full border border-black-400 bg-white py-4 font-medium text-black-500 transition hover:bg-yellow-50">
-                  Add Another Item
+                  {{ $t('add_another_item') }}
                 </button>
 
                 <button @click="handleContinue" :disabled="navigating"
                   class="flex-1 rounded-full bg-yellow-400 py-4 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
-                  {{ navigating ? 'Loading...' : 'Continue' }}
+                  {{ navigating ? $t('loading') : $t('continue') }}
                 </button>
               </div>
             </div>

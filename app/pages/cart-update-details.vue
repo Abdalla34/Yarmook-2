@@ -7,7 +7,7 @@
                     <!-- Left Side -->
                     <div class="lg:col-span-2 min-w-0">
                         <h2 class="mb-6 text-xl font-semibold text-gray-800">
-                            Order Details
+                            {{ $t('order_details') }}
                         </h2>
 
                         <div v-if="loading" class="space-y-4">
@@ -26,15 +26,15 @@
                             <p class="text-red-500">{{ error }}</p>
                             <button @click="fetchCart"
                                 class="mt-4 px-6 py-2 bg-main-color rounded-lg font-medium hover:opacity-90 transition">
-                                Retry
+                                {{ $t('retry') }}
                             </button>
                         </div>
 
                         <div v-else-if="!cartItems.length" class="text-center py-12">
-                            <p class="text-gray-500 text-lg">Your cart is empty</p>
+                            <p class="text-gray-500 text-lg">{{ $t('cart_empty') }}</p>
                             <NuxtLink to="/services"
                                 class="inline-block mt-4 px-6 py-2 bg-main-color rounded-lg font-medium hover:opacity-90 transition">
-                                Browse Services
+                                {{ $t('browse_services') }}
                             </NuxtLink>
                         </div>
 
@@ -82,41 +82,41 @@
                         <div class="rounded-3xl bg-white p-6 shadow-md box-design">
 
                             <h2 class="mb-5 text-lg font-semibold">
-                                Order Details
+                                {{ $t('order_details') }}
                             </h2>
 
                             <div class="space-y-3 text-sm">
                                 <div class="flex justify-between">
-                                    <span class="text-gray-500">Branch</span>
-                                    <span class="font-medium">{{ branch.title || 'Not set' }}</span>
+                                    <span class="text-gray-500">{{ $t('branch') }}</span>
+                                    <span class="font-medium">{{ branch.title || $t('not_set') }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-500">Reservation Date</span>
-                                    <span class="font-medium">{{ reservationDate || 'Not set' }}</span>
+                                    <span class="text-gray-500">{{ $t('reservation_date_label') }}</span>
+                                    <span class="font-medium">{{ reservationDate || $t('not_set') }}</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-500">Reservation Time</span>
-                                    <span class="font-medium">{{ reservationTime || 'Not set' }}</span>
+                                    <span class="text-gray-500">{{ $t('reservation_time_label') }}</span>
+                                    <span class="font-medium">{{ reservationTime || $t('not_set') }}</span>
                                 </div>
                             </div>
 
                             <hr class="my-6" />
 
                             <h2 class="mb-4 text-lg font-semibold">
-                                Cost Details
+                                {{ $t('cost_details') }}
                             </h2>
 
                             <div class="space-y-3 text-sm box-design">
                                 <div class="flex justify-between">
-                                    <span class="text-gray-500">Total Order</span>
+                                    <span class="text-gray-500">{{ $t('total_order') }}</span>
                                     <span>{{ cartTotal }} SAR</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-500">VAT</span>
+                                    <span class="text-gray-500">{{ $t('vat') }}</span>
                                     <span>{{ vatAmount }} SAR</span>
                                 </div>
                                 <div class="flex justify-between">
-                                    <span class="text-gray-500">Final Amount</span>
+                                    <span class="text-gray-500">{{ $t('final_amount') }}</span>
                                     <span>{{ amountToPay }} SAR</span>
                                 </div>
                             </div>
@@ -124,23 +124,23 @@
                             <hr class="my-6" />
 
                             <div class="mt-5 relative">
-                                <input v-model="promoCode" type="text" placeholder="Promocode"
+                                <input v-model="promoCode" type="text" :placeholder="$t('promocode')"
                                     class="w-full rounded-lg border border-gray-200 px-4 py-3 pr-20 outline-none focus:border-yellow-400"
                                     :disabled="!!voucherCode" />
                                 <button v-if="!voucherCode" @click="applyPromoCode" :disabled="promoApplying || !promoCode.trim()"
                                     class="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg bg-yellow-400 px-4 py-2 text-sm font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
                                     <span v-if="promoApplying"
                                         class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin inline-block"></span>
-                                    <span v-else>Apply</span>
+                                    <span v-else>{{ $t('apply') }}</span>
                                 </button>
                                 <button v-else @click="deletevoucher" :disabled="promoDeleting"
                                     class="absolute right-1 top-1/2 -translate-y-1/2 rounded-lg bg-red-400 px-4 py-2 text-sm font-medium text-black transition hover:bg-red-500 disabled:opacity-50">
                                     <span v-if="promoDeleting"
                                         class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin inline-block"></span>
-                                    <span v-else>delete</span>
+                                    <span v-else>{{ $t('delete') }}</span>
                                 </button>
                             </div>
-                            <div v-if="voucherCode" class="mt-2 text-sm text-green-600">Promo code "{{ voucherCode }}" applied</div>
+                            <div v-if="voucherCode" class="mt-2 text-sm text-green-600">{{ $t('promo_applied', { code: voucherCode }) }}</div>
                             <div v-if="promoError" class="mt-2 text-sm text-red-600">{{ promoError }}</div>
 
                             <div v-if="Number(balance) > 0" class="mt-4 rounded-xl border border-green-200 bg-white px-4 py-3">
@@ -152,9 +152,9 @@
                                             </svg>
                                         </div>
                                         <div>
-                                            <span class="text-sm font-medium text-gray-700">Use Wallet</span>
+                                            <span class="text-sm font-medium text-gray-700">{{ $t('use_wallet') }}</span>
                                             <p class="flex items-center gap-1 text-xs text-gray-400">
-                                                <span>Balance: {{ balance }} SAR</span>
+                                                <span>{{ $t('balance_label', { balance }) }}</span>
                                                 <span v-if="walletLoading" class="inline-block h-3 w-3 animate-spin rounded-full border-2 border-gray-400 border-t-transparent"></span>
                                             </p>
                                         </div>
@@ -171,13 +171,13 @@
                                     <svg class="h-3.5 w-3.5 shrink-0 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    <span class="text-xs font-medium text-green-700">Wallet covers the full amount</span>
+                                    <span class="text-xs font-medium text-green-700">{{ $t('wallet_full_amount') }}</span>
                                 </div>
                             </div>
 
                             <div class="mt-4 flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3">
                                 <span class="font-semibold text-gray-700">
-                                    Total Amount
+                                    {{ $t('total_amount_label') }}
                                 </span>
                                 <div>
                                     <span class="text-2xl font-bold">{{ amountToPay }}</span>
@@ -188,7 +188,7 @@
                             <div class="mt-6 flex flex-col sm:flex-row gap-3">
                                 <button @click="handleContinue" :disabled="checkoutLoading"
                                     class="flex-1 rounded-full bg-yellow-400 py-4 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-50">
-                                    {{ checkoutLoading ? 'Loading...' : 'Continue' }}
+                                    {{ checkoutLoading ? $t('loading') : $t('continue') }}
                                 </button>
                             </div>
 
@@ -210,18 +210,18 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                     </svg>
                 </div>
-                <h3 class="mb-2 text-lg font-semibold text-gray-800">Payment Successful</h3>
-                <p class="mb-6 text-sm text-gray-500">Your order has been paid using your wallet balance.</p>
+                <h3 class="mb-2 text-lg font-semibold text-gray-800">{{ $t('payment_successful') }}</h3>
+                <p class="mb-6 text-sm text-gray-500">{{ $t('wallet_payment_desc') }}</p>
                 <div class="flex flex-col gap-3">
                     <button @click="goToOrder" :disabled="popupLoading"
                         class="flex w-full items-center justify-center gap-2 rounded-full bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500 disabled:opacity-60">
                         <span v-if="popupLoading" class="h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent"></span>
-                        <span>Track Order</span>
+                        <span>{{ $t('track_order') }}</span>
                     </button>
                     <button @click="goToHome" :disabled="popupLoading"
                         class="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white py-3 font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-60">
                         <span v-if="popupLoading" class="h-4 w-4 animate-spin rounded-full border-2 border-gray-500 border-t-transparent"></span>
-                        <span>Go to Home</span>
+                        <span>{{ $t('go_to_home') }}</span>
                     </button>
                 </div>
             </div>
