@@ -150,7 +150,7 @@ function animateYarmookSection() {
             <div class="container mx-auto">
                 <section class="mt-4 md:mt-10 px-4">
                     <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
-                        <h2 ref="sectionTitle" class="text-2xl font-bold mb-6">Center Yarmook</h2>
+                        <h2 ref="sectionTitle" class="text-2xl font-bold mb-6">{{ $t('center_yarmook') }}</h2>
 
                         <div ref="mainGrid" class="grid grid-cols-2 gap-3">
                             <div @click="navigateTo('/services')"
@@ -158,9 +158,9 @@ function animateYarmookSection() {
                                 <div class="h-28 md:h-36 flex items-center justify-center p-4">
                                     <img src="/car-fix.png" alt="Handmade Services" class="object-contain w-full h-full" />
                                 </div>
-                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">More</span>
+                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $t('more') }}</span>
                                 <div class="p-2 text-center">
-                                    <h3 class="text-sm font-bold">Handmade Services</h3>
+                                    <h3 class="text-sm font-bold">{{ $t('handmade_services') }}</h3>
                                 </div>
                             </div>
 
@@ -169,9 +169,9 @@ function animateYarmookSection() {
                                 <div class="h-28 md:h-36 flex items-center justify-center p-4">
                                     <img src="/Carcomfortable.png" alt="Comfortable Service" class="object-contain w-full h-full" />
                                 </div>
-                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">More</span>
+                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $t('more') }}</span>
                                 <div class="p-2 text-center">
-                                    <h3 class="text-sm font-bold">Comfortable Service</h3>
+                                    <h3 class="text-sm font-bold">{{ $t('comfortable_service') }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -182,9 +182,9 @@ function animateYarmookSection() {
                                 <div class="h-28 flex items-center justify-center p-4">
                                     <img src="/maintenance.png" alt="Maintenance" class="object-contain w-full h-full" />
                                 </div>
-                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Soon</span>
+                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">{{ $t('soon') }}</span>
                                 <div class="p-2 text-center">
-                                    <h3 class="text-xs font-bold">Maintenance</h3>
+                                    <h3 class="text-xs font-bold">{{ $t('maintenance') }}</h3>
                                 </div>
                             </div>
 
@@ -193,20 +193,20 @@ function animateYarmookSection() {
                                 <div class="h-28 flex items-center justify-center p-4">
                                     <img src="/Car Brake.png" alt="Spare Parts" class="object-contain w-full h-full" />
                                 </div>
-                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Soon</span>
+                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">{{ $t('soon') }}</span>
                                 <div class="p-2 text-center">
-                                    <h3 class="text-xs font-bold">Spare Parts</h3>
+                                    <h3 class="text-xs font-bold">{{ $t('spare_parts') }}</h3>
                                 </div>
                             </div>
 
                             <div @click="navigateTo('/memberships')"
                                 class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                                 <div class="h-28 flex items-center justify-center">
-                                    <span class="text-red-500 font-bold text-4xl uppercase">Pro</span>
+                                    <span class="text-red-500 font-bold text-4xl uppercase">{{ $t('pro') }}</span>
                                 </div>
-                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Pro</span>
+                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">{{ $t('pro') }}</span>
                                 <div class="p-2 text-center">
-                                    <h3 class="text-xs font-bold">Memberships</h3>
+                                    <h3 class="text-xs font-bold">{{ $t('memberships') }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -219,10 +219,8 @@ function animateYarmookSection() {
             <div class="container mx-auto px-4">
                 <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
                     <div ref="offersHeading" class="flex align-middle justify-between">
-                        <h2 class="text-2xl font-bold text-start mb-6">Offers</h2>
-                        <h2 class="text-red-500 font-bold capitalize cursor-pointer" @click="navigateTo('/offers')">View
-                            all
-                        </h2>
+                        <h2 class="text-2xl font-bold text-start mb-6">{{ $t('offers') }}</h2>
+                        <h2 class="text-red-500 font-bold capitalize cursor-pointer" @click="navigateTo('/offers')">{{ $t('view_all') }}</h2>
                     </div>
                     <div ref="offersGrid"
                         class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:snap-none">
