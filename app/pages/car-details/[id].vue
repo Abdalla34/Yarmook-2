@@ -112,8 +112,10 @@ function translateKey(key) {
     year: t('year'),
     color: t('color'),
     engine_number: t('engine_number'),
-    manufacturer_year: t('manufacturer_year'),
-    man_year: t('manufacturer_year'),
+    manufacture_year: t('manufacture_year'),
+    manufacturer_year: t('manufacture_year'),
+    man_year: t('manufacture_year'),
+    car_plate: t('car_plate'),
   };
   return map[key] || key.replace(/_/g, ' ');
 }

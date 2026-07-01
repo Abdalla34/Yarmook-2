@@ -126,7 +126,7 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700">Car Plate <span class="text-red-400">*</span></label>
+                                <label class="mb-2 block text-sm font-medium text-gray-700">{{ $t('car_plate') }} <span class="text-red-400">*</span></label>
                                 <div class="flex gap-2">
                                     <input v-model="formData.car_plate_letters" type="text" placeholder="ABC"
                                         maxlength="4"
@@ -160,7 +160,7 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700">Manufacture Year <span class="text-red-400">*</span></label>
+                                <label class="mb-2 block text-sm font-medium text-gray-700">{{ $t('manufacture_year') }} <span class="text-red-400">*</span></label>
                                 <div @click="showYearPopup = true"
                                     class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-main-color focus:ring-2 focus:ring-main-color/20 transition cursor-pointer flex items-center justify-between">
                                     <span :class="formData.manufacture_year ? 'text-gray-900' : 'text-gray-400'">

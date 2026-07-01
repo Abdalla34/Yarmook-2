@@ -34,7 +34,7 @@
                         <img :src="defaultCar.image || defaultCar.car_image || '/newLogo.png'" class="w-16 h-16 object-contain" alt="" @error="handleImgError" />
                         <div>
                             <h2 class="font-bold text-lg">{{ carName }}</h2>
-                            <p class="text-sm text-gray-500 mt-1">🔒 Membership applies to this vehicle only</p>
+                            <p class="text-sm text-gray-500 mt-1">🔒 {{ $t('membership_applies_to') }}</p>
                         </div>
                     </div>
                 </div>
@@ -48,11 +48,11 @@
                     </div>
 
                     <div v-if="inspectionCount || benefitsCount" class="flex gap-3 mt-4">
-                        <div v-if="inspectionCount" class="bg-red-50 text-red-600 font-semibold rounded-full px-5 py-2">{{ inspectionCount }} Services</div>
-                        <div v-if="benefitsCount" class="bg-green-50 text-green-600 font-semibold rounded-full px-5 py-2">{{ benefitsCount }} Benefits</div>
+                        <div v-if="inspectionCount" class="bg-red-50 text-red-600 font-semibold rounded-full px-5 py-2">{{ inspectionCount }} {{ $t('services_label') }}</div>
+                        <div v-if="benefitsCount" class="bg-green-50 text-green-600 font-semibold rounded-full px-5 py-2">{{ benefitsCount }} {{ $t('benefits_label') }}</div>
                     </div>
 
-                    <h1 class="text-2xl font-bold mt-5">{{ memberDetails?.name || 'Membership' }}</h1>
+                    <h1 class="text-2xl font-bold mt-5">{{ memberDetails?.name || $t('membership') }}</h1>
                 </div>
 
                 <p v-if="memberDetails?.description" class="text-gray-600 mt-4 leading-relaxed">{{ memberDetails.description }}</p>
@@ -67,7 +67,7 @@
                     <div v-if="memberDetails?.warranty" class="bg-purple-50 text-purple-600 font-semibold rounded-full px-5 py-2 text-sm">{{ memberDetails.warranty.display }}</div>
                 </div>
 
-                <h2 v-if="inspectionCount" class="font-bold text-lg mt-8 mb-4">Main Benefits</h2>
+                <h2 v-if="inspectionCount" class="font-bold text-lg mt-8 mb-4">{{ $t('main_benefits') }}</h2>
                 <div v-if="inspectionCount" class="grid md:grid-cols-2 gap-4">
                     <div v-for="(service, index) in memberDetails.includes.inspection" :key="index" class="border rounded-2xl p-4 flex gap-4 items-center">
                         <img v-if="service.service_icon" :src="service.service_icon" class="w-14 h-14 rounded-xl object-cover" alt="" @error="handleImgError" />
@@ -83,7 +83,7 @@
                     </div>
                 </div>
 
-                <h2 v-if="benefitsCount" class="font-bold text-lg mt-8 mb-4">Exclusive Benefits</h2>
+                <h2 v-if="benefitsCount" class="font-bold text-lg mt-8 mb-4">{{ $t('exclusive_benefits') }}</h2>
                 <div v-if="benefitsCount" class="grid md:grid-cols-2 gap-4">
                     <div v-for="(benefit, index) in memberDetails.exclusive_benefits" :key="index" class="border rounded-2xl p-4 flex gap-4 items-center">
                         <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
@@ -98,30 +98,30 @@
                     </div>
                 </div>
 
-                <h2 class="font-bold text-lg mt-8 mb-4">Membership Details</h2>
+                <h2 class="font-bold text-lg mt-8 mb-4">{{ $t('membership_details_label') }}</h2>
                 <div class="border rounded-3xl p-5 flex justify-between">
                     <div>
-                        <p class="text-gray-500 text-sm">Subscription Type</p>
+                        <p class="text-gray-500 text-sm">{{ $t('subscription_type') }}</p>
                         <p class="font-bold mt-1">{{ memberDetails?.plan_duration || 'Annually' }}</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-gray-500 text-sm">Fees</p>
+                        <p class="text-gray-500 text-sm">{{ $t('fees') }}</p>
                         <p class="font-bold mt-1">{{ price }} SAR</p>
                     </div>
                 </div>
 
                 <div v-if="memberDetails?.start_date || memberDetails?.end_date" class="border rounded-3xl p-5 flex justify-between mt-4">
                     <div v-if="memberDetails?.start_date">
-                        <p class="text-gray-500 text-sm">Start Date</p>
+                        <p class="text-gray-500 text-sm">{{ $t('start_date') }}</p>
                         <p class="font-bold mt-1">{{ memberDetails.start_date }}</p>
                     </div>
                     <div v-if="memberDetails?.end_date" class="text-center">
-                        <p class="text-gray-500 text-sm">End Date</p>
+                        <p class="text-gray-500 text-sm">{{ $t('end_date') }}</p>
                         <p class="font-bold mt-1">{{ memberDetails.end_date }}</p>
                     </div>
                 </div>
 
-                <h2 class="font-bold text-lg mt-8 mb-4">FAQ</h2>
+                <h2 class="font-bold text-lg mt-8 mb-4">{{ $t('faq') }}</h2>
                 <div class="space-y-4">
                     <div v-for="(faq, index) in faqList" :key="faq.id || index" class="border rounded-2xl p-5 cursor-pointer" @click="toggleIcon(faq.id || index)">
                         <div class="flex justify-between items-center">
@@ -135,7 +135,7 @@
                 </div>
 
                 <div class="text-center mt-10">
-                    <p class="font-bold text-lg">You can pay with</p>
+                    <p class="font-bold text-lg">{{ $t('you_can_pay_with') }}</p>
                     <div class="flex flex-wrap justify-center gap-3 sm:gap-4 mt-5">
                         <img src="/visa.png" class="h-8 sm:h-10 object-contain" alt="Visa" @error="handleImgError" />
                         <img src="/masterCard.png" class="h-8 sm:h-10 object-contain" alt="MasterCard" @error="handleImgError" />
@@ -147,8 +147,8 @@
                 <hr class="my-8">
 
                 <div class="text-center text-gray-500">
-                    By submitting the membership you agree to
-                    <span class="font-bold text-black">Terms and Conditions</span>
+                    {{ $t('by_submitting_agree') }}
+                    <span class="font-bold text-black">{{ $t('terms_and_conditions') }}</span>
                 </div>
 
                 <hr class="my-8">
@@ -158,7 +158,7 @@
                         <span class="text-2xl font-bold text-red-600">{{ price }} SAR</span>
                         <span v-if="memberDetails?.price_before_discount" class="text-gray-400 line-through ml-2">{{ memberDetails.price_before_discount }} SAR</span>
                     </div>
-                    <button @click="navigateTo('/payment?membership_id=' + idMember + (defaultCar?.id ? '&car_id=' + defaultCar.id : ''))" class="bg-red-600 hover:bg-red-700 transition text-white px-8 py-3 rounded-full font-semibold w-full sm:w-auto">Buy It Now</button>
+                    <button @click="navigateTo('/payment?membership_id=' + idMember + (defaultCar?.id ? '&car_id=' + defaultCar.id : ''))" class="bg-red-600 hover:bg-red-700 transition text-white px-8 py-3 rounded-full font-semibold w-full sm:w-auto">{{ $t('buy_it_now') }}</button>
                 </div>
             </template>
         </div>
