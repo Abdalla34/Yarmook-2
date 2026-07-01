@@ -1,6 +1,7 @@
 export const useWenchServices = () => {
     const token = useCookie("token");
     const config = useRuntimeConfig();
+    const { locale } = useI18n();
     const createWenchOrder = async (formData: FormData) => {
         return await $fetch(`${config.public.apiBase}/order/orders`, {
             method: "POST",
@@ -8,6 +9,8 @@ export const useWenchServices = () => {
             headers: {
                 Authorization: `Bearer ${token.value}`,
                 Accept: "application/json",
+                "Accept-Language": locale.value,
+                "X-localization": locale.value,
             },
         });
     };
@@ -18,6 +21,8 @@ export const useWenchServices = () => {
             headers: {
                 Authorization: `Bearer ${token.value}`,
                 Accept: "application/json",
+                "Accept-Language": locale.value,
+                "X-localization": locale.value,
             },
         });
     };

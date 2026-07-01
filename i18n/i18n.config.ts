@@ -80,6 +80,9 @@ export default defineI18nConfig(() => ({
       total_label: 'المجموع:',
       please_create_account: 'يرجى إنشاء حساب لعرض طلباتك.',
       create_account: 'إنشاء حساب',
+      add_to_cart: 'أضف إلى السلة',
+      added_to_cart: 'تمت الإضافة',
+      adding: 'جارٍ الإضافة...',
     },
     en: {
       site_name: 'Al Yarmook',
@@ -136,6 +139,9 @@ export default defineI18nConfig(() => ({
       total_label: 'Total:',
       please_create_account: 'Please create an account to view your orders.',
       create_account: 'Create Account',
+      add_to_cart: 'Add to Cart',
+      added_to_cart: 'Added to Cart',
+      adding: 'Adding...',
     },
   },
 }))

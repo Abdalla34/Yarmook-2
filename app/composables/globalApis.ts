@@ -1,12 +1,15 @@
 export const useGlobalApi = () => {
     let token = useCookie("token", { maxAge: 365 * 24 * 60 * 60 });
     const config = useRuntimeConfig();
+    const { locale } = useI18n();
 
     const headers = {
         Authorization: `Bearer ${token.value}`,
         "Content-Type": "application/json",
         Accept: "application/json",
         "Access-Control-Allow-Origin": "*",
+        "Accept-Language": locale.value,
+        "X-localization": locale.value,
     };
     // done
     const getHome = async () => {

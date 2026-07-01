@@ -1,11 +1,14 @@
 export const useCarServices = () => {
   const token = useCookie("token");
   const config = useRuntimeConfig();
+  const { locale } = useI18n();
   const headers = {
     Authorization: `Bearer ${token.value}`,
     "Content-Type": "application/json",
     Accept: "application/json",
     "Access-Control-Allow-Origin": "*",
+    "Accept-Language": locale.value,
+    "X-localization": locale.value,
   };
   // done
   const getServices = async (params = {}) => {
@@ -14,6 +17,8 @@ export const useCarServices = () => {
       headers: {
         Authorization: `Bearer ${token.value}`,
         Accept: "application/json",
+        "Accept-Language": locale.value,
+        "X-localization": locale.value,
       },
       params,
     });

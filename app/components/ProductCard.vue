@@ -18,7 +18,7 @@
           v-if="loadingId === item.id"
           class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"
         ></span>
-        {{ item.in_cart ? 'Added to Cart' : (loadingId === item.id ? 'Adding...' : 'Add to Cart') }}
+        {{ item.in_cart ? $t('added_to_cart') : (loadingId === item.id ? $t('adding') : $t('add_to_cart')) }}
       </button>
     </div>
   </div>

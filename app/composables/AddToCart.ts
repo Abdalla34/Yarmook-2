@@ -32,11 +32,14 @@ export const useAddToCart = () => {
 
     const config = useRuntimeConfig();
     const token = useCookie("token", { maxAge: 365 * 24 * 60 * 60 });
+    const { locale } = useI18n();
     // done
     const getHeaders = () => ({
         ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
         "Content-Type": "application/json",
         Accept: "application/json",
+        "Accept-Language": locale.value,
+        "X-localization": locale.value,
     });
 
     function updateCountFromCart(data: any) {
@@ -51,6 +54,8 @@ export const useAddToCart = () => {
             ...(authToken ? { Authorization: `Bearer ${authToken}` } : (token.value ? { Authorization: `Bearer ${token.value}` } : {})),
             "Content-Type": "application/json",
             Accept: "application/json",
+            "Accept-Language": locale.value,
+            "X-localization": locale.value,
         };
         const res = await $fetch(`${config.public.apiBase}/marketplace/cart/add-to-cart-multi`, {
             method: "POST",
@@ -71,6 +76,8 @@ export const useAddToCart = () => {
                 Authorization: `Bearer ${effectiveToken}`,
                 "Content-Type": "application/json",
                 Accept: "application/json",
+                "Accept-Language": locale.value,
+                "X-localization": locale.value,
             };
             const res = await $fetch(`${config.public.apiBase}/marketplace/cart/add-to-cart`, {
                 method: "POST",
@@ -129,7 +136,7 @@ export const useAddToCart = () => {
             {
                 method: "POST",
                 headers: isFormData
-                    ? { Authorization: `Bearer ${token.value}` }
+                    ? { Authorization: `Bearer ${token.value}`, "Accept-Language": locale.value, "X-localization": locale.value }
                     : getHeaders(),
                 body: payload,
             }
