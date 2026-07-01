@@ -2,7 +2,7 @@
   <ProfileLinksBar :isLoggedIn="isLoggedIn" />
   <div class="min-h-screen bg-gray-50 py-10">
     <div class="container mx-auto max-w-5xl px-4">
-      <button @click="navigateTo('/my-cars')" class="mb-4 text-sm text-gray-500 hover:text-gray-700">&larr; Back to My Cars</button>
+      <button @click="navigateTo('/my-cars')" class="mb-4 text-sm text-gray-500 hover:text-gray-700">{{ $t('back_to_my_cars') }}</button>
 
       <div v-if="loading" class="animate-pulse space-y-4">
         <div class="h-8 w-48 rounded bg-gray-200" />
@@ -23,12 +23,12 @@
             <div>
               <h2 class="text-xl font-semibold">{{ car.brand?.title }} - {{ car.car_type?.title }}</h2>
               <p v-if="car.plate_number" class="text-gray-500">{{ car.plate_number }}</p>
-              <span v-if="car.is_default" class="mt-1 inline-block rounded-full bg-yellow-400 px-3 py-1 text-xs font-medium">Default</span>
+              <span v-if="car.is_default" class="mt-1 inline-block rounded-full bg-yellow-400 px-3 py-1 text-xs font-medium">{{ $t('default') }}</span>
             </div>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
             <div v-for="(val, key) in details" :key="key" class="rounded-xl bg-gray-50 p-3">
-              <p class="text-gray-500 capitalize">{{ key.replace(/_/g, ' ') }}</p>
+              <p class="text-gray-500 capitalize">{{ translateKey(key) }}</p>
               <p class="font-semibold truncate">{{ val ?? '—' }}</p>
             </div>
           </div>
@@ -36,36 +36,36 @@
 
         <!-- Latest Orders -->
         <div v-if="orders.length" class="rounded-3xl bg-white p-6 shadow-sm">
-          <h2 class="text-lg font-bold text-gray-800 mb-4">Latest Orders</h2>
+          <h2 class="text-lg font-bold text-gray-800 mb-4">{{ $t('latest_orders_label') }}</h2>
           <div class="space-y-3">
             <div v-for="order in orders" :key="order.id"
               class="rounded-xl border border-gray-100 bg-gray-50 p-4">
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                 <div>
-                  <p class="text-gray-500 text-xs">Order #</p>
+                  <p class="text-gray-500 text-xs">{{ $t('order_number', { id: '' }) }}</p>
                   <p class="font-semibold">{{ order.order_num || order.id }}</p>
                 </div>
                 <div>
-                  <p class="text-gray-500 text-xs">Type</p>
+                  <p class="text-gray-500 text-xs">{{ $t('type_label') }}</p>
                   <p class="font-semibold capitalize">{{ order.type_for_customer || order.type || '—' }}</p>
                 </div>
                 <div>
-                  <p class="text-gray-500 text-xs">Status</p>
+                  <p class="text-gray-500 text-xs">{{ $t('status_label') }}</p>
                   <span class="inline-block text-xs font-medium px-2 py-0.5 rounded-full mt-0.5"
                     :class="statusClass(order.status)">
                     {{ order.status_value || order.status }}
                   </span>
                 </div>
                 <div>
-                  <p class="text-gray-500 text-xs">Amount</p>
+                  <p class="text-gray-500 text-xs">{{ $t('amount_label') }}</p>
                   <p class="font-semibold">{{ order.total_amount ?? '—' }} SAR</p>
                 </div>
                 <div>
-                  <p class="text-gray-500 text-xs">Vendor</p>
+                  <p class="text-gray-500 text-xs">{{ $t('vendor_label') }}</p>
                   <p class="font-semibold">{{ order.vendor_name || '—' }}</p>
                 </div>
                 <div>
-                  <p class="text-gray-500 text-xs">Date</p>
+                  <p class="text-gray-500 text-xs">{{ $t('date_label') }}</p>
                   <p class="font-semibold">{{ order.created_at || '—' }}</p>
                 </div>
               </div>
@@ -76,13 +76,13 @@
         <!-- Total Orders Amount (full width, at bottom) -->
         <div v-if="totalAmount" class="rounded-3xl bg-white p-6 shadow-sm border-t-4 border-yellow-400">
           <div class="flex items-center justify-between">
-            <p class="text-gray-600 font-medium">Total Orders Amount</p>
+            <p class="text-gray-600 font-medium">{{ $t('total_orders_amount_label') }}</p>
             <p class="text-2xl font-bold text-gray-800">{{ totalAmount }} <span class="text-sm font-normal text-gray-500">SAR</span></p>
           </div>
         </div>
       </div>
 
-      <div v-else class="text-center text-gray-400 py-20">Car not found</div>
+      <div v-else class="text-center text-gray-400 py-20">{{ $t('car_not_found') }}</div>
     </div>
   </div>
 </template>
@@ -90,6 +90,7 @@
 <script setup>
 const token = useCookie("token");
 const isLoggedIn = computed(() => !!token.value);
+const { t } = useI18n();
 
 const { getUserCarId } = useCarServices();
 const route = useRoute();
@@ -99,7 +100,25 @@ const loading = ref(true);
 const orders = ref([]);
 const totalAmount = ref(null);
 
-const EXCLUDED_KEYS = ["id", "brand", "car_type", "image", "name", "is_default", "plate_number", "latest_orders", "latest_order", "orders", "total_orders_amount", "alerts"];
+function translateKey(key) {
+  const map = {
+    chassis_number: t('chassis_number'),
+    plate_number: t('plate_number'),
+    car_mileage: t('car_mileage'),
+    last_maintenance: t('last_maintenance'),
+    last_oil_change: t('last_oil_change'),
+    user_id: t('user_id'),
+    created_at: t('created_at'),
+    year: t('year'),
+    color: t('color'),
+    engine_number: t('engine_number'),
+    manufacturer_year: t('manufacturer_year'),
+    man_year: t('manufacturer_year'),
+  };
+  return map[key] || key.replace(/_/g, ' ');
+}
+
+const EXCLUDED_KEYS = ["id", "brand", "car_type", "image", "name", "is_default", "latest_orders", "latest_order", "orders", "total_orders_amount", "alerts"];
 
 const details = computed(() => {
   const d = car.value;
