@@ -93,12 +93,12 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              Profile
+              {{ $t('profile') }}
             </NuxtLink>
             <NuxtLink to="/my-cars" @click="menuOpen = false"
               class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-yellow-200 text-sm font-semibold">
               <IconsCarIcon />
-              My Cars
+              {{ $t('my_cars') }}
             </NuxtLink>
           </div>
 
@@ -109,17 +109,17 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
               </svg>
-              Sign In
+              {{ $t('sign_in') }}
             </NuxtLink>
           </div>
 
           <div class="flex-1 flex flex-col gap-1 px-4 py-4 overflow-y-auto">
-            <NuxtLink to="/" active-class="bg-main-color/30 font-bold" class="rounded-xl px-5 py-3.5 text-base font-medium hover:bg-main-color/20 transition" @click="menuOpen = false">Home</NuxtLink>
-            <NuxtLink to="/my-orders" active-class="bg-main-color/30 font-bold" class="rounded-xl px-5 py-3.5 text-base font-medium hover:bg-main-color/20 transition" @click="menuOpen = false">My Orders</NuxtLink>
-            <NuxtLink to="/services" active-class="bg-main-color/30 font-bold" class="rounded-xl px-5 py-3.5 text-base font-medium hover:bg-main-color/20 transition" @click="menuOpen = false">Services</NuxtLink>
-            <NuxtLink to="/offers" active-class="bg-main-color/30 font-bold" class="rounded-xl px-5 py-3.5 text-base font-medium hover:bg-main-color/20 transition" @click="menuOpen = false">Offers</NuxtLink>
-            <NuxtLink to="/memberships" active-class="bg-main-color/30 font-bold" class="rounded-xl px-5 py-3.5 text-base font-medium hover:bg-main-color/20 transition" @click="menuOpen = false">Memberships</NuxtLink>
-            <NuxtLink to="/spare-parts" active-class="bg-main-color/30 font-bold" class="rounded-xl px-5 py-3.5 text-base font-medium hover:bg-main-color/20 transition" @click="menuOpen = false">Spare Parts</NuxtLink>
+            <NuxtLink to="/" active-class="bg-main-color/30 font-bold" class="rounded-xl px-5 py-3.5 text-base font-medium hover:bg-main-color/20 transition" @click="menuOpen = false">{{ $t('home') }}</NuxtLink>
+            <NuxtLink to="/my-orders" active-class="bg-main-color/30 font-bold" class="rounded-xl px-5 py-3.5 text-base font-medium hover:bg-main-color/20 transition" @click="menuOpen = false">{{ $t('my_orders') }}</NuxtLink>
+            <NuxtLink to="/services" active-class="bg-main-color/30 font-bold" class="rounded-xl px-5 py-3.5 text-base font-medium hover:bg-main-color/20 transition" @click="menuOpen = false">{{ $t('services') }}</NuxtLink>
+            <NuxtLink to="/offers" active-class="bg-main-color/30 font-bold" class="rounded-xl px-5 py-3.5 text-base font-medium hover:bg-main-color/20 transition" @click="menuOpen = false">{{ $t('offers') }}</NuxtLink>
+            <NuxtLink to="/memberships" active-class="bg-main-color/30 font-bold" class="rounded-xl px-5 py-3.5 text-base font-medium hover:bg-main-color/20 transition" @click="menuOpen = false">{{ $t('memberships') }}</NuxtLink>
+            <NuxtLink to="/spare-parts" active-class="bg-main-color/30 font-bold" class="rounded-xl px-5 py-3.5 text-base font-medium hover:bg-main-color/20 transition" @click="menuOpen = false">{{ $t('spare_parts') }}</NuxtLink>
           </div>
         </nav>
       </Transition>

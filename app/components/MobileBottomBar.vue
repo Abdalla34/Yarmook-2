@@ -6,25 +6,25 @@
                 class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition"
                 :class="isActive('/') ? 'text-black' : 'text-gray-400'">
                 <IconsHomeIcon :active="isActive('/')" />
-                <span class="text-[10px] font-medium">Home</span>
+                <span class="text-[10px] font-medium">{{ $t('home') }}</span>
             </NuxtLink>
             <NuxtLink to="/profile"
                 class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition"
                 :class="isActive('/profile') ? 'text-black' : 'text-gray-400'">
                 <IconsProfileIcon :active="isActive('/profile')" />
-                <span class="text-[10px] font-medium">Profile</span>
+                <span class="text-[10px] font-medium">{{ $t('profile') }}</span>
             </NuxtLink>
             <NuxtLink to="/my-orders"
                 class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition"
                 :class="isActive('/my-orders') ? 'text-black' : 'text-gray-400'">
                 <IconsMyOrders :active="isActive('/my-orders')" />
-                <span class="text-[10px] font-medium">My Orders</span>
+                <span class="text-[10px] font-medium">{{ $t('my_orders') }}</span>
             </NuxtLink>
             <NuxtLink to="/offers"
                 class="flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition"
                 :class="isActive('/offers') ? 'text-black' : 'text-gray-400'">
                 <IconsOffersIcon :active="isActive('/offers')" />
-                <span class="text-[10px] font-medium">Offers</span>
+                <span class="text-[10px] font-medium">{{ $t('offers') }}</span>
             </NuxtLink>
         </div>
     </div>

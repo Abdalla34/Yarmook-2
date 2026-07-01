@@ -222,6 +222,8 @@ export default defineI18nConfig(() => ({
       copy_failed: 'فشل النسخ',
       copy_code: 'نسخ "{code}"',
       our_branches: 'فروعنا',
+      profile: 'الملف الشخصي',
+      sign_in: 'تسجيل الدخول',
     },
     en: {
       site_name: 'Al Yarmook',
@@ -420,6 +422,8 @@ export default defineI18nConfig(() => ({
       copy_failed: 'Failed to copy',
       copy_code: 'Copy "{code}"',
       our_branches: 'Our Branches',
+      profile: 'Profile',
+      sign_in: 'Sign In',
     },
   },
 }))
