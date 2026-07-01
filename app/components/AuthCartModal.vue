@@ -104,13 +104,13 @@ async function handleOtpComplete(value) {
           class="absolute top-3 end-3 text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
 
         <div v-if="step === 1">
-          <h2 class="text-2xl font-bold text-center mb-6">Login to Add to Cart</h2>
+          <h2 class="text-2xl font-bold text-center mb-6">{{ $t('login_add_cart') }}</h2>
           <Form @submit="submitPhone">
             <div class="mb-4">
-              <label class="block text-sm font-bold mb-2">Phone Number</label>
+              <label class="block text-sm font-bold mb-2">{{ $t('phone_number') }}</label>
               <div class="flex items-center border rounded-lg overflow-hidden">
                 <span class="bg-gray-100 px-3 py-2 text-gray-700 font-bold border-r">+966</span>
-                <Field name="phone" type="text" inputmode="numeric" placeholder="5XXXXXXXX" :rules="phoneRules"
+                <Field name="phone" type="text" inputmode="numeric" :placeholder="$t('phone_example')" :rules="phoneRules"
                   class="w-[full] px-3 py-2 outline-none" />
               </div>
               <ErrorMessage name="phone" class="text-red-500 text-sm mt-1" />
@@ -120,18 +120,18 @@ async function handleOtpComplete(value) {
               class="bg-main-color w-full py-2 rounded-lg font-bold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2">
               <span v-if="loading"
                 class="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-              {{ loading ? "Please wait..." : "Submit" }}
+              {{ loading ? $t('please_wait') : $t('submit') }}
             </button>
             <button type="button" @click="emit('close')"
               class="w-full py-2 mt-2 rounded-lg font-bold text-gray-600 border border-gray-300 hover:bg-red-500 transition">
-              Cancel
+              {{ $t('cancel') }}
             </button>
           </Form>
         </div>
 
         <div v-else>
-          <h2 class="text-xl font-bold text-center mb-6">Verify OTP</h2>
-          <p class="text-center text-gray-500 mb-4">Enter the code sent to your phone</p>
+          <h2 class="text-xl font-bold text-center mb-6">{{ $t('verify_otp') }}</h2>
+          <p class="text-center text-gray-500 mb-4">{{ $t('enter_otp_hint') }}</p>
           <p v-if="error" class="text-red-500 text-sm text-center mb-2">{{ error }}</p>
           <div class="flex justify-center">
             <v-otp-input :num-inputs="4" :should-auto-focus="true" :should-focus-order="true" input-type="number"

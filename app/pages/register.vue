@@ -76,25 +76,25 @@ async function onSubmit(values) {
         <div class="container mx-auto px-4">
             <div class="md:w-[70%] mx-auto mt-12">
                 <div class="bg-white rounded-lg shadow-md p-6">
-                    <h2 class="text-xl font-bold text-start mb-6 uppercase">personial information</h2>
+                    <h2 class="text-xl font-bold text-start mb-6 uppercase">{{ $t('personal_information') }}</h2>
                     <Form @submit="onSubmit">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                                <Field name="first_name" :rules="required" placeholder="First Name"
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('first_name') }}</label>
+                                <Field name="first_name" :rules="required" :placeholder="$t('first_name')"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none" />
                                 <ErrorMessage name="first_name" class="text-red-500 text-sm mt-1 block" />
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                                <Field name="last_name" :rules="required" placeholder="Last Name"
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('last_name') }}</label>
+                                <Field name="last_name" :rules="required" :placeholder="$t('last_name')"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none" />
                                 <ErrorMessage name="last_name" class="text-red-500 text-sm mt-1 block" />
                             </div>
                         </div>
 
                         <div class="mt-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('phone_number') }}</label>
                             <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
                                 <span
                                     class="bg-gray-100 px-4 py-3 text-gray-700 font-medium border-r border-gray-300">+966</span>
@@ -106,18 +106,18 @@ async function onSubmit(values) {
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Area</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('area') }}</label>
                                 <select v-model="selectedArea"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none bg-white">
-                                    <option value="">Select Area</option>
+                                    <option value="">{{ $t('select_area') }}</option>
                                     <option v-for="a in areas" :key="a.id" :value="a.id">{{ a.title }}</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{{ $t('city') }}</label>
                                 <select v-model="selectedCity"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none bg-white">
-                                    <option value="">Select City</option>
+                                    <option value="">{{ $t('select_city') }}</option>
                                     <option v-for="ci in cities" :key="ci.id" :value="ci.id">{{ ci.title }}</option>
                                 </select>
                             </div>
@@ -125,7 +125,7 @@ async function onSubmit(values) {
 
                         <button type="submit" :disabled="loading"
                             class="w-full  bg-main-color text-black py-3 rounded-lg mt-6 font-bold transition disabled:opacity-50">
-                            {{ loading ? "Submitting..." : "Register" }}
+                            {{ loading ? $t('submitting') : $t('register') }}
                         </button>
                     </Form>
                 </div>

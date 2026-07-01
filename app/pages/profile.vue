@@ -174,7 +174,7 @@ async function saveProfile() {
 
                 <div class="flex justify-between items-center mb-6">
                     <h1 class="text-2xl font-semibold capitalize">
-                        personal Information
+                        {{ $t('personal_information') }}
                     </h1>
 
                 </div>
@@ -186,18 +186,18 @@ async function saveProfile() {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="flex flex-col">
                                 <label class="mb-2 text-sm font-medium">
-                                    First Name
+                                    {{ $t('first_name') }}
                                 </label>
-                                <input v-model="firstName" type="text" placeholder="Your First Name"
+                                <input v-model="firstName" type="text" :placeholder="$t('first_name_placeholder')"
                                     :disabled="!editing"
                                     class="border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed" />
                             </div>
 
                             <div class="flex flex-col">
                                 <label class="mb-2 text-sm font-medium">
-                                    Last Name
+                                    {{ $t('last_name') }}
                                 </label>
-                                <input v-model="lastName" type="text" placeholder="Your Last Name" :disabled="!editing"
+                                <input v-model="lastName" type="text" :placeholder="$t('last_name_placeholder')" :disabled="!editing"
                                     class="border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed" />
                             </div>
                         </div>
@@ -206,9 +206,9 @@ async function saveProfile() {
                         <div>
                             <div class="flex flex-col">
                                 <label class="mb-2 text-sm font-medium">
-                                    Phone Number
+                                    {{ $t('phone_number') }}
                                 </label>
-                                <input type="text" placeholder="+966 500000000" :value="user?.phone || ''" disabled
+                                <input type="text" :placeholder="$t('phone_example')" :value="user?.phone || ''" disabled
                                     class="border border-gray-300 rounded-lg px-4 py-3 bg-gray-100 cursor-not-allowed" />
                             </div>
                         </div>
@@ -217,28 +217,28 @@ async function saveProfile() {
                         <template v-if="editing">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div class="flex flex-col">
-                                    <label class="mb-2 text-sm font-medium">Country</label>
+                                    <label class="mb-2 text-sm font-medium">{{ $t('country') }}</label>
                                     <select v-model="selectedCountry" @change="loadAreas"
                                         class="border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-green-500">
-                                        <option value="">Select Country</option>
+                                        <option value="">{{ $t('select_country') }}</option>
                                         <option v-for="c in countries" :key="c.id" :value="c.id">{{ c.title }}</option>
                                     </select>
                                 </div>
 
                                 <div class="flex flex-col">
-                                    <label class="mb-2 text-sm font-medium">Area</label>
+                                    <label class="mb-2 text-sm font-medium">{{ $t('area') }}</label>
                                     <select v-model="selectedArea" @change="loadCities"
                                         class="border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-green-500">
-                                        <option value="">Select Area</option>
+                                        <option value="">{{ $t('select_area') }}</option>
                                         <option v-for="a in areas" :key="a.id" :value="a.id">{{ a.title }}</option>
                                     </select>
                                 </div>
 
                                 <div class="flex flex-col">
-                                    <label class="mb-2 text-sm font-medium">City</label>
+                                    <label class="mb-2 text-sm font-medium">{{ $t('city') }}</label>
                                     <select v-model="selectedCity"
                                         class="border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-green-500">
-                                        <option value="">Select City</option>
+                                        <option value="">{{ $t('select_city') }}</option>
                                         <option v-for="ci in cities" :key="ci.id" :value="ci.id">{{ ci.title }}</option>
                                     </select>
                                 </div>
@@ -247,12 +247,12 @@ async function saveProfile() {
                         <template v-else>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="flex flex-col">
-                                    <label class="mb-2 text-sm font-medium">Area</label>
+                                    <label class="mb-2 text-sm font-medium">{{ $t('area') }}</label>
                                     <input type="text" :value="user?.area?.title || ''" disabled
                                         class="border border-gray-300 rounded-lg px-4 py-3 bg-gray-100 cursor-not-allowed" />
                                 </div>
                                 <div class="flex flex-col">
-                                    <label class="mb-2 text-sm font-medium">City</label>
+                                    <label class="mb-2 text-sm font-medium">{{ $t('city') }}</label>
                                     <input type="text" :value="user?.city?.title || ''" disabled
                                         class="border border-gray-300 rounded-lg px-4 py-3 bg-gray-100 cursor-not-allowed" />
                                 </div>
@@ -264,24 +264,24 @@ async function saveProfile() {
                             class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                             <span v-if="saving"
                                 class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                            {{ saving ? "Saving..." : "Save" }}
+                            {{ saving ? $t('saving') : $t('save') }}
                         </button>
 
                         <!-- Action Buttons -->
                         <div class="flex flex-col gap-3 pt-4 border-t border-gray-200">
                             <button v-if="!editing" type="button" @click="startEdit"
                                 class="w-full bg-gray-100 hover:bg-yellow-200 text-gray-700 font-medium px-8 py-3 rounded-full transition">
-                                Edit Profile
+                                {{ $t('edit_profile') }}
                             </button>
 
                             <button type="button" @click="openLogoutPopup"
                                 class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium px-8 py-3 rounded-full transition">
-                                LogOut
+                                {{ $t('logout') }}
                             </button>
 
                             <button type="button" @click="openDeletePopup"
                                 class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium px-8 py-3 rounded-full transition">
-                                Delete Account
+                                {{ $t('delete_account') }}
                             </button>
                         </div>
 
@@ -292,10 +292,10 @@ async function saveProfile() {
         </div>
         <div v-else class="container mx-auto px-4">
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm p-6 text-center">
-                <p class="text-gray-600 mb-4">Please create an account to access your profile.</p>
+                <p class="text-gray-600 mb-4">{{ $t('please_create_account') }}</p>
                 <button @click="navigateTo('/create-account')"
                     class="bg-main-color text-black px-8 py-3 rounded-full font-medium hover:opacity-90 transition">
-                    Create Account
+                    {{ $t('create_account') }}
                 </button>
             </div>
         </div>
@@ -305,7 +305,7 @@ async function saveProfile() {
     <Teleport to="body">
         <div v-if="showLogoutPopup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Reason for Logout</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-4">{{ $t('reason_logout') }}</h2>
 
                 <div v-if="loadingReasons" class="flex justify-center py-6">
                     <span
@@ -326,11 +326,11 @@ async function saveProfile() {
                         class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                         <span v-if="loggingOut"
                             class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                        {{ loggingOut ? "Logging out..." : "Yes, I'm sure" }}
+                        {{ loggingOut ? $t('logging_out') : $t('yes_im_sure') }}
                     </button>
                     <button @click="cancelLogout" :disabled="loggingOut"
                         class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition disabled:opacity-50">
-                        Cancel
+                        {{ $t('cancel') }}
                     </button>
                 </div>
             </div>
@@ -341,7 +341,7 @@ async function saveProfile() {
     <Teleport to="body">
         <div v-if="showDeletePopup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Reason for Deleting Account</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-4">{{ $t('reason_delete') }}</h2>
 
                 <div v-if="loadingDeleteReasons" class="flex justify-center py-6">
                     <span
@@ -362,11 +362,11 @@ async function saveProfile() {
                         class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                         <span v-if="deleting"
                             class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                        {{ deleting ? "Deleting..." : "Yes, I'm sure" }}
+                        {{ deleting ? $t('deleting') : $t('yes_im_sure') }}
                     </button>
                     <button @click="cancelDelete" :disabled="deleting"
                         class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition disabled:opacity-50">
-                        Cancel
+                        {{ $t('cancel') }}
                     </button>
                 </div>
             </div>
