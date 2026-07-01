@@ -4,9 +4,11 @@ const router = useRouter()
 const { sendOtpCode } = useGlobalApi()
 const loading = ref(false)
 
+const { t } = useI18n()
+
 const phoneRules = (value) => {
-  if (!value) return 'Phone number is required'
-  if (!/^\d{9,}$/.test(value)) return 'Must be at least 9 digits'
+  if (!value) return t('phone_required')
+  if (!/^\d{8,}$/.test(value)) return t('phone_min_digits')
   return true
 }
 

@@ -253,6 +253,8 @@ export default defineI18nConfig(() => ({
       login_add_cart: 'تسجيل الدخول للإضافة إلى السلة',
       verify_otp: 'تحقق من رمز التحقق',
       enter_otp_hint: 'أدخل الرمز المرسل إلى هاتفك',
+      phone_required: 'رقم الهاتف مطلوب',
+      phone_min_digits: 'يجب أن يكون على الأقل 8 أرقام',
     },
     en: {
       site_name: 'Al Yarmook',
@@ -482,6 +484,8 @@ export default defineI18nConfig(() => ({
       login_add_cart: 'Login to Add to Cart',
       verify_otp: 'Verify OTP',
       enter_otp_hint: 'Enter the code sent to your phone',
+      phone_required: 'Phone number is required',
+      phone_min_digits: 'Must be at least 8 digits',
     },
   },
 }))

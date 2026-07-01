@@ -50,8 +50,8 @@ const handleOtpComplete = async (value) => {
         <div>
           <div class="bg-white rounded-lg shadow-md p-6 text-center">
             <img src="/newLogo.png" alt="" class="mx-auto mb-2">
-            <h2 class="text-xl font-bold text-center mb-3">Verify OTP</h2>
-            <p class="text-center text-gray-500 mb-4">Enter the code sent to your phone</p>
+            <h2 class="text-xl font-bold text-center mb-3">{{ $t('verify_otp') }}</h2>
+            <p class="text-center text-gray-500 mb-4">{{ $t('enter_otp_hint') }}</p>
             <p v-if="error" class="text-red-500 text-sm text-center mb-2">{{ error }}</p>
             <div class="flex justify-center">
               <v-otp-input ref="otpInput" :num-inputs="4" :should-auto-focus="true" :should-focus-order="true"
