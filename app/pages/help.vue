@@ -12,7 +12,7 @@
     <div class="w-full mx-auto lg:w-2/3">
       <!-- Title -->
       <h1 class="mb-6 text-3xl font-bold capitalize text-gray-900">
-        Help
+        {{ $t('help') }}
       </h1>
 
       <!-- Fill Form -->
@@ -25,7 +25,7 @@
               <!-- Icon -->
             </div>
             <span class="text-lg font-medium text-gray-800">
-              Fill a Form
+              {{ $t('fill_a_form') }}
             </span>
           </div>
 
@@ -47,7 +47,7 @@
               <!-- FAQ Icon -->
             </div>
             <span class="text-lg font-medium uppercase text-gray-800">
-              FAQ
+              {{ $t('faq') }}
             </span>
           </div>
 
@@ -70,7 +70,7 @@
 
             <div class="flex flex-col">
               <h2 class="text-lg font-medium uppercase text-gray-800">
-                Call Us
+                {{ $t('call_us') }}
               </h2>
 
               <p class="text-sm text-gray-500">
@@ -98,7 +98,7 @@
             </div>
 
             <span class="text-lg font-medium text-gray-800">
-              Visit Your Nearest Branch
+              {{ $t('visit_branch') }}
             </span>
           </div>
 

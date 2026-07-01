@@ -6,12 +6,12 @@
       <!-- Back Button -->
       <div class="mb-6 flex items-center gap-2 text-sm text-gray-500">
         <span @click="$router.push('/help')" class="cursor-pointer hover:text-yellow-500">←</span>
-        <span>Help > Fill a Form</span>
+        <span>{{ $t('help') }} > {{ $t('fill_a_form') }}</span>
       </div>
 
       <!-- Title -->
       <h1 class="mb-6 text-center text-3xl font-bold capitalize text-gray-900">
-        Fill a Form
+        {{ $t('fill_a_form') }}
       </h1>
 
       <!-- Form -->
@@ -19,27 +19,27 @@
 
         <!-- Full Name -->
         <div class="flex flex-col gap-2">
-          <input v-model="form.name" type="text" placeholder="Full Name"
+          <input v-model="form.name" type="text" :placeholder="$t('full_name')"
             class="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-yellow-500" />
         </div>
 
         <!-- Phone -->
         <div class="flex flex-col gap-2">
-          <input v-model="form.phone" type="text" placeholder="Phone"
+          <input v-model="form.phone" type="text" :placeholder="$t('phone_number')"
             class="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-yellow-500" />
         </div>
 
         <!-- Address -->
         <div class="flex flex-col gap-2">
-          <label class="text-sm font-medium text-gray-700">Address</label>
+          <label class="text-sm font-medium text-gray-700">{{ $t('address') }}</label>
           <input v-model="form.address" type="text"
             class="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-yellow-500" />
         </div>
 
         <!-- Message -->
         <div class="flex flex-col gap-2">
-          <label class="text-sm font-medium text-gray-700">Message</label>
-          <textarea v-model="form.message" rows="5" placeholder="Write your message"
+          <label class="text-sm font-medium text-gray-700">{{ $t('message') }}</label>
+          <textarea v-model="form.message" rows="5" :placeholder="$t('write_message')"
             class="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none transition focus:border-yellow-500 resize-none"></textarea>
         </div>
 
@@ -53,7 +53,7 @@
         class="flex h-14 w-full items-center justify-center rounded-full bg-yellow-400 transition hover:bg-yellow-500">
         <button @click="submitForm" type="button" class="w-full h-full text-lg font-bold text-black"
           :disabled="sending">
-          {{ sending ? 'Sending...' : 'Send' }}
+          {{ sending ? $t('sending') : $t('send') }}
         </button>
       </div>
 
@@ -70,7 +70,7 @@
           </p>
           <button @click="$router.push('/help')"
             class="w-full rounded-full bg-yellow-400 px-5 py-3 font-bold text-black transition hover:bg-yellow-500">
-            Close
+            {{ $t('close') }}
           </button>
         </div>
       </div>

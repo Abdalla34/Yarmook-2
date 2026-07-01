@@ -7,7 +7,7 @@
                     <!-- Breadcrumb -->
                     <div @click="navigateTo('/help')" class="go-page-arrow d-flex align-items-center gap-2 mb-4">
                         <span>←</span>
-                        <span>help > our branches</span>
+                        <span>{{ $t('help') }} > {{ $t('our_branches') }}</span>
                     </div>
 
                     <div v-if="loading" class="loading-skeleton">
@@ -66,7 +66,7 @@
                             </div>
 
                             <div v-if="!branches.length" class="empty-state">
-                                No branches available
+                                {{ $t('no_branches_available') }}
                             </div>
                         </div>
                     </div>
@@ -91,8 +91,9 @@ let map = null;
 let markers = [];
 let branchMarkerMap = {};
 
+const { t } = useI18n()
 useHead({
-    title: 'Our Branches',
+    title: t('our_branches'),
 });
 
 function focusBranch(branch) {

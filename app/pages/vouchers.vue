@@ -1,4 +1,5 @@
 <script setup>
+const { t } = useI18n()
 const token = useCookie("token");
 const isLoggedIn = computed(() => !!token.value);
 
@@ -38,9 +39,9 @@ function switchTab(tab) {
 async function copyCode(code) {
     try {
         await navigator.clipboard.writeText(code)
-        showToastMessage('Voucher copied successfully')
+        showToastMessage(t('voucher_copied'))
     } catch {
-        showToastMessage('Failed to copy')
+        showToastMessage(t('copy_failed'))
     }
 }
 
@@ -68,8 +69,8 @@ onMounted(() => {
                 <div class="mb-6 rounded-3xl bg-white p-6 shadow-sm">
                     <div class="flex items-center justify-between">
                         <div class="text-center">
-                            <h2 class="text-2xl font-bold text-gray-900">Vouchers</h2>
-                            <p class="mt-1 text-sm text-gray-500">Available Coupons & Discounts</p>
+                            <h2 class="text-2xl font-bold text-gray-900">{{ $t('vouchers') }}</h2>
+                            <p class="mt-1 text-sm text-gray-500">{{ $t('available_coupons') }}</p>
                         </div>
                     </div>
                 </div>
@@ -78,13 +79,13 @@ onMounted(() => {
                 <div class="mb-6">
                     <ul class="flex items-center justify-center gap-8 border-b border-gray-200 pb-3">
                         <li @click="switchTab('available')" :class="['cursor-pointer pb-2 font-semibold transition', activeTab === 'available' ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-black']">
-                            Available
+                            {{ $t('available') }}
                         </li>
                         <li @click="switchTab('used')" :class="['cursor-pointer pb-2 font-semibold transition', activeTab === 'used' ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-black']">
-                            Used
+                            {{ $t('used') }}
                         </li>
                         <li @click="switchTab('expired')" :class="['cursor-pointer pb-2 font-semibold transition', activeTab === 'expired' ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-black']">
-                            Expired
+                            {{ $t('expired') }}
                         </li>
                     </ul>
                 </div>
@@ -105,8 +106,8 @@ onMounted(() => {
                 <template v-else>
                     <div v-if="vouchers.length === 0" class="rounded-3xl bg-white p-10 text-center shadow-sm">
                         <img src="/empty.png" alt="Empty" class="mx-auto mb-4 h-40 w-auto object-contain" />
-                        <h3 class="text-lg font-semibold text-gray-900">No Vouchers Found</h3>
-                        <p class="mt-1 text-sm text-gray-500">There are no vouchers {{ activeTab }} yet.</p>
+                        <h3 class="text-lg font-semibold text-gray-900">{{ $t('no_vouchers') }}</h3>
+                        <p class="mt-1 text-sm text-gray-500">{{ $t('no_vouchers_hint', { tab: $t(activeTab) }) }}</p>
                     </div>
 
                     <div v-for="v in vouchers" :key="v.id"
@@ -119,12 +120,12 @@ onMounted(() => {
                         <div class="mt-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                             <button v-if="activeTab === 'available'" @click="copyCode(v.code)"
                                 class="rounded-xl bg-black px-5 py-3 text-sm font-medium text-white transition hover:opacity-90">
-                                Copy "{{ v.code }}"
+                                {{ $t('copy_code', { code: v.code }) }}
                             </button>
                             <div v-else class="text-sm font-medium text-gray-400">{{ v.code ?? '' }}</div>
 
                             <div class="text-right">
-                                <span class="text-xs uppercase text-gray-400">Expired At</span>
+                                <span class="text-xs uppercase text-gray-400">{{ $t('expired_at') }}</span>
                                 <p class="text-sm font-medium text-gray-600">{{ v.expires_at ?? v.expire_date ?? v.end_date ?? '-' }}</p>
                             </div>
                         </div>

@@ -6,7 +6,7 @@
             <!-- Breadcrumb -->
             <div class="mb-6 flex items-center gap-2 text-sm text-gray-500">
                 <span @click="$router.push('/help')" class="cursor-pointer hover:text-yellow-500">←</span>
-                <span>Help > FAQ</span>
+                <span>{{ $t('help') }} > {{ $t('faq') }}</span>
             </div>
 
             <!-- Loading -->
@@ -51,16 +51,16 @@
 
                 <button @click="prevPage" :disabled="currentPage <= 1"
                     class="rounded-full bg-yellow-400 px-6 py-2 font-medium text-black transition hover:bg-yellow-500 disabled:cursor-not-allowed disabled:opacity-50">
-                    Prev
+                    {{ $t('prev_page') }}
                 </button>
 
                 <span class="text-gray-700 font-medium">
-                    Page {{ currentPage }}
+                    {{ $t('page_info', { page: currentPage }) }}
                 </span>
 
                 <button @click="nextPage" :disabled="currentPage >= lastPage"
                     class="rounded-full bg-yellow-400 px-6 py-2 font-medium text-black transition hover:bg-yellow-500 disabled:cursor-not-allowed disabled:opacity-50">
-                    Next
+                    {{ $t('next_page') }}
                 </button>
 
             </div>
