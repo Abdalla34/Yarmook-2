@@ -7,7 +7,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
-        Back to Offers
+        {{ $t('back_to_offers') }}
       </button>
 
       <div v-if="loading" class="space-y-4">
@@ -29,7 +29,7 @@
             :class="offer.image ? 'object-cover' : 'object-contain bg-gray-50 p-8'"
             @error="$event.target.src = '/offerimage.jpeg'" />
           <div v-else class="w-full h-56 md:h-72 bg-gray-100 flex items-center justify-center text-gray-400">
-            No image
+            {{ $t('no_image') }}
           </div>
           <span v-if="offer.discount_percentage_text"
             class="absolute top-3 right-3 bg-red-500 text-white text-xs md:text-sm font-bold px-3 py-1 rounded-full">
@@ -52,7 +52,7 @@
 
 
           <div v-if="offer.benefits" class="mb-4">
-            <h2 class="text-sm font-bold text-gray-800 mb-2">Benefits</h2>
+            <h2 class="text-sm font-bold text-gray-800 mb-2">{{ $t('benefits') }}</h2>
             <div class="text-sm text-gray-600 offer-benefits" v-html="offer.benefits" />
           </div>
 
@@ -75,12 +75,12 @@
             :class="offer.in_cart ? 'bg-white text-black border-2 border-gray-300' : 'bg-main-color text-black hover:bg-yellow-200'">
             <span v-if="loadingId === offer.id"
               class="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-            {{ offer.in_cart ? 'Added to Cart' : (loadingId === offer.id ? 'Adding...' : 'Add to Cart') }}
+            {{ offer.in_cart ? $t('added_to_cart') : (loadingId === offer.id ? $t('adding') : $t('add_to_cart')) }}
           </button>
         </div>
       </template>
 
-      <p v-else class="text-center text-gray-500 py-10">Offer not found.</p>
+      <p v-else class="text-center text-gray-500 py-10">{{ $t('offer_not_found') }}</p>
     </div>
     <AuthCartModal :show="showAuthModal" type="offer" :item-id="offer?.id" :qty="1" @close="showAuthModal = false"
       @success="handleAuthSuccess" />

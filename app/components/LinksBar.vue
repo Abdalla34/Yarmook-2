@@ -19,13 +19,14 @@
 
 <script setup>
 const localePath = useLocalePath()
+const { t } = useI18n()
 
 const links = [
-  { to: '/', label: 'Home' },
-  { to: '/my-orders', label: 'My Orders' },
-  { to: '/services', label: 'Services' },
-  { to: '/offers', label: 'Offers' },
-  // { to: '/memberships', label: 'Memberships' },
-  { to: '/spare-parts', label: 'Spare Parts' },
+  { to: '/', label: computed(() => t('home')) },
+  { to: '/my-orders', label: computed(() => t('my_orders')) },
+  { to: '/services', label: computed(() => t('services')) },
+  { to: '/offers', label: computed(() => t('offers')) },
+  // { to: '/memberships', label: computed(() => t('memberships')) },
+  { to: '/spare-parts', label: computed(() => t('spare_parts')) },
 ]
 </script>

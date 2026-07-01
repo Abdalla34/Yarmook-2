@@ -2,7 +2,7 @@
   <div ref="pageRef" class="offers-page min-h-screen py-8">
     <div class="container mx-auto px-4">
       <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
-        <h1 ref="pageTitle" class="text-2xl font-bold mb-6">Offers</h1>
+        <h1 ref="pageTitle" class="text-2xl font-bold mb-6">{{ $t('offers') }}</h1>
 
         <div v-if="loading" class="grid grid-cols-2 gap-4">
         <div v-for="n in 4" :key="n"
@@ -52,7 +52,7 @@
         </NuxtLink>
       </div>
 
-      <p v-else class="text-center text-gray-500 py-10">No offers available.</p>
+      <p v-else class="text-center text-gray-500 py-10">{{ $t('no_offers_available') }}</p>
       </div>
     </div>
   </div>

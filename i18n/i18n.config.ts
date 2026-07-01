@@ -132,6 +132,11 @@ export default defineI18nConfig(() => ({
       required_field: 'هذا الحقل مطلوب',
       select_branch_required: 'يرجى اختيار فرع',
       select_date_time_required: 'يرجى اختيار التاريخ والوقت',
+      no_offers_available: 'لا توجد عروض متاحة',
+      back_to_offers: 'العودة إلى العروض',
+      no_image: 'لا توجد صورة',
+      benefits: 'المزايا',
+      offer_not_found: 'العرض غير موجود',
     },
     en: {
       site_name: 'Al Yarmook',
@@ -240,6 +245,11 @@ export default defineI18nConfig(() => ({
       required_field: 'This field is required',
       select_branch_required: 'Please select a branch',
       select_date_time_required: 'Please select date & time',
+      no_offers_available: 'No offers available.',
+      back_to_offers: 'Back to Offers',
+      no_image: 'No image',
+      benefits: 'Benefits',
+      offer_not_found: 'Offer not found.',
     },
   },
 }))
