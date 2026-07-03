@@ -32,7 +32,7 @@ const onSubmit = handleSubmit(async (values) => {
           <form @submit="onSubmit">
             <div class="mb-4">
               <label class="block text-sm font-bold mb-2">{{ $t('phone_number') }}</label>
-              <div class="flex items-center border rounded-lg overflow-hidden">
+              <div class="flex items-center border rounded-lg overflow-hidden" dir="ltr">
                 <span class="bg-gray-100 px-3 py-2 text-gray-700 font-bold border-r">+966</span>
                 <Field
                   name="phone"
@@ -41,6 +41,7 @@ const onSubmit = handleSubmit(async (values) => {
                   :placeholder="$t('phone_example')"
                   :rules="phoneRules"
                   class="w-full px-3 py-2 outline-none"
+                  dir="ltr"
                 />
               </div>
               <ErrorMessage name="phone" class="text-red-500 text-sm mt-1" />
