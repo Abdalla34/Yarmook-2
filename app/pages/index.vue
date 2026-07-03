@@ -15,6 +15,7 @@ const OFFERS_CACHE_KEY = "offers_cache";
 
 const homeData = ref(null);
 const offersData = ref(null);
+const loading = ref(true);
 
 const sliders = computed(() => homeData.value?.data?.sliders ?? []);
 const offers = computed(() => offersData.value?.data?.items ?? offersData.value?.data ?? []);
@@ -33,6 +34,7 @@ onMounted(async () => {
         if (cachedHome) {
             try {
                 homeData.value = JSON.parse(cachedHome);
+                loading.value = false;
             } catch (e) { /* ignore */ }
         }
         const cachedOffers = localStorage.getItem(OFFERS_CACHE_KEY);
@@ -53,6 +55,8 @@ onMounted(async () => {
         offersData.value = offersRes;
     } catch (err) {
         console.error(err);
+    } finally {
+        loading.value = false;
     }
 
     animateYarmookSection();
@@ -135,6 +139,9 @@ function animateYarmookSection() {
     <div class="index-page mt-4">
         <div class="container mx-auto ">
             <!-- sliders home page -->
+            <div v-if="loading && !sliders.length"
+                class="animate-pulse w-[90%] md:w-[100%] lg:w-[90%] mx-auto border-4 border-white rounded-lg overflow-hidden bg-gray-200 h-[120px] md:h-[450px]">
+            </div>
             <Swiper v-if="sliders.length" :modules="[Autoplay, Pagination]" :loop="true" :autoplay="{ delay: 2000 }"
                 :pagination="{ clickable: true }"
                 class="home-slider w-[90%] md:w-[100%] lg:w-[90%] border-4 border-white rounded-lg overflow-hidden">
