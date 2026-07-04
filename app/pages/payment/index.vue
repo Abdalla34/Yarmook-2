@@ -15,7 +15,7 @@
                 <div v-else-if="!paymentMethods.length" class="text-center py-12">
                     <p class="text-gray-500 text-lg">No payment methods available.</p>
                 </div>
-                <div v-else class="space-y-4">
+                <div v-else class="max-w-2xl mx-auto space-y-4">
                     <div v-for="method in paymentMethods" :key="method" @click="selectedMethod = method"
                         class="rounded-2xl border w-full bg-white px-3 py-2 cursor-pointer transition hover:border-yellow-400 hover:shadow-sm"
                         :class="selectedMethod === method ? 'bg-yellow-100 border-yellow-400' : 'border-gray-200'">
@@ -47,10 +47,12 @@
                 <p class="mt-4 text-gray-600">Preparing payment...</p>
             </div>
 
-            <div v-if="checkoutId" class="max-w-lg mx-auto">
+            <div v-if="checkoutId" class="max-w-2xl mx-auto">
                 <div class="bg-white rounded-2xl p-6 shadow-md">
                     <h2 class="text-lg font-semibold text-center mb-6">Enter your card details</h2>
-                    <form :action="hyperpayRedirectUrl" class="paymentWidgets" :data-brands="hyperpayBrands"></form>
+                    <div class="w-full">
+                        <form :action="hyperpayRedirectUrl" class="paymentWidgets" :data-brands="hyperpayBrands" method="POST"></form>
+                    </div>
                 </div>
             </div>
 
