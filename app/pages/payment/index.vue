@@ -72,6 +72,8 @@
 </template>
 
 <script setup>
+console.log("[PAYMENT INDEX] Page mounted");
+
 definePageMeta({
     key: route => route.fullPath,
 });
@@ -88,6 +90,7 @@ useHead({
 const route = useRoute();
 const { getsingleOrder } = useGlobalApi();
 const { usePayment, usePaymentMembership, usePaymentToChargeWallet, tamaraPayment, tabyPayment, checkOnDelivery } = PayMents();
+const localePath = useLocalePath();
 
 const orderId = computed(() => route.query.order_id);
 const membershipId = computed(() => route.query.membership_id);
@@ -242,9 +245,9 @@ function loadHyperpayWidget(id) {
         existing.remove();
     }
 
-    const successUrl = `${origin}/payment/status?gateway=hyperpay&${callbackParams.value}`;
-    const failureUrl = `${origin}/payment/failure?gateway=hyperpay&${callbackParams.value}`;
-    const cancelUrl = `${origin}/payment/cancel?gateway=hyperpay&${callbackParams.value}`;
+    const successUrl = `${origin}${localePath('/payment/status')}?gateway=hyperpay&${callbackParams.value}`;
+    const failureUrl = `${origin}${localePath('/payment/failure')}?gateway=hyperpay&${callbackParams.value}`;
+    const cancelUrl = `${origin}${localePath('/payment/cancel')}?gateway=hyperpay&${callbackParams.value}`;
 
     window.wpwlOptions = {
         onCheckoutSuccess: function () {
@@ -265,9 +268,9 @@ function loadHyperpayWidget(id) {
 }
 
 async function handleTamaraPayment() {
-    const successUrl = `${origin}/payment/status?gateway=tamara&${callbackParams.value}`;
-    const failureUrl = `${origin}/payment/failure?gateway=tamara&${callbackParams.value}`;
-    const cancelUrl = `${origin}/payment/cancel?gateway=tamara&${callbackParams.value}`;
+    const successUrl = `${origin}${localePath('/payment/status')}?gateway=tamara&${callbackParams.value}`;
+    const failureUrl = `${origin}${localePath('/payment/failure')}?gateway=tamara&${callbackParams.value}`;
+    const cancelUrl = `${origin}${localePath('/payment/cancel')}?gateway=tamara&${callbackParams.value}`;
 
     const payload = { success_url: successUrl, failure_url: failureUrl, cancel_url: cancelUrl };
     if (paymentContext.value === "order") {
@@ -301,9 +304,9 @@ async function handleCashOnDelivery() {
 }
 
 async function handleTabbyPayment() {
-    const successUrl = `${origin}/payment/status?gateway=tabby&${callbackParams.value}`;
-    const failureUrl = `${origin}/payment/failure?gateway=tabby&${callbackParams.value}`;
-    const cancelUrl = `${origin}/payment/cancel?gateway=tabby&${callbackParams.value}`;
+    const successUrl = `${origin}${localePath('/payment/status')}?gateway=tabby&${callbackParams.value}`;
+    const failureUrl = `${origin}${localePath('/payment/failure')}?gateway=tabby&${callbackParams.value}`;
+    const cancelUrl = `${origin}${localePath('/payment/cancel')}?gateway=tabby&${callbackParams.value}`;
 
     const payload = { success_url: successUrl, failure_url: failureUrl, cancel_url: cancelUrl };
     if (paymentContext.value === "order") {

@@ -140,7 +140,7 @@ export default defineI18nConfig(() => ({
       center_yarmook: 'مركز يارموك',
       more: 'المزيد',
       handmade_services: 'خدمات اليدوية',
-      comfortable_service: 'خدمة مريحة',
+      comfortable_service: 'خدمة مرتاح',
       soon: 'قريباً',
       maintenance: 'الصيانة',
       pro: 'برو',

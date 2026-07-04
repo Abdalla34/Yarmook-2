@@ -12,9 +12,9 @@
 </template>
 
 <script setup>
+console.log("[PAYMENT STATUS] Page mounted");
+
 const route = useRoute();
-const { getHyperpayStatus, tabbyStatusSuccess } = PayMents();
-const { cartCount } = useAddToCart();
 
 const gateway = route.query.gateway;
 const orderId = route.query.order_id;
@@ -22,72 +22,27 @@ const membershipId = route.query.membership_id;
 const walletAmount = route.query.amount;
 const carId = route.query.car_id;
 const id = route.query.id ?? route.query.resourcePath;
-const paymentId = route.query.payment_id;
 
-const callbackParams = computed(() => {
-    if (orderId) return `order_id=${orderId}`;
-    if (membershipId) {
-        let params = `membership_id=${membershipId}`;
-        if (carId) params += `&car_id=${carId}`;
-        return params;
-    }
-    if (walletAmount) return `amount=${walletAmount}`;
-    return "";
-});
+const params = new URLSearchParams();
+params.set('gateway', gateway || 'unknown');
+if (orderId) params.set('order_id', orderId);
+if (membershipId) params.set('membership_id', membershipId);
+if (carId) params.set('car_id', carId);
+if (walletAmount) params.set('amount', walletAmount);
 
 function redirect(url) {
-    if (import.meta.client) {
-        window.location.href = url;
-    }
+    window.location.href = url;
 }
 
-onMounted(async () => {
-    try {
-        if (gateway === "hyperpay" && id) {
-            const res = await getHyperpayStatus(id);
-
-            const isSuccess =
-                res?.status === true ||
-                res?.status === "true" ||
-                res?.data?.status === true ||
-                res?.data?.status === "true";
-
-            if (isSuccess) {
-                cartCount.value = 0;
-                redirect(`/payment/success?gateway=hyperpay&${callbackParams.value}`);
-            } else {
-                redirect(`/payment/failure?gateway=hyperpay&${callbackParams.value}`);
-            }
-            return;
-        }
-
-        if (gateway === "tabby") {
-            const pid = paymentId || id;
-
-            if (pid) {
-                const res = await tabbyStatusSuccess(pid);
-
-                const isSuccess =
-                    res?.status === true ||
-                    res?.status === "true" ||
-                    res?.data?.status === true ||
-                    res?.data?.status === "true";
-
-                if (isSuccess) {
-                    cartCount.value = 0;
-                    redirect(`/payment/success?gateway=tabby&${callbackParams.value}`);
-                } else {
-                    redirect(`/payment/failure?gateway=tabby&${callbackParams.value}`);
-                }
-                return;
-            }
-        }
-
-        cartCount.value = 0;
-        redirect(`/payment/success?gateway=${gateway || 'unknown'}&${callbackParams.value}`);
-    } catch (err) {
-        console.error("Payment verification error:", err);
-        redirect(`/payment/failure?gateway=${gateway || 'unknown'}&${callbackParams.value}`);
+if (import.meta.client) {
+    if (gateway === "tabby") {
+        redirect(`/payment/success?${params.toString()}`);
+    } else if (gateway === "tamara") {
+        redirect(`/payment/success?${params.toString()}`);
+    } else if (gateway === "hyperpay" && id) {
+        redirect(`/payment/success?${params.toString()}`);
+    } else {
+        redirect(`/payment/success?${params.toString()}`);
     }
-});
+}
 </script>

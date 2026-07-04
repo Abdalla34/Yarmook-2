@@ -24,6 +24,6 @@ onMounted(() => {
 
     setTimeout(() => {
         navigateTo("/my-orders");
-    }, 2000);
+    }, 4000);
 });
 </script>
