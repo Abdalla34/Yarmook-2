@@ -5,11 +5,11 @@
                 <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
                     <span class="text-3xl text-green-500">&#10003;</span>
                 </div>
-                <h1 class="text-2xl font-bold text-gray-800 mb-2">Payment Successful</h1>
-                <p class="text-gray-500 mb-6">Your payment has been processed successfully.</p>
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ $t('payment_successful') }}</h1>
+                <p class="text-gray-500 mb-6">{{ $t('payment_successful_desc') }}</p>
                 <NuxtLink to="/my-orders"
                     class="inline-block px-6 py-3 bg-yellow-400 rounded-full font-semibold hover:bg-yellow-500 transition">
-                    View My Orders
+                    {{ $t('my_orders') }}
                 </NuxtLink>
             </div>
         </div>

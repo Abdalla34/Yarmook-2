@@ -2,7 +2,7 @@
     <div class="payment-page min-h-screen bg-gray-50 py-10">
         <div class="container mx-auto px-4">
             <h1 class="mb-8 text-2xl font-bold text-gray-800 text-center">
-                Payment Method
+                {{ $t('payment_method') }}
             </h1>
 
             <div v-if="!checkoutId">
@@ -10,16 +10,16 @@
                     <div
                         class="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto">
                     </div>
-                    <p class="mt-4 text-gray-600">Loading order details...</p>
+                    <p class="mt-4 text-gray-600">{{ $t('loading_order_details') }}</p>
                 </div>
                 <div v-else-if="!paymentMethods.length" class="text-center py-12">
-                    <p class="text-gray-500 text-lg">No payment methods available.</p>
+                    <p class="text-gray-500 text-lg">{{ $t('no_payment_methods') }}</p>
                 </div>
                 <div v-else class="max-w-2xl mx-auto space-y-4">
                     <div v-for="method in paymentMethods" :key="method" @click="selectedMethod = method"
                         class="rounded-2xl border w-full bg-white px-3 py-2 cursor-pointer transition hover:border-yellow-400 hover:shadow-sm"
                         :class="selectedMethod === method ? 'bg-yellow-100 border-yellow-400' : 'border-gray-200'">
-                        <p class="text-lg font-semibold text-center p-3 text-gray-800">Pay with {{ method }}</p>
+                        <p class="text-lg font-semibold text-center p-3 text-gray-800">{{ $t('pay_with') }} {{ method }}</p>
                     </div>
                 </div>
 
@@ -33,9 +33,9 @@
                         <span v-if="submitting" class="inline-flex items-center gap-2">
                             <span
                                 class="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-                            Processing...
+                            {{ $t('processing') }}
                         </span>
-                        <span v-else>Pay</span>
+                        <span v-else>{{ $t('pay') }}</span>
                     </button>
                 </div>
             </div>
@@ -44,12 +44,12 @@
                 <div
                     class="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto">
                 </div>
-                <p class="mt-4 text-gray-600">Preparing payment...</p>
+                <p class="mt-4 text-gray-600">{{ $t('preparing_payment') }}</p>
             </div>
 
             <div v-if="checkoutId" class="max-w-2xl mx-auto">
                 <div class="bg-white rounded-2xl p-6 shadow-md">
-                    <h2 class="text-lg font-semibold text-center mb-6">Enter your card details</h2>
+                    <h2 class="text-lg font-semibold text-center mb-6">{{ $t('enter_card_details') }}</h2>
                     <div class="w-full">
                         <form :action="hyperpayRedirectUrl" class="paymentWidgets" :data-brands="hyperpayBrands" method="POST"></form>
                     </div>
@@ -61,7 +61,7 @@
                     <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
                         <span class="text-3xl text-green-500">&#10003;</span>
                     </div>
-                    <h2 class="text-xl font-bold text-gray-800 mb-3">Cash on Delivery</h2>
+                    <h2 class="text-xl font-bold text-gray-800 mb-3">{{ $t('cash_on_delivery') }}</h2>
                     <p class="text-gray-600 mb-6">{{ codMessage }}</p>
                     <NuxtLink to="/my-orders"
                         class="inline-block px-6 py-3 bg-yellow-400 rounded-full font-semibold hover:bg-yellow-500 transition">
@@ -74,8 +74,6 @@
 </template>
 
 <script setup>
-console.log("[PAYMENT INDEX] Page mounted");
-
 definePageMeta({
     key: route => route.fullPath,
 });
@@ -84,7 +82,7 @@ useHead({
     meta: [
         {
             "http-equiv": "Content-Security-Policy",
-            content: "script-src 'self' https://ajax.googleapis.com/ https://test.oppwa.com 'unsafe-inline' 'unsafe-eval'; worker-src blob: https://test.oppwa.com; frame-src https://test.oppwa.com",
+            content: "script-src 'self' https://ajax.googleapis.com/ https://test.oppwa.com 'unsafe-inline' 'unsafe-eval'; worker-src blob: https://test.oppwa.com; frame-src https://test.oppwa.com; style-src 'self' 'unsafe-inline' https://test.oppwa.com; img-src 'self' data: https://test.oppwa.com; connect-src 'self' https://test.oppwa.com https://alyarmook.demo.asol-tec.com",
         },
     ],
 });
