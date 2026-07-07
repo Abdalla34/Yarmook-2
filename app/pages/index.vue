@@ -156,27 +156,32 @@ function animateYarmookSection() {
         <div ref="sectionYarmook" class="section-yarmook mb-5">
             <div class="container mx-auto">
                 <section class="mt-4 md:mt-10 px-4">
-                    <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
                         <h2 ref="sectionTitle" class="text-2xl font-bold mb-6">{{ $t('center_yarmook') }}</h2>
 
                         <div ref="mainGrid" class="grid grid-cols-2 gap-3">
                             <div @click="navigateTo('/services')"
-                                class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
+                                class="bg-gray-50 rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                                 <div class="h-28 md:h-36 flex items-center justify-center p-4">
-                                    <img src="/car-fix.png" alt="Handmade Services" class="object-contain w-full h-full" />
+                                    <img src="/car-fix.png" alt="Handmade Services"
+                                        class="object-contain w-full h-full" />
                                 </div>
-                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $t('more') }}</span>
+                                <span
+                                    class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{
+                                        $t('more') }}</span>
                                 <div class="p-2 text-center">
                                     <h3 class="text-sm font-bold">{{ $t('handmade_services') }}</h3>
                                 </div>
                             </div>
 
                             <div @click="navigateTo('/comfortable-services')"
-                                class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
+                                class="bg-gray-50 rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                                 <div class="h-28 md:h-36 flex items-center justify-center p-4">
-                                    <img src="/Carcomfortable.png" alt="Comfortable Service" class="object-contain w-full h-full" />
+                                    <img src="/Carcomfortable.png" alt="Comfortable Service"
+                                        class="object-contain w-full h-full" />
                                 </div>
-                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $t('more') }}</span>
+                                <span
+                                    class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{
+                                        $t('more') }}</span>
                                 <div class="p-2 text-center">
                                     <h3 class="text-sm font-bold">{{ $t('comfortable_service') }}</h3>
                                 </div>
@@ -185,54 +190,60 @@ function animateYarmookSection() {
 
                         <div ref="secondaryGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
                             <div @click="navigateTo('/services')"
-                                class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
+                                class="bg-gray-50 rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                                 <div class="h-28 flex items-center justify-center p-4">
-                                    <img src="/maintenance.png" alt="Maintenance" class="object-contain w-full h-full" />
+                                    <img src="/maintenance.png" alt="Maintenance"
+                                        class="object-contain w-full h-full" />
                                 </div>
-                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">{{ $t('soon') }}</span>
+                                <span
+                                    class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">{{
+                                        $t('soon') }}</span>
                                 <div class="p-2 text-center">
                                     <h3 class="text-xs font-bold">{{ $t('maintenance') }}</h3>
                                 </div>
                             </div>
 
                             <div @click="navigateTo('/services')"
-                                class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
+                                class="bg-gray-50 rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                                 <div class="h-28 flex items-center justify-center p-4">
                                     <img src="/Car Brake.png" alt="Spare Parts" class="object-contain w-full h-full" />
                                 </div>
-                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">{{ $t('soon') }}</span>
+                                <span
+                                    class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">{{
+                                        $t('soon') }}</span>
                                 <div class="p-2 text-center">
                                     <h3 class="text-xs font-bold">{{ $t('spare_parts') }}</h3>
                                 </div>
                             </div>
 
                             <div @click="navigateTo('/memberships')"
-                                class="bg-white rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
+                                class="bg-gray-50 rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                                 <div class="h-28 flex items-center justify-center">
                                     <span class="text-red-500 font-bold text-4xl uppercase">{{ $t('pro') }}</span>
                                 </div>
-                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">{{ $t('pro') }}</span>
+                                <span
+                                    class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">{{
+                                        $t('pro') }}</span>
                                 <div class="p-2 text-center">
                                     <h3 class="text-xs font-bold">{{ $t('memberships') }}</h3>
                                 </div>
                             </div>
                         </div>
-                    </div>
                 </section>
             </div>
         </div>
         <!-- offers yarmook -->
         <section ref="offersSection" v-if="offers.length" class="offers mb-8 mt-4 md:mt-10">
             <div class="container mx-auto px-4">
-                <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
                     <div ref="offersHeading" class="flex align-middle justify-between">
                         <h2 class="text-2xl font-bold text-start mb-6">{{ $t('offers') }}</h2>
-                        <h2 class="text-red-500 font-bold capitalize cursor-pointer" @click="navigateTo('/offers')">{{ $t('view_all') }}</h2>
+                        <h2 class="text-red-500 font-bold capitalize cursor-pointer" @click="navigateTo('/offers')">{{
+                            $t('view_all') }}</h2>
                     </div>
                     <div ref="offersGrid"
                         class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:snap-none">
                         <NuxtLink v-for="offer in offers" :key="offer.id" :to="`/offers/${offer.id}`"
-                            class="min-w-[calc(50%-0.5rem)] w-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] flex-shrink-0 snap-start md:min-w-0 md:w-auto md:max-w-none bg-white rounded-2xl border border-gray-300 shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
+                            class="min-w-[calc(50%-0.5rem)] w-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] flex-shrink-0 snap-start md:min-w-0 md:w-auto md:max-w-none bg-gray-50 rounded-2xl border border-gray-300 shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                             <div class="relative">
                                 <img :src="offer.image || '/offerimage.jpeg'" :alt="offer.title"
                                     class="w-full h-28 md:h-[50%] object-cover"
@@ -271,9 +282,48 @@ function animateYarmookSection() {
                             </div>
                         </NuxtLink>
                     </div>
-                </div>
             </div>
         </section>
         <!-- end offers -->
+        <!-- try app section -->
+        <div class="p-4">
+            <div class="container mx-auto">
+                <div class="relative mx-auto w-[80%] rounded-3xl bg-gradient-to-r from-[#fae1e7] to-[#fcee97] p-6">
+                    <Swiper class="flex items-center justify-center gap-5">
+                        <SwiperSlide>
+                            <div class="flex flex-wrap items-center justify-center gap-5">
+                                <!-- Discount -->
+                                <div>
+                                    <h1 class="text-4xl font-bold">
+                                        20% OFF
+                                    </h1>
+                                </div>
+
+                                <!-- Offer Image -->
+                                <div>
+                                    <img src="/GroupPhone.png" alt="Offer" class="h-auto max-w-full" />
+                                </div>
+
+                                <!-- QR Code -->
+                                <div class="flex items-center gap-2 rounded-lg px-4 py-2">
+                                    <!-- <img src="/QR_code.png" alt="QR Code" class="w-20 h-20" /> -->
+
+                                    <div>
+                                        <h6 class="text-base font-medium capitalize">
+                                            Try the App
+                                        </h6>
+
+                                        <p class="text-sm text-gray-500 capitalize">
+                                            Scan to Download
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </SwiperSlide>
+                    </Swiper>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
