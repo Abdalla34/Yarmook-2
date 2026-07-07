@@ -19,7 +19,8 @@
                     <div v-for="method in paymentMethods" :key="method" @click="selectedMethod = method"
                         class="rounded-2xl border w-full bg-white px-3 py-2 cursor-pointer transition hover:border-yellow-400 hover:shadow-sm"
                         :class="selectedMethod === method ? 'bg-yellow-100 border-yellow-400' : 'border-gray-200'">
-                        <p class="text-lg font-semibold text-center p-3 text-gray-800">{{ $t('pay_with') }} {{ method }}</p>
+                        <p class="text-lg font-semibold text-center p-3 text-gray-800">{{ $t('pay_with') }} {{ method }}
+                        </p>
                     </div>
                 </div>
 
@@ -50,9 +51,7 @@
             <div v-if="checkoutId" class="max-w-2xl mx-auto">
                 <div class="bg-white rounded-2xl p-6 shadow-md">
                     <h2 class="text-lg font-semibold text-center mb-6">{{ $t('enter_card_details') }}</h2>
-                    <div class="w-full">
-                        <form :action="hyperpayRedirectUrl" class="paymentWidgets" :data-brands="hyperpayBrands" method="POST"></form>
-                    </div>
+                    <form :action="hyperpayRedirectUrl" class="paymentWidgets" :data-brands="hyperpayBrands"></form>
                 </div>
             </div>
 
@@ -117,8 +116,11 @@ const loadingCheckout = ref(false);
 const loadingOrder = ref(true);
 const hyperpayBrands = ref("");
 
+const { loadWidget: loadHyperpayWidget, cleanup: cleanupHyperpay } = useHyperpay();
+
 onUnmounted(() => {
     if (codTimer.value) clearTimeout(codTimer.value);
+    cleanupHyperpay();
 });
 
 onMounted(async () => {
@@ -210,7 +212,7 @@ async function handleHyperpayPayment() {
 
         let res;
         if (paymentContext.value === "order") {
-            res = await usePayment(Number(orderId.value), apiBrand, 0, Number(totalAmount.value));
+            res = await usePayment(Number(orderId.value), apiBrand);
         } else if (paymentContext.value === "membership") {
             res = await usePaymentMembership(Number(membershipId.value), apiBrand, carId.value ? Number(carId.value) : undefined);
         } else if (paymentContext.value === "wallet") {
@@ -233,38 +235,12 @@ async function handleHyperpayPayment() {
         hyperpayBrands.value = widgetBrands;
 
         await nextTick();
-        loadHyperpayWidget(id);
+
+        const resultUrl = `${origin}/payment/status?gateway=hyperpay&${callbackParams.value}`;
+        await loadHyperpayWidget(id, resultUrl);
     } finally {
         loadingCheckout.value = false;
     }
-}
-
-function loadHyperpayWidget(id) {
-    const existing = document.querySelector('script[src*="paymentWidgets.js"]');
-    if (existing) {
-        existing.remove();
-    }
-
-    const successUrl = `${origin}${localePath('/payment/status')}?gateway=hyperpay&${callbackParams.value}`;
-    const failureUrl = `${origin}${localePath('/payment/failure')}?gateway=hyperpay&${callbackParams.value}`;
-    const cancelUrl = `${origin}${localePath('/payment/cancel')}?gateway=hyperpay&${callbackParams.value}`;
-
-    window.wpwlOptions = {
-        onCheckoutSuccess: function () {
-            window.location.href = successUrl;
-        },
-        onCheckoutFailure: function () {
-            window.location.href = failureUrl;
-        },
-        onCheckoutCancel: function () {
-            window.location.href = cancelUrl;
-        },
-    };
-
-    const script = document.createElement("script");
-    script.src = `https://test.oppwa.com/v2/paymentWidgets.js?checkoutId=${id}`;
-    script.async = true;
-    document.head.appendChild(script);
 }
 
 async function handleTamaraPayment() {

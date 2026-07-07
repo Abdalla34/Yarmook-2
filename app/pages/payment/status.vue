@@ -15,6 +15,7 @@
 console.log("[PAYMENT STATUS] Page mounted");
 
 const route = useRoute();
+const { getHyperpayStatus } = PayMents();
 
 const gateway = route.query.gateway;
 const orderId = route.query.order_id;
@@ -30,19 +31,40 @@ if (membershipId) params.set('membership_id', membershipId);
 if (carId) params.set('car_id', carId);
 if (walletAmount) params.set('amount', walletAmount);
 
+const verifying = ref(true);
+
 function redirect(url) {
     window.location.href = url;
 }
 
-if (import.meta.client) {
+onMounted(async () => {
+    if (gateway === "hyperpay" && id) {
+        try {
+            const res = await getHyperpayStatus(id);
+            const data = res?.data ?? res;
+
+            if (data?.status === true || data?.success === true) {
+                redirect(`/payment/success?${params.toString()}`);
+                return;
+            }
+        } catch (err) {
+            console.error("[Payment Status] HyperPay verification failed:", err);
+        }
+
+        redirect(`/payment/failure?${params.toString()}`);
+        return;
+    }
+
     if (gateway === "tabby") {
         redirect(`/payment/success?${params.toString()}`);
-    } else if (gateway === "tamara") {
-        redirect(`/payment/success?${params.toString()}`);
-    } else if (gateway === "hyperpay" && id) {
-        redirect(`/payment/success?${params.toString()}`);
-    } else {
-        redirect(`/payment/success?${params.toString()}`);
+        return;
     }
-}
+
+    if (gateway === "tamara") {
+        redirect(`/payment/success?${params.toString()}`);
+        return;
+    }
+
+    redirect(`/payment/success?${params.toString()}`);
+});
 </script>

@@ -14,12 +14,19 @@
                             <Form @submit="submitOrderDetails">
 
                                 <!-- My Cars -->
-                                <div v-if="cars.length > 0" class="mb-5">
+                                <div class="mb-5">
                                     <label class="mb-2 block text-sm font-medium text-gray-700">
                                         {{ $t('my_cars') }}
                                     </label>
 
-                                    <Field name="car_id" :rules="required" as="select" v-model="selectedCarId"
+                                    <!-- Loading: show greeting only, disabled -->
+                                    <select v-if="loadingCars" disabled
+                                        class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none bg-gray-50 text-gray-400">
+                                        <option value="" disabled>{{ $t('welcome_mr', { name: userName }) }}</option>
+                                    </select>
+
+                                    <!-- Loaded with cars: show full select -->
+                                    <Field v-else-if="cars.length > 0" name="car_id" :rules="required" as="select" v-model="selectedCarId"
                                         class="w-full rounded-xl cursor-pointer border border-gray-200 px-4 py-3 outline-none focus:border-yellow-400">
                                         <option value="" disabled class="text-gray-200">{{ $t('welcome_mr', { name: userName }) }}</option>
                                         <option v-for="car in cars" :key="car.id" :value="car.id">
@@ -27,11 +34,9 @@
                                         </option>
                                     </Field>
                                     <ErrorMessage name="car_id" class="text-red-500 text-sm mt-1 block" />
-                                </div>
 
-                                <!-- No Car -->
-                                <div v-else class="mb-5">
-                                    <button @click="router.push('/add-car')"
+                                    <!-- No Car after load: show add button -->
+                                    <button v-if="!loadingCars && cars.length === 0" @click="router.push('/add-car')"
                                         class="w-full rounded-xl bg-yellow-400 py-3 font-medium text-black transition hover:bg-yellow-500">
                                         {{ $t('add_car') }}
                                     </button>
@@ -252,6 +257,7 @@ const router = useRouter();
 const orderId = route.query.order_id;
 
 const cars = ref([]);
+const loadingCars = ref(true);
 const selectedCarId = useState("orderCarId", () => "");
 
 const branches = ref([]);
@@ -349,11 +355,14 @@ function selectBranch(branch) {
 }
 
 async function fetchCars() {
+    loadingCars.value = true;
     try {
         const response = await getMycars();
         cars.value = response?.data?.data ?? response?.data ?? [];
     } catch (err) {
         console.error(err);
+    } finally {
+        loadingCars.value = false;
     }
 }
 
