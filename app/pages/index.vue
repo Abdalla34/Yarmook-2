@@ -288,10 +288,10 @@ function animateYarmookSection() {
         <!-- try app section -->
         <div class="p-4">
             <div class="container mx-auto">
-                <div class="relative mx-auto w-[80%] rounded-3xl bg-gradient-to-r from-[#fae1e7] to-[#fcee97] p-6">
+                <div class="relative mx-auto w-[80%] rounded-3xl bg-gradient-to-r from-[#fae1e7] to-[#fcee97] px-6 py-2">
                     <Swiper class="flex items-center justify-center gap-5">
                         <SwiperSlide>
-                            <div class="flex flex-wrap items-center justify-center gap-5">
+                            <div class="flex flex-wrap items-center justify-around gap-5">
                                 <!-- Discount -->
                                 <div>
                                     <h1 class="text-4xl font-bold">

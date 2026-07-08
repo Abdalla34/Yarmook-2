@@ -112,7 +112,12 @@ export const useGlobalApi = () => {
         })
 
     }
+const settings = async () => {
+    return await $fetch(`${config.public.apiBase}/settings`, {
+        method: "GET",
+        headers
+    })
+}   
 
-
-    return { headers, token, getHome, getOffers, getOfferById, getCountries, getAreasByCountry, getCitiesByArea, getBranches, getBranchDates, getsingleOrder,getOrdersAll, sendOtpCode, checkCode, logOrRegister, getSpareParts }
+    return { headers, token, getHome, getOffers, getOfferById, getCountries, getAreasByCountry, getCitiesByArea, getBranches, getBranchDates, getsingleOrder,getOrdersAll, sendOtpCode, checkCode, logOrRegister, getSpareParts, settings    }
 }
