@@ -81,7 +81,6 @@ onMounted(async () => {
     if (cached) {
       try {
         offers.value = JSON.parse(cached);
-        loading.value = false;
       } catch (e) {
         // ignore invalid cache
       }
