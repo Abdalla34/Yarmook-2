@@ -288,7 +288,7 @@ function animateYarmookSection() {
         <!-- try app section -->
         <div class="p-4">
             <div class="container mx-auto">
-                <div class="relative mx-auto w-[80%] rounded-3xl bg-gradient-to-r from-[#fae1e7] to-[#fcee97] px-6 py-2">
+                <div class="relative mx-auto w-full md:w-[80%] rounded-3xl bg-gradient-to-r from-[#fae1e7] to-[#fcee97] px-6 py-2">
                     <Swiper class="flex items-center justify-center gap-5">
                         <SwiperSlide>
                             <div class="flex flex-wrap items-center justify-around gap-5">
@@ -305,16 +305,16 @@ function animateYarmookSection() {
                                 </div>
 
                                 <!-- QR Code -->
-                                <div class="flex items-center gap-2 rounded-lg px-4 py-2">
-                                    <!-- <img src="/QR_code.png" alt="QR Code" class="w-20 h-20" /> -->
+                                <div class="flex items-center gap-2 rounded-lg bg-[#fff6] border-2 border-white px-4 py-2">
+                                    <img src="/QR_code.png" alt="QR Code" class="w-20 h-20 border-2 border-white rounded-lg cursor-pointer hover:scale-110 transition-transform duration-300" />
 
                                     <div>
                                         <h6 class="text-base font-medium capitalize">
-                                            Try the App
+                                            {{ $t('try_the_app') }}
                                         </h6>
 
                                         <p class="text-sm text-gray-500 capitalize">
-                                            Scan to Download
+                                            {{ $t('scan_to_download') }}
                                         </p>
                                     </div>
                                 </div>

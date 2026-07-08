@@ -272,6 +272,8 @@ export default defineI18nConfig(() => ({
       payment_cancelled: 'تم إلغاء الدفع',
       payment_cancelled_desc: 'لقد ألغيت عملية الدفع.',
       choose_another_method: 'اختر طريقة أخرى',
+      try_the_app: 'جرب التطبيق',
+      scan_to_download: 'امسح للتحميل',
     },
     en: {
       site_name: 'Al Yarmook',
@@ -520,6 +522,8 @@ export default defineI18nConfig(() => ({
       payment_cancelled: 'Payment Cancelled',
       payment_cancelled_desc: 'You have cancelled the payment.',
       choose_another_method: 'Choose Another Method',
+      try_the_app: 'Try the App',
+      scan_to_download: 'Scan to Download',
     },
   },
 }))
