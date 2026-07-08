@@ -295,7 +295,7 @@ function animateYarmookSection() {
                                 <!-- Discount -->
                                 <div>
                                     <h1 class="text-4xl font-bold">
-                                        20% OFF
+                                        {{ $t('discount_20') }}
                                     </h1>
                                 </div>
 

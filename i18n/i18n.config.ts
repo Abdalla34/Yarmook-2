@@ -274,6 +274,7 @@ export default defineI18nConfig(() => ({
       choose_another_method: 'اختر طريقة أخرى',
       try_the_app: 'جرب التطبيق',
       scan_to_download: 'امسح للتحميل',
+      discount_20: 'خصم 20%',
     },
     en: {
       site_name: 'Al Yarmook',
@@ -524,6 +525,7 @@ export default defineI18nConfig(() => ({
       choose_another_method: 'Choose Another Method',
       try_the_app: 'Try the App',
       scan_to_download: 'Scan to Download',
+      discount_20: '20% OFF',
     },
   },
 }))
