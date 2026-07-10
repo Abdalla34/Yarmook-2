@@ -31,7 +31,7 @@ function handleOrder() {
           <!-- Header -->
           <div class="relative flex items-center justify-between bg-gradient-to-l from-gray-100 to-gray-100 px-6 py-5">
             <h3 class="text-lg font-bold text-black capitalize">
-              {{ $t("About Service") }}
+              {{ $t("about_service") }}
             </h3>
             <button @click="emit('close')"
               class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-600 transition hover:bg-gray-300 hover:text-gray-900 hover:scale-110">
@@ -48,19 +48,19 @@ function handleOrder() {
 
             <!-- Title -->
             <h4 class="mt-5 text-start text-xl font-bold text-gray-900 leading-relaxed">
-              {{ $t("A comfortable service - that makes you comfortable") }}
+              {{ $t("comfortable_service_title") }}
             </h4>
 
             <!-- Description -->
             <p class="mt-3 text-start text-gray-500 leading-relaxed">
-              {{ $t("We repair your car while you are there, without any industrial trips") }}.
+              {{ $t("comfortable_service_desc") }}
             </p>
 
             <!-- Tagline -->
             <div class="mt-4 flex items-center gap-2 rounded-xl bg-red-50 px-4 py-3">
               <i class="fa-solid fa-car text-red-500"></i>
               <p class="font-bold text-red-600 text-sm">
-                # {{ $t("We receive it.. we fix it.. we return it") }}
+                # {{ $t("comfortable_service_tagline") }}
               </p>
             </div>
 
@@ -72,10 +72,10 @@ function handleOrder() {
                 </div>
                 <div>
                   <h5 class="text-start font-bold text-amber-700 text-sm">
-                    {{ $t("Important Note") }}
+                    {{ $t("important_note") }}
                   </h5>
                   <p class="mt-1 text-start text-sm text-amber-600">
-                    {{ $t("Service comfortable availability in Riyadh only") }}.
+                    {{ $t("comfortable_service_riyadh_only") }}
                   </p>
                 </div>
               </div>
@@ -84,25 +84,25 @@ function handleOrder() {
             <!-- Steps -->
             <div class="mt-5">
               <h5 class="mb-3 text-start font-bold text-gray-800 text-sm">
-                {{ $t("How it works") }}
+                {{ $t("how_it_works") }}
               </h5>
 
               <div class="space-y-3">
                 <div class="flex items-center gap-3">
                   <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">1</div>
-                  <span class="text-sm text-gray-600">{{ $t("Request service") }}</span>
+                  <span class="text-sm text-gray-600">{{ $t("request_service") }}</span>
                 </div>
                 <div class="flex items-center gap-3">
                   <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">2</div>
-                  <span class="text-sm text-gray-600">{{ $t("Share location") }}</span>
+                  <span class="text-sm text-gray-600">{{ $t("share_location") }}</span>
                 </div>
                 <div class="flex items-center gap-3">
                   <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">3</div>
-                  <span class="text-sm text-gray-600">{{ $t("Wait for arrival") }}</span>
+                  <span class="text-sm text-gray-600">{{ $t("wait_for_arrival") }}</span>
                 </div>
                 <div class="flex items-center gap-3">
                   <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">4</div>
-                  <span class="text-sm text-gray-600">{{ $t("Get assistance") }}</span>
+                  <span class="text-sm text-gray-600">{{ $t("get_assistance") }}</span>
                 </div>
               </div>
             </div>
@@ -112,12 +112,12 @@ function handleOrder() {
           <div class="border-t border-gray-100 px-6 py-5">
             <button @click="handleDontShow" type="button"
               class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-800">
-              {{ $t("Dont show next time") }}
+              {{ $t("dont_show_next_time") }}
             </button>
 
             <button @click="handleOrder"
               class="mt-3 w-full rounded-xl bg-gradient-to-l from-red-500 to-red-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-500/25 transition hover:shadow-xl hover:shadow-red-500/30 hover:scale-[1.02] active:scale-[0.98]">
-              {{ $t("Order Now") }}
+              {{ $t("order_now") }}
             </button>
           </div>
         </div>
