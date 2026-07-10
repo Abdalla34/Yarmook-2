@@ -104,7 +104,7 @@ async function handleOtpComplete(value) {
 
 <template>
   <Teleport to="body">
-    <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div v-if="show" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50">
       <div class="bg-white rounded-lg shadow-md p-8 w-full max-w-md mx-4 relative">
         <button @click="emit('close')"
           class="absolute top-3 end-3 text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>

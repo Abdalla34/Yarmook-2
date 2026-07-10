@@ -1,75 +1,154 @@
+<script setup>
+const props = defineProps({
+  show: Boolean,
+});
+
+const emit = defineEmits(["close", "confirm"]);
+
+const dontShowKey = "hide_comfortable_modal";
+
+function handleDontShow() {
+  if (import.meta.client) {
+    localStorage.setItem(dontShowKey, "1");
+  }
+  emit("close");
+}
+
+function handleOrder() {
+  emit("confirm");
+}
+</script>
+
 <template>
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-        <div  class="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl">
-            <!-- Header -->
-            <div class="flex items-center justify-between border-b px-6 py-4">
-                <h3 class="text-xl font-semibold capitalize">
-                    {{ $t("About Service") }}
-                </h3>
+  <Teleport to="body">
+    <Transition name="modal">
+      <div v-if="show" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click.self="emit('close')">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
 
-                <i class="fa-solid fa-xmark cursor-pointer text-xl text-gray-500 hover:text-black"></i>
+        <!-- Modal -->
+        <div class="relative w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden rounded-3xl bg-white shadow-2xl">
+          <!-- Header -->
+          <div class="relative flex items-center justify-between bg-gradient-to-l from-gray-100 to-gray-100 px-6 py-5">
+            <h3 class="text-lg font-bold text-black capitalize">
+              {{ $t("About Service") }}
+            </h3>
+            <button @click="emit('close')"
+              class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-600 transition hover:bg-gray-300 hover:text-gray-900 hover:scale-110">
+              <i class="fa-solid fa-xmark text-sm">x</i>
+            </button>
+          </div>
+
+          <!-- Body -->
+          <div class="flex-1 overflow-y-auto px-6 py-5">
+            <!-- Image -->
+            <div class="overflow-hidden rounded-2xl shadow-lg">
+              <img src="/comfortableimg.jpeg" alt="Service" class="w-full h-48 object-cover" />
             </div>
 
-            <!-- Body -->
-            <div class="px-6 py-6">
-                <img src="/comfortableimg.jpeg" alt="Service" class="w-full rounded-lg shadow-md" />
+            <!-- Title -->
+            <h4 class="mt-5 text-start text-xl font-bold text-gray-900 leading-relaxed">
+              {{ $t("A comfortable service - that makes you comfortable") }}
+            </h4>
 
-                <div class="mt-6">
-                    <h4 class="text-start text-2xl font-semibold capitalize">
-                        {{ $t("A comfortable service - that makes you comfortable") }}
-                    </h4>
+            <!-- Description -->
+            <p class="mt-3 text-start text-gray-500 leading-relaxed">
+              {{ $t("We repair your car while you are there, without any industrial trips") }}.
+            </p>
 
-                    <p class="mt-2 text-start text-gray-600">
-                        {{
-                            $t(
-                                "We repair your car while you are there, without any industrial trips"
-                            )
-                        }}.
-                    </p>
+            <!-- Tagline -->
+            <div class="mt-4 flex items-center gap-2 rounded-xl bg-red-50 px-4 py-3">
+              <i class="fa-solid fa-car text-red-500"></i>
+              <p class="font-bold text-red-600 text-sm">
+                # {{ $t("We receive it.. we fix it.. we return it") }}
+              </p>
+            </div>
 
-                    <p class="mt-3 font-bold capitalize text-red-600">
-                        # {{ $t("We receive it.. we fix it.. we return it") }}.
-                    </p>
-
-                    <!-- Note -->
-                    <div class="mt-5 rounded-lg bg-gray-100 p-4">
-                        <h5 class="mb-2 text-start font-semibold capitalize text-red-600">
-                            {{ $t("Important Note") }}:
-                        </h5>
-
-                        <p class="text-start capitalize text-red-600">
-                            {{ $t("Service comfortable availability in Riyadh only") }}.
-                        </p>
-                    </div>
-
-                    <!-- Steps -->
-                    <div class="mt-6">
-                        <h5 class="mb-3 text-start font-semibold capitalize">
-                            {{ $t("How it works") }}:
-                        </h5>
-
-                        <div class="space-y-2 text-start capitalize text-gray-700">
-                            <div>1. {{ $t("Request service") }}</div>
-                            <div>2. {{ $t("Share location") }}</div>
-                            <div>3. {{ $t("Wait for arrival") }}</div>
-                            <div>4. {{ $t("Get assistance") }}</div>
-                        </div>
-                    </div>
+            <!-- Note -->
+            <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+              <div class="flex items-start gap-3">
+                <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-100">
+                  <i class="fa-solid fa-circle-exclamation text-xs text-amber-600"></i>
                 </div>
+                <div>
+                  <h5 class="text-start font-bold text-amber-700 text-sm">
+                    {{ $t("Important Note") }}
+                  </h5>
+                  <p class="mt-1 text-start text-sm text-amber-600">
+                    {{ $t("Service comfortable availability in Riyadh only") }}.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <!-- Footer -->
-            <div class="flex flex-col gap-3 border-t px-6 py-5">
-                <button type="button"
-                    class="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-3 font-medium transition hover:bg-gray-200">
-                    {{ $t("Dont show next time") }}
-                </button>
+            <!-- Steps -->
+            <div class="mt-5">
+              <h5 class="mb-3 text-start font-bold text-gray-800 text-sm">
+                {{ $t("How it works") }}
+              </h5>
 
-                <button
-                    class="w-full rounded-lg bg-primary px-4 py-3 font-semibold text-white transition hover:opacity-90">
-                    {{ $t("Order Now") }}
-                </button>
+              <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">1</div>
+                  <span class="text-sm text-gray-600">{{ $t("Request service") }}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">2</div>
+                  <span class="text-sm text-gray-600">{{ $t("Share location") }}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">3</div>
+                  <span class="text-sm text-gray-600">{{ $t("Wait for arrival") }}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">4</div>
+                  <span class="text-sm text-gray-600">{{ $t("Get assistance") }}</span>
+                </div>
+              </div>
             </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="border-t border-gray-100 px-6 py-5">
+            <button @click="handleDontShow" type="button"
+              class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-800">
+              {{ $t("Dont show next time") }}
+            </button>
+
+            <button @click="handleOrder"
+              class="mt-3 w-full rounded-xl bg-gradient-to-l from-red-500 to-red-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-500/25 transition hover:shadow-xl hover:shadow-red-500/30 hover:scale-[1.02] active:scale-[0.98]">
+              {{ $t("Order Now") }}
+            </button>
+          </div>
         </div>
-    </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
+
+<style scoped>
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.modal-enter-active .relative,
+.modal-leave-active .relative {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .relative {
+  transform: scale(0.95) translateY(10px);
+  opacity: 0;
+}
+
+.modal-leave-to .relative {
+  transform: scale(0.95) translateY(10px);
+  opacity: 0;
+}
+</style>

@@ -11,17 +11,33 @@ gsap.registerPlugin(ScrollTrigger);
 const { getHome, getOffers, token } = useGlobalApi();
 
 const showAuthModal = ref(false);
+const showComfortableModal = ref(false);
+
+const hideComfortableKey = "hide_comfortable_modal";
 
 function handleComfortableServiceClick() {
   if (!token.value) {
     showAuthModal.value = true;
     return;
   }
-  navigateTo('/comfortable-services');
+  if (import.meta.client && localStorage.getItem(hideComfortableKey) === "1") {
+    navigateTo('/comfortable-services');
+    return;
+  }
+  showComfortableModal.value = true;
 }
 
 function handleAuthSuccess() {
   showAuthModal.value = false;
+  if (import.meta.client && localStorage.getItem(hideComfortableKey) === "1") {
+    navigateTo('/comfortable-services');
+    return;
+  }
+  showComfortableModal.value = true;
+}
+
+function handleComfortableConfirm() {
+  showComfortableModal.value = false;
   navigateTo('/comfortable-services');
 }
 
@@ -347,5 +363,11 @@ function animateYarmookSection() {
       mode="login-only"
       @close="showAuthModal = false"
       @success="handleAuthSuccess"
+    />
+
+    <Modal-For-Comfortable
+      :show="showComfortableModal"
+      @close="showComfortableModal = false"
+      @confirm="handleComfortableConfirm"
     />
 </template>
