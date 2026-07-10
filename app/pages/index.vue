@@ -8,7 +8,22 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const { getHome, getOffers } = useGlobalApi();
+const { getHome, getOffers, token } = useGlobalApi();
+
+const showAuthModal = ref(false);
+
+function handleComfortableServiceClick() {
+  if (!token.value) {
+    showAuthModal.value = true;
+    return;
+  }
+  navigateTo('/comfortable-services');
+}
+
+function handleAuthSuccess() {
+  showAuthModal.value = false;
+  navigateTo('/comfortable-services');
+}
 
 const HOME_CACHE_KEY = "home_cache";
 const OFFERS_CACHE_KEY = "offers_cache";
@@ -173,7 +188,7 @@ function animateYarmookSection() {
                                 </div>
                             </div>
 
-                            <div @click="navigateTo('/comfortable-services')"
+                            <div @click="handleComfortableServiceClick"
                                 class="bg-gray-50 rounded-lg border border-gray-300 shadow-md relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer">
                                 <div class="h-28 md:h-36 flex items-center justify-center p-4">
                                     <img src="/Carcomfortable.png" alt="Comfortable Service"
@@ -326,4 +341,11 @@ function animateYarmookSection() {
         </div>
 
     </div>
+
+    <AuthCartModal
+      :show="showAuthModal"
+      mode="login-only"
+      @close="showAuthModal = false"
+      @success="handleAuthSuccess"
+    />
 </template>

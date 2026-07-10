@@ -7,6 +7,7 @@ const props = defineProps({
   type: String,
   itemId: Number,
   qty: { type: Number, default: 1 },
+  mode: { type: String, default: "cart" },
 });
 
 const emit = defineEmits(["close", "success"]);
@@ -64,6 +65,11 @@ async function handleOtpComplete(value) {
     if (lrRes?.status && lrRes?.data?.token) {
       token.value = lrRes.data.token;
       userCookie.value = lrRes.data.user;
+
+      if (props.mode === "login-only") {
+        emit("success");
+        return;
+      }
 
       if (registered.value === true || registered.value === 'true') {
         await addCart(props.type, props.itemId, props.qty, token.value);
